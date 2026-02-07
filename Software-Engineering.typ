@@ -89,6 +89,8 @@ Prüfung mit Kunde (Stakeholder) ob System Use-Case erfüllt und abnahmefähig i
 
 = Graphen
 
+#image("Arten-von-UML-Diagrammen.png")
+
 == Kontrollflussgraph
 
 === Zweigüberdeckung
@@ -285,10 +287,14 @@ Beispiel:
 - Teams: Frontend - Backend - DB
 - Softwarestruktur: Frontend - Backend - DB
 
+== Muster
+
+#image("gang-of-four-patterns.png")
+
 == Architekturmuster
 
 - Client-Server
-- Peer-To-Peer
+- Peer-To-Peer (2-Peer?)
 - Layered Architecture
 
 == Entwurfsmuster
