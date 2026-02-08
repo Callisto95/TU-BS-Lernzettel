@@ -235,6 +235,31 @@ Beispiele:
 - Portability
 - Compliance
 
+== Organisatorische
+
+Rahmenbedingungen der Organisation
+
+- Zeitrahmen
+    - Entwicklung innerhalb von 9 Monaten
+- Entwicklung nach Scrum
+- nur Verwendung einer spezifischen API
+
+== Externe
+
+Äußere Vorgaben, Gesetze, Normen
+
+- Einhaltung der DSGVO
+- verhlüsselte Übertragung der Daten
+- Kompatibilität mit offiziellen Schnittstellen
+
+== Produktanforderungen
+
+Qualität oder Eigenschaft eines Systems
+
+- Reaktion innerhalb von X Sekunden
+- Erkennungsrate von mindestenz XX%
+- maximaler Akkuverbrauch
+
 == Anforderungsmanagement
 
 #grid(
@@ -266,6 +291,13 @@ Beispiele:
         Prüfung von Anforderungen auf Vollständigkeit und Testbarkeit mit Stakeholdern
     ],
 )
+
+= Maintenance
+
+- Adaptive
+- Perfective
+- Preventive
+- Corrective
 
 = Design
 
