@@ -124,7 +124,7 @@ Ablauf aller Knoten
 Beispiele:
 
 Conservation of organizational stability:
-- A team delivers ~10 meaningful changes per month.
+- A team delivers \~10 meaningful changes per month.
 - Product demands 20.
 - The result isn't 20 changes - it's:
     - 10 rushed changes or
