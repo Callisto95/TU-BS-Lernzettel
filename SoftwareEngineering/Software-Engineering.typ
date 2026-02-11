@@ -154,17 +154,6 @@ Reproduzierbare und standartisierte Infrastruktur und Einstellungen
 
 #image("SE-Wasserfallmodell.png")
 
-// #let lr = sym.arrow.l.r
-
-// #grid(
-//     columns: 2,
-//     [], [Requirements Analysis],
-//     lr, [System and Software Design],
-//     lr, [Implementation and Unit Testing],
-//     lr, [Integration and System Testing],
-//     lr, [Operation and Maintenance],
-// )
-
 Geeignet für:
 - eingebettete Systeme
 - große Softwaresysteme
@@ -234,6 +223,8 @@ Beispiele:
 - Wartbarkeit
 - Portability
 - Compliance
+
+#image("Non-Functional-Requirements.png")
 
 == Organisatorische
 
@@ -337,3 +328,7 @@ Beispiel:
     - Klassenstruktur
 - Verhaltensmuster
     - Interaktion und Verantwortlichkeit von Objekten
+
+= Quality Assurance
+
+#image("Quality-Assurance.png")
