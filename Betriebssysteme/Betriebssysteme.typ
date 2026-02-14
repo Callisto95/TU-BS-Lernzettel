@@ -245,7 +245,7 @@ Abstraktionsschicht des Betribssystems für die Integration und Verwendung von D
 ===== Benutzersicht
 
 persistenz von Daten
-- Sicherung und Benennung von Ergebnissen eines Programmablaufes auf einen Hintergrundspeicher
+- Sicherung und Benennung von Ergebnissen eines Programmablaufs auf einen Hintergrundspeicher
 - spätere Wiederverwendung der Ergebnisse in anderem Programm
 
 ====== Datein als benannte Objekte
@@ -461,23 +461,59 @@ Variante: Verkettete Listen
 
 == Prozesse
 
+Mit Erzeugung, Bereitstellung, und Begleitung von Prozessen bringt das Betribssystem Programme zur Ausführung
+
+Gleichzeitige Programmabläufe durch Prozesse
+- multiprogramming: mehrere Programme
+- multitasking: mehrere Aufgaben mehrerer Programme
+- multithreading: mehrere Fäden eines oder mehrerer Programme
+
+#underline([Ablauf]): Teil eines einzelnen oder mehrerer Programme
+- Einlastung einen Prozesses vom Betribssystem zum Ablaufstart
+    - Einlasten: Wechsel von aktiven Prozessen
+- Einplanung von Prozessen durch das Betriebssystem
+- üblich: Zeitteilverfahren
+
+=== Simultanverarbeitung von Prozessen
+
+Programmablauf möglich, wenn
++ er dem Betribssystem explizit gemacht worden ist
++ alle von ihm benötigten Betriebsmittel (real/virtuell) verfügbar sind
+
 === Zustände
 
 #grid(
     columns: 2,
-    [Laufend], [Prozess wird ausgeführt],
-    [Blockiert], [Prozess kann ausgeführt werden],
-    [Bereit], [Prozess wartet auf Bedingung der IO Aktivität],
+    [blockiert], [Warten auf Verfügbarkeit der Betriebsmittel],
+    [bereit], [bei Verfügbarkeit der Betriebsmittel],
+    [laufend], [zusätzliche Zuteilung des Betriebsmittel CPU],
 )
 
-== Scheduling
+weitere Zustände
+
+#grid(
+    columns: 2,
+    [erzeugt], [vom Betribssystem bekannt, kein Zulass auf Verarbeitung],
+    [beendet], [keine Ausführung eines Programms, aber immer noch vom Betribssystem bekannt],
+    [anghalten], [temporärer Ausschluss von der Verarbeitung durch Überlastung oder Benutzerwunsch],
+)
+
+===== Reihenfolgebestimmung
+
+pro Rechenkern:
+- ein laufender Prozess
+- mehrere blockierte und laufende Prozesse
+
+=== Scheduling
 
 Ein Scheduling Algorithmus characterisiert sich durch die Reihenfolge von Prozessen in der Warteschlange und die Bedingungen, unter denen die Prozesse der Warteschlange zugeführt werden.
 
-Die Bereitliste (ready list) definiert einen Ablaufplan (schedule) zur Prozessorteilung, der zur Laufzeit fortgeschrieben wird.\
+Definition des Ablaufplan (schedule) für die Prozessoreinteilung durch Bereitliste\
 -> Ordnung nach Ankunft, Termin, Dringlichkeit (= #underline([schedule Strategie]))
+- zur Laufzeit vorgeschrieben
+- Elemente: Prozesskontrollblock
 
-=== Ziele
+==== Ziele
 
 #grid(
     columns: 3,
@@ -488,6 +524,171 @@ Die Bereitliste (ready list) definiert einen Ablaufplan (schedule) zur Prozessor
 Kein Planungsalgorithmus kann alle Anforderungen erfüllen
 
 #image("Simultanverhalten.png")
+
+=== Sichtweisen
+
+==== Benutzersicht
+
+Prozess #sym.equiv Ablauf\
+"Gerichteter Ablauf des Geschehens"
+
+- Geschäfts-, Datenverarbeitungs-, Softwareentwicklungsprozess
+- formale Beschreibung (= Standartisiert)
+
+==== Anwendungssicht
+
+Prozess #sym.equiv Programmablauf\
+Interaktive Ausführung durch einen Prozessor
+
+- (inter)aktive Elemente des Rechensystems
+- Ausführung durch Betribssystem
+
+Unterscheidung zwischen Programm und Prozess:
+- statisches Programm (passiv)
+- dynamischer Prozess (aktiv)
+
+Ausführung von Zustandsübergängen nur durch laufenden Prozess (technisch gesehen)
+- explizit: eigenständiger Übergang in einen anderen Zustand
+- implizit: anderer Prozess übernimmt Transition aus blockiert und bereit
+
+Übernahme von Zustandsübergängen durch Scheduler\
+-> Definition der Phasen der Prozessverarbeitung
+- scheduling: beim Übergang in bereit und blockiert
+- implizit: beim Übergang in laufend
+
+==== Systemsicht
+
+Prozess #sym.equiv Ausführungskontext\
+Systemobjekt, welches Prozessausführung beschreibt
+- Umgebung für die Inkarnation einen Programmablaufs
+    - Prozessor / VM für Programmablauf
+- Einheit zur Zuteilung von Betriebsmitteln
+
+=== Prozesse unter UNIX
+
+primäres Strukturierungsmittel für Aktivitäten
+- hierarchiesche Anordnung in Eltern-Kind-Beziehung
+
+Entstehung eines Kindprozesses durch Klonung
+- fork: identischer Programmablauf
+- exec: Ersetzung des Programmablaufs
+
+Trennung von exec und fork ist eine UNIX Besonderheit
+- andere Betriebssysteme: forkexec ähnliche Primitive
+    - Windows: `CreateProcess`: Erzeugung und Ausführung eines Kindprozesses
+- Vorteil: Anpassung von Umgebung des Kindprozesses möglich
+    - Anpassung der Rechte
+    - Umleitung von stdin, stdout
+    - -> flexible Schnittstelle fork und exec (3 Parameter), anstatt große Funktion (CreateProcess: 25 Parameter)
+- Nachteil: Klonen ist für viele Abstraktionen schwer
+    - FD werden beibehalten
+    - Aktion bei unteilbaren Betriebsmitteln?
+    - Zustand für konsumierbaren Betriebsmitteln?
+    - Aktion bei mehrfädigen Programmen?
+    - -> fork nur bei einfachen Programmen wohldefiniert
+        - viele Sonder- und Spezialfälle in der Dokumentation
+
+==== Mehrdeutigkeit
+
+Prozess #sym.equiv Programmablauf
+- Programm in Ausführung durch einen Prozessor
+
+Prozess #sym.equiv Anweisungsfolge
+- Folge von Anweisungen für einen Prozessor
+
+Prozess #sym.equiv Ausführungskontext
+- vom Betribssystem verwalteter Ausführungskontext (CPU, Speicher, Umgebung)
+- seit Multics: eigener Adressraum
+- zusammengefasst in Prozesskontrollblock
+-> Prozesse als Objekte des Betribssystems
+
+=> "Prozess" ist mehrdeutig (im Kontext Betribssystem)
+- oft für Prozessobjekt, Programmablauf, oder beides
+- oft 1:1 Beziehung zwischen Objekt und Ablauf
+    - Beziehung nicht garantiert
+
+=== Repräsentation im Betribssystem
+
+Bündlung aller zur partiellen Virtualisierung relevanten Attribute im Prozesskontrollblock
+- process control block, PCB
+- zentrale Informations- und Kontrollstruktur im Betribssystem
+- typische Attribute
+    - Adressraum, Speicherbelegung, Laufzeitkontext, geöffnete Dateien,...
+    - Verarbeitungszustand, Blockierungsgrund, Dringlichkeit, Termin
+    - Name, Domäne, Zugehörigkeit, Befähigung, Zugriffsrechte, Identifikation
+
+ein Prozesszeiger pro Prozessor
+- Verwaltung vom Betribssystem 
+- Identifikation des laufenden Prozessobjektes
+    - zeigt auf gegenwärtigen Prozess
+    - ähnlich: Befehlszeiger der CPU zeigt auf laufenden Befehl
+- Weiterschaltung bei Prozesswechsel (dispatch)
+
+äußere Referenzierung durch Prozessidentifikation (PID)
+- oft: Index in systemweite Prozesstabelle
+- UNIX: Wiederverwendung der PID's
+    - nur eindeutig, so lange Prozessobjekt existiert
+
+== Betriebsmittel
+
+logische Abhängigkeit von Prozessen und konsumierbaren Betriebsmittel
+
+bei Simultanverarbeitung: Wettstreit um wiederverwendbare Betriebsmittel
+
+=== Klassifikation
+
+#image("Betriebsmittelklassifikation.png")
+
+Erforderliche Synchronisation bei
+- gemeinsamer Nutzung wiederverwendbarer Betriebsmittel
+- logische Abhängigkeit von konsumierbaren Betriebsmittel
+
+=== wiederverwendbare Betriebsmittel
+
+- typisch: Hardware (CPU, Speicher)
+- teilweise Aufteilbar für gleichzeitige Benutzung durch mehrere Prozesse
+- exklusive Zuordnung auf einen einzelnen Prozess bei unteilbaren Betriebsmittel
+
+=== konsumierbare Betriebsmittel
+
+- typisch: IO Operationen
+    - jede Art von Interaktion mit der Umwelt
+- Ergebnis von IO Operationen ist konsumierbares Betriebsmittel
+
+=== Gewichtsklassen
+
+UNIX Prozesse als schwergewichtige Ausführungskontexte
+- eigener Adressraum, FD Tabelle, Befähigung, Signale,...
+- Segmente für Text (code), Daten (data), 2 Stapel (user & kernel stack)
+-> Multiplexing und Virtualisierung des vollständigen Computers
+- aufwendige Erzeugung
+- aufwendige Ein- & Auslasten von Prozessen
+- ungünstig für parallele Abläufe innerhalb eines Programms
+
+==== Prozess (Process)
+
+Prozessobjekt
+
+- schwergewichtig
+- Verwaltung des Ausführungskontextes durch Betribssystem
+- "virtueller Computer", virtueller Adressraum / Geräte / CPU's
+- Verwendet von mehreren Fäden des Programms
+
+==== Faden (Thread)
+
+- leichtgewichtiger Prozess
+- vom Betribssystem verwalteter CPU-Kontext für einen Programmstrang
+- Manifest im Anwendungs- wie im Kernadressraum
+- Virtualisierung der CPU auf Ebene $L_3$, "virtueller Prozessor"
+- Ausführung in einem konkreten Prozessadressraum
+
+==== Faser (Fiber)
+
+- von der Anwendung verwalteter CPU-Kontext für einen Programmstrang
+- Manifest nur im Anwendungsadressraum
+- Virtualisierung der virtuellen CPU oberhalb der Maschinenebene $E_3$
+- Unbekannt beim Betriebssystem
+- Ausführung in einem konkreten Faden
 
 == Speicher
 
