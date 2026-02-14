@@ -4,6 +4,7 @@
 #set quote(block: true) // actually show attribution in quotes
 #show link: underline
 #set line(length: 100%)
+#show math.equation: set text(font: "Fira Math")
 
 #let E2 = $E_2$
 #let E3 = $E_3$
@@ -252,7 +253,7 @@ Benötigt Verwaltungsinformationen
 ==== Kontext
 
 - Kontext definiert flachen Namensraum
-- Erstellung eines Namensraums hierarchiescher Struktur durch Rekursion
+- Erstellung eines Namensraums hierarchischer Struktur durch Rekursion
 - Arbeitsverzeichnis als impliziter Startkontext für den Pfad
 
 ==== virtuelles Dateisystem
@@ -530,27 +531,6 @@ pro Rechenkern:
 - ein laufender Prozess
 - mehrere blockierte und laufende Prozesse
 
-=== Scheduling
-
-Ein Scheduling Algorithmus characterisiert sich durch die Reihenfolge von Prozessen in der Warteschlange und die Bedingungen, unter denen die Prozesse der Warteschlange zugeführt werden.
-
-Definition des Ablaufplan (schedule) für die Prozessoreinteilung durch Bereitliste\
--> Ordnung nach Ankunft, Termin, Dringlichkeit (= #underline([schedule Strategie]))
-- zur Laufzeit vorgeschrieben
-- Elemente: Prozesskontrollblock
-
-==== Ziele
-
-#grid(
-    columns: 3,
-    [Benutzerorientiert], [->], [kurze Antwortzeiten],
-    [Systemorientiert], [->], [hohe CPU-Auslastung],
-)
-
-Kein Planungsalgorithmus kann alle Anforderungen erfüllen
-
-#image("Simultanverhalten.png")
-
 === Sichtweisen
 
 ==== Benutzersicht
@@ -593,7 +573,7 @@ Systemobjekt, welches Prozessausführung beschreibt
 === Prozesse unter UNIX
 
 primäres Strukturierungsmittel für Aktivitäten
-- hierarchiesche Anordnung in Eltern-Kind-Beziehung
+- hierarchische Anordnung in Eltern-Kind-Beziehung
 
 Entstehung eines Kindprozesses durch Klonung
 - fork: identischer Programmablauf
@@ -747,17 +727,17 @@ Prozessobjekt
 
 - Welcher Speicherbereich könnte Sinnvoll ausgelagert werden?
 
-= Signale
+== Signale
 
 virtuelle Ausnahme des Prozessors
 
-== Sichtweisen
+=== Sichtweisen
 
-=== Benutzersicht
+==== Benutzersicht
 
 seltene Ereignisse
 
-=== Anwendungssicht
+==== Anwendungssicht
 
 Signal vom Betribssystem
 - Rückruf des Betribssystems an ein Programm in Ausführung
@@ -765,14 +745,14 @@ Signal vom Betribssystem
     - synchrones Ereignis: unmittelbarer Zusammenhang mit der Programmausführung
     - asynchrones Ereignis: kein Zusammenhang mit der Programmausführung
 
-=== Systemsicht
+==== Systemsicht
 
 Aktivierung des Betribssystems
 - Aufruf des durch das Betribssystem realisierten Interpreters
 - synchron durch laufende Prozess (implizit und explizit)
 - asynchron durch ein Signal der Nebenläufigen Hardware
 
-=== synchrones Signal
+==== synchrones Signal
 
 Auslösung durch Aktivität des eigenen Prozesses
 - durchgereichter #E2 trap bei Ausführung einer Instruktion durch die CPU
@@ -783,7 +763,7 @@ Auslösung durch Aktivität des eigenen Prozesses
     - `SIGPIPE`: pipe error
     - `SIGSYS`: illegal syscall
 
-=== asynchrones Signal
+==== asynchrones Signal
 
 Auslösung durch externes Ereignis oder anderer Prozessor
 - durchgereichtes asynchrones Ereignis des $L_2$ Prozessors (CPU, Hardware Ereignis)
@@ -798,7 +778,7 @@ Auslösung durch externes Ereignis oder anderer Prozessor
     - Synchronisation erforderlich
     - nicht-unterdrück/-verzögerbare Signale existieren (`SIGKILL`, `SIGSTOP`)
 
-==== technische Sicht
+===== technische Sicht
 
 Signalbehandlung erfolgt immer beim Verlassen des Kerns\
 -> wenn #E3 Prozessor (Prozess) Arbeit wiederaufnimmt
@@ -828,7 +808,7 @@ Genauer Ablauf abhängig vom Zustand des Prozesses
     ],
 )
 
-=== Nebenläufigigkeit durch Signale
+==== Nebenläufigigkeit durch Signale
 
 Erzeugung von Nebenläufigkeit durch asynchrone Signale innerhalb eines Prozesses
 - Problem ähnlich wir IRQ auf #E2
@@ -937,3 +917,391 @@ asynchrone Unterbrechungen jederzeit (nach jeder #E2 Operation) möglich\
 -> Problematisch: gemeinsam verwendeter Zustand\
 => kritische Gebiete Schützen
 - Verzögerung von Unterbrechungen
+
+== Scheduling
+
+Ein Scheduling Algorithmus characterisiert sich durch die Reihenfolge von Prozessen in der Warteschlange und die Bedingungen, unter denen die Prozesse der Warteschlange zugeführt werden.
+
+Definition des Ablaufplan (schedule) für die Prozessoreinteilung durch Bereitliste\
+-> Ordnung nach Ankunft, Termin, Dringlichkeit (= #underline([schedule Strategie]))
+- zur Laufzeit vorgeschrieben
+- Elemente: Prozesskontrollblock
+
+Dabei: Einhaltung komplexer Randbedingungen (Fairness, Durchsatz, Reaktionszeit, Ressourcennutzung = Planungsziele)
+- idR: nicht alle Planungsziele können erreicht werden
+- Gewichtung je nach Betriebsart
+- Zielkonflikte bleiben bestehen
+
+=== Ziele
+
+#grid(
+    columns: 3,
+    [Benutzerorientiert], [->], [kurze Antwortzeiten],
+    [Systemorientiert], [->], [hohe CPU-Auslastung],
+)
+
+Kein Planungsalgorithmus kann alle Anforderungen erfüllen
+
+=== Sichtweisen
+
+==== Benutzersicht
+
+Wahrgenommenes Systemverhalten
+- Antwortzeit einer Systemanforderung
+- Durchlaufzeit eines Prozesses
+- Fairness der Ressourcenverteilung
+
+==== Anwendungssicht
+
+Transparenz und Verlässlichkeit
+- Termintreue neo der Prozessaktivierung (verlässliche Einplanung)
+- Vorhersagbarkeit der Ressourcenzuteilung (Fortschrittsgarantie)
+- Berücksichtigung der Dringlichkeit (Priorisierung von Aktivitäten)
+
+===== Betriebsarten
+
+====== Stapelbetrieb (batch scheduling)
+
+interaktionslose, unabhängige Programme
+- nicht verdrängend
+- verdrängend mit langen Zeitscheiben
+    - Minimierung des Umplanaufwands
+
+Ziel: Durchsatz
+
+====== Dialogbetrieb (interactive scheduling)
+
+interaktionreiche, abhängige Programme
+- ereignisgesteuerte, verdrängende Verfahren
+- kurze Zeitscheiben
+
+Ziel: Antwortzeit
+
+====== Echtzeitbetrieb (real-time scheduling)
+
+zeitkritische, abhängige Programme
+
+- ereignisgesteuerte, zeitgesteuerte deterministische Verfahren
+- Einhaltung physischer Zeitschranken
+
+Ziel: Rechtzeitigkeit
+
+==== Systemsicht
+
+Auslastung der Systemressourcen
+- Durchsatz des Rechensystems (Prozesse pro Zeiteinheit)
+- Hardwareauslastung (Minimierung der Kosten des Rechenbetriebs)
+- Ermöglichung von Lastenausgleich (gleichmäßige Nutzung der Hardware)
+
+#line()
+
+#grid(
+    columns: 2,
+    [Aufgabe (job)], [ausführbarer Arbeitsauftrag],
+    [Prozess / Faden], [ausführende Einheit],
+)
+
+generell: Betrachtung von Aufgaben durch Planungsalgorithmen
+
+idR: CPU Zuteilung an Prozessen und Fäden
+- Betrachtungsweise entspricht Stapelbetrieb
+- Instantiierung zugelassener Aufgaben als ein Prozess
+    - Abarbeitung des Auftrags durch Prozess
+    - Terminierung mit Ergebnis
+
+Betrachtungsweise: Dialogbetrieb
+- Starten von interaktiven Prozessen durch zugelassene Nutzer
+- Kennzeichnung: Wechsel von IO und Berechnung
+-> Aufgabe: CPU-Stoß (CPU burst)
+
+===== Planungsebenen
+
+====== High-Level Scheduling
+
+"User"
+
+Bereich: Sekunden - Minuten
+- System Zwangskontrolle für Aufgaben
+- Initiierung zugelassener Aufgaben zu interaktiven Prozessen (oder Gruppen von interaktiven Prozessen)
+
+====== Intermediate-Level Scheduling
+
+"Process"
+
+Bereich: Millisekunden - Sekunden
+- CPU Zwangskontrolle für Prozesse
+- Steuerung von Aktivierung und Deaktivierung (Ein- & Auslagerung von Prozessen)
+- Konkurrenz um Betriebsmittel nur von aktiven Prozessen
+
+====== Low-Level Scheduling
+
+"Thread"
+
+Bereich: Mirkosekunden - Sekunden
+- CPU Zuteilungskontrolle für Fäden
+- Steuerung der Einlastung konkreter Prozesse und Fäden über die Zustände `BEREIT` #sym.arrow.l.r `LAUFEND` #sym.arrow.l.r `BLOCKIERT`
+
+=== Verfahren
+
+Planungsverfahren zu verschiedenen Zeitpunkten
+- online scheduling: dynamischer, während der Ausführung
+- offline scheduling: statisch, vor der Ausführung
+
+Planungsverfahren unter der Annahme der Vorhersagbarkeit
+- deterministic scheduling: bekannter, vorberechneter Prozesse
+- probabilistic scheduling: unbekannte Prozesse
+
+Kooperationsverhalten
+- cooperative scheduling
+    - voneinander abhängige Prozesse
+    - freiwillige Abgabe des Prozessors
+- preemptive scheduling
+    - voneinander unabhängige Prozesse
+    - Entziehung des Prozessors
+
+UNIX: Einplanung von Prozesse (Fäden) durch online, probabilistisch, und verdrängender Einplanung
+
+==== klassische Planungs- und Auswahlverfahren
+
+#grid(
+    columns: 2,
+    [kooperativ],
+    [
+        - FCFS (first come, first serve)
+    ],
+
+    [verdrängend],
+    [
+        - RR (round robin)
+        - VRR (virtual round robin)
+    ],
+
+    [probabilistisch],
+    [
+        - SPN (SJF) (shortes job finish)
+        - SRTF (shortest remaining time first)
+        - HRRN (highest reponse ration first)
+    ],
+
+    [mehrstufig],
+    [
+        - MLQ (multi level queues)
+        - MLFQ (multi level feedback queues)
+        - FSS (fair share scheduling)
+    ],
+)
+
+==== Kooperativ (FCFS)
+
+Einplanung nach Ankunftszeit
+- nicht verdrängend
+- gerecht
+    - höhere Antwortzeit
+    - niedriger IO Durchsatz
+- suboptimal bei Mix von kurzen und langen CPU Stößen
+    - Begünstigung von Prozessen mit langen CPU Stößen
+    - Benachteiligung von Prozessen mit kurzen CPU Stößen
+- Problem: Konvoieffekt
+    - kurzer CPU-Stoß folgt einem langen
+
+==== Verdrängend (RR)
+
+Einplanung nach Ankunftszeit, Umplanung in regelmäßigen Zeitabständen
+- verdrängend, periodische Unterbrechungen
+- jeder Prozess erhält Zeitscheibe (time slice)
+    - obere Schranke für CPU-Stoß
+- Verringerung der Benachteiligung von FCFS
+- Zeitscheibe bestimmt Effektivität
+    - zu lang: Degenerierung zu FCFS
+    - zu kurz: hoher Mehraufwand durch Kontextwechsel
+    - Faustregel: etwas länger als die Dauer eines typischen CPU-Stoßes
+- Problem: Konvoieffekt
+    - kurzer Prozess folgt einem, welcher Zeitscheibe aufgebraucht hat
+
+Konvoieffekt:
+- Zuteilung weiterhin durch FCFS
+    - Benachteiligung kurzer Prozesse besteht weiterhin
+    - IO intensive Prozesse
+        - selten vollständige Ausschöpfung der Zeitscheibe
+        - freiwilliges Beenden des CPU-Stoßen
+    - CPU intesive Prozesse
+        - meist vollständige Ausschöpfung der Zeitscheibe
+        - unfreiwilliges des CPU-Stoßes
+- Bedienung aller Prozesse reihum
+
+Ungünstige Verteilung der CPU-Zeit bei Nichtausschöpfung der Zeitscheibe durch einen Prozess
+- schlechte Bedienung von IO intensiven Prozessen
+- schlechtere Auslastung von IO-Geräten
+- beträchtliche Varianz der Antwortzeit IO-intensiver Prozesse
+
+==== Verdrängend VRR
+
+RR mit Vorzugsliste und variablen Zeitscheiben
+- keine Benachteiligung von interaktiven (IO-intensiven) Prozessen
+
+bevorzugte Einplanung von Prozessen nach IO-Stoß
+- Einplanung mittels einer der Bereitliste vorgeschalteten Vorzugsliste
+    - FIFO
+        - eventuell Benachteiligung hoch-interaktiver Prozesse
+    - aufsteigend Sortiert nach Zeitscheibenrest eines Prozesses
+- Umplanung bei Ablauf der aktuellen Zeitscheibe
+    - priorisierter Einlass der Prozesse auf der Vorzugsliste
+    - Zuteilung der CPU für die Restdauer der Zeitscheibe
+    - Einreihung in Bereitliste nach Ablauf der Zeitscheibe
+- erreicht durch strukturelle Maßnahmen, nicht durch analytische
+
+kein voll-verdrängendes Verfahren
+- Einlastung erst nach Ablauf der laufenden Zeitscheibe
+
+===== RR & VRR
+
+RR
+- gleiche Behandlung CPU und IO-intensiver Prozesse
+- eine gemeinsame Bereitliste zur Zuteilung der CPU
+- IO-intensive Prozesse bekommen (relativ) weniger CPU-Zeit
+- schlechte Auslastung von IO-Geräten
+
+VRR
+- Hinzufügen von Prozessen nach IO auf Vorzugsliste
+- vorrangige Bedienung dieser Liste durch CPU
+-> Aufbrauch vom Rest der Zeitscheibe von diesen Prozessen
+
+==== Probabilistisch (SPN)
+
+Einplanung nach durschnittlicher oder maximale erwarteten Bedienzeit
+- Grundlage: à priori Wissen über Prozesslaufzeiten
+    - Stapelbetrieb: Programmierer setzt Frist
+    - Produktionsbetrieb: Erstellung einer Statistik durch Probeläufe
+    - Dialogbetrieb: Abschätzung von CPU-Stoßlängen zur Laufzeit
+- Abarbeitung nach aufsteigender Laufzeit
+    - Abschätzung erfolgt vor (statisch) oder zur (dynamische) Laufzeit
+
+Verkürzung von Antwortzeiten und Steigerung der Gesamtleistun des Systems
+- Benachteiligung längerer Prozesse
+- Verhungern (starvation) langer Prozesse möglich
+
+kein Konvoieffekt
+- praktikable Implementierung nur als näherungsweise Lösung möglich
+
+===== Mittlung
+
+heuristisches Verfahren
+- bildet Mittelwert von CPU-Stoßlängen für jeden Procezz
+- erwartete Länge des nächsten CPU-Stoßes eines Prozesses:
+$
+    S_(n+1) = frac(1, n) dot sum_(i=1)^n T_i
+$
+- Problem: gleiche Wichtigung aller CPU-Stöße
+    - Lokalität durch jüngere CPU-Stöße
+        - sollte: stärkere Berücksichtigung
+
+===== Wichtung
+
+Begrenzung des Einflusses älterer CPU-Stöße durch Dämpfungsfiler (decay filter)
+$
+    S_(n+1) = alpha dot T_n + (a - alpha) dot S_n
+$
+- zuletzt gemessener ($T_n$) und geschätzer ($S_n$) CPU-Stoßlänge
+- konstanter Wichtungsfaktor $alpha: 0 < alpha < 1$
+
+===== HRRN
+
+hungerfreies SPN
+- nicht verdrängend
+- Einplanung nach der (erwarteten) kürzesten Bedienzeit
+- Umplanung unter Berücksichtigung der Wartezeit
+    - Einführung dynamische Prioritäten
+    - regelmäßige, periodische Neuberechnung der Prioritäten anhand
+    $
+        "Prio" = frac("Wartezeit" + "Bedienzeit", "Bedienzeit")
+    $
+    - Neuberechnung betrifft alle Einträge in der Bereitliste
+- Problem: Schätzung der Bedienzeit
+- Anstieg der Wartezeit = "Alterung" (aging)
+    - Vorbeugung vor Verhungern durch Entgegenwirkung der Alterung
+
+==== Mehrstufig (MLQ)
+
+Einplanung der Prozesse nach ihrem Typ
+- Aufteilung der Bereitliste in separate Listen
+    - z.B. für System-, Dialog-, und Stapelprozesse
+- lokale Einplanungsstrategie pro Liste
+    - z.B. SPN, RR, FCFS
+- Definition einer globalen Einplanungsstrategie zwischen den Listen
+    - statisch
+        - Zuordnung einer Liste zu einer bestimmten Prioritätsebene
+        - Hungergefahr für Prozesse in tieferen Listen
+    - dynamisch
+        - Wechseln der Listen durch Zeitmultiplexverfahren
+        - z.B. 40% System-, 40% Dialog-, 20% Stapelprozesse
+- Problem: Typfestlegung erfordert Vorabwissen (statische Entscheidung)
+
+===== MLFQ
+
+- Einplanung nach Ankunftszeit
+- Umplanung in regelmäßigen Zeitabständen
+
+- Hierarchie von Bereitlisten für Prioritätsebenen 1,...,n
+    - Zeitscheibenlänge (Quantum q) wird immer länger
+        - $q_1 < q_2 < ... < q_n$
+    - Einstieg neuer Prozesse in Ebene 1
+    - innerhalb der Ebene: FCFS
+        - Verwendung von RR in Ebene n
+    - Ebene 1
+        - höchste Priorität
+        - geringste Zeitscheibenlänge (Quantum q)
+
+Bestrafung (penalization)
+- Zeitscheibenlauf drückt laufenden Prozess weiter nach unten
+-> lange Prozesse fallen nach unten
+
+Alterung (aging, anti-aging)
+- untere Prozesse finden seltener statt
+    - Anhebung nach Bewährfrist
+
+===== FSS
+
+Grundidee: hierarchische Verteilung der Systemressourcen
+- oberste Ebene: Verteilung nach festem Schlüssel
+- weitere Ebenen: problemspezifischer Planer
+
+Ausgleich von Interessensgruppen / Mischbetrieb von Betriebsarten
+- Beispiele
+    - Cloud
+        - Teilung eines echten Rechners in mehrere VM's
+        - VM-Anteil an CPU, Speicher,... entspricht Bezahlung
+    - Mainframe
+        - interaktive und Stapel- und Systemprozesse
+        - Aufteilung: 50% interaktive Prozesse, 50% Stapel- & Systemprozesse
+
+===== Gegenüberstellung
+
+#table(
+    align: center,
+    columns: (auto, 1fr, 1fr, 1fr, 1fr, 1fr),
+    table.header([], [FCFS], [(V)RR], [SPN], [HRRN], [SRTF]),
+    [kooperativ], [X], [], [(X)], [(X)], [],
+    [verdrängend], [], [X], [], [], [X],
+    [probabilistisch], [], [], [X], [X], [X],
+    [deterministische], table.cell(colspan: 5, [keines]),
+)
+
+MLQ, MLFQ, FSS: Kombination der Verfahren möglich
+- Prozesseinplanung unterliegt breit gefächerten Einordung
+    - kooperativ/verdrängend
+    - deterministische/probabilistisch
+    - statisch/dynamisch
+
+Festlegung von Prozessvorrang durch Verfahren
+#grid(
+    columns: 2,
+    [nach], [],
+    [Ankunftszeit], [FCFS, RR, VRR, (MLFQ)],
+    [Bedienzeit], [SPN, (MLFQ)],
+    [Bedienzeit/Wartezeit], [HRRN],
+    [Restbedienzeit], [SRTF],
+)
+
+Problem der Abschätzung bei probabilistischen Verfahren
+
+#image("Scheduling-Verfahren.png")
