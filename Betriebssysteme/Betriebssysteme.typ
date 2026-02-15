@@ -649,13 +649,13 @@ Erforderliche Synchronisation bei
 - gemeinsamer Nutzung wiederverwendbarer Betriebsmittel
 - logische Abhängigkeit von konsumierbaren Betriebsmittel
 
-=== wiederverwendbare Betriebsmittel
+==== wiederverwendbare Betriebsmittel
 
 - typisch: Hardware (CPU, Speicher)
 - teilweise Aufteilbar für gleichzeitige Benutzung durch mehrere Prozesse
 - exklusive Zuordnung auf einen einzelnen Prozess bei unteilbaren Betriebsmittel
 
-=== konsumierbare Betriebsmittel
+==== konsumierbare Betriebsmittel
 
 - typisch: IO Operationen
     - jede Art von Interaktion mit der Umwelt
@@ -695,6 +695,68 @@ Prozessobjekt
 - Virtualisierung der virtuellen CPU oberhalb der Maschinenebene #E3
 - Unbekannt beim Betriebssystem
 - Ausführung in einem konkreten Faden
+
+=== Aufgaben
+
+#underline([Buchung]) über die im Betribssystem vorhandenen Betriebsmittel
+- Art, Klasse
+- Zugriffsrechte, Prozesszuordnung, Nutzungsstand und -dauer
+
+#underline([Steuerung]) der Verarbeitung von Betriebsmittelanforderungen
+- Entgegennahme, Überprüfung (z.B. der Zugriffsrechte)
+- Einplanung und Nutzung durch Prozesse
+- Zuteilung (Entlastung) von Betriebsmittel
+- Freigabe von Prozessen benutzter Betriebsmittel
+
+#underline([Betriebsmittelentzug])
+- Zurücknahme der Betriebsmittel, welche von einem schlechten Prozess belegt werden
+- bei Virtualisierung: Entzug des realen Betriebsmittels
+
+=== Ziele
+
+Durchsetzen der gewählten Betriebsstrategie in Abhängigkeit von Betriebsart und Planungszielen:
+- konfliktfreie Abarbeitung der anstehenden Aufträge
+- korrekte Bearbeitung der Aufträge in endlicher Zeit
+- gleichmäßige und maximale Auslastung der Betriebsmittel
+- hoher Durchsatz, geringe Durchlaufzeit, hohe Ausfallsicherheit
+- ...
+
+Betriebsmittelzugang frei von Verhungern / Verklemmung
+- Verhungern
+    - zeitweilige Benachteiligung einzelner Prozesse
+    - Betribssystem macht weiterhin Fortschritt, kein Stillstand
+- Verklemmung
+    - irreversible gegenseitige Blockierung von Prozessen
+    - Stillstand des Prozessorsystems
+
+gemeinsames Merkmal: Wettstreit um Betriebsmittel
+steuerndes Element: Form der Zuteilung der Betriebsmittel
+
+=== Zuteilung
+
+#grid(
+    columns: (1fr, 1fr),
+    align(center, [statisch]), align(center, [dynamisch]),
+    [
+        - vor der Laufzeit / Laufzeitabschnitt
+        - Anforderung aller (im Abschnitt) benötigten Betriebsmittel
+        - Zuteilung der Betriebsmittel erfolgt ggf. lange vor ihrer eigentlichen Benutzung
+        - Freigabe aller Betriebsmittel mit Laufzeitende / Laufzeitabschnittende
+    ],
+    [
+        - zur Laufzeit, in beliebigen Laufzeitabschnitten
+        - Anforderung des jeweils benötigten Betriebsmittel bei Bedarf
+        - Zuteilung des jeweiligen Betriebsmittel erfolgt im Moment seiner Benutzung
+        - Freigabe eines belegten Betriebsmittels, sobald kein Bedarf mehr besteht
+    ],
+
+    [
+        Risiko: suboptimale Auslastung der Betriebsmittel
+    ],
+    [
+        Risiko: Verklemmung von abhängigen Prozessen
+    ],
+)
 
 == Signale
 
@@ -1274,6 +1336,100 @@ Festlegung von Prozessvorrang durch Verfahren
 Problem der Abschätzung bei probabilistischen Verfahren
 
 #image("Scheduling-Verfahren.png")
+
+== Deadlocks
+
+"Deadly Embrace"
+//gekoppelte Prozesse warten gegenseitig auf die Aufhebung einer Wartebedingung, welche aber durch dir Prozesse selber aufgehoben werden müsste.
+
+Ein Deadlock liegt vor, wenn eine Gruppe von Prozessen wechselseitig auf den Eintritt einer Bedienung wartet, die nur durch andere Prozesse der Gruppe hergestellt werden kann.
+-> gekoppelte Prozesse im blocked Zustand
+
+Situation nur von Außen lösbar
+- keine Erkennung oder Behebung durch beteiligte Prozesse
+
+Entstehung selbst wenn
+- kein einziger Prozess benötigt mehr als die verfügbare Menge an Betriebsmittel
+- unabhängig von der Verantwortlichkeit der Betriebsmittelzuteilung (Betriebssystem oder Anwendungsprogramm)
+-> Stillstand durch Verschränkung der Prozessabläufe
+
+=== Livelock
+
+Ein Livelock ist wie ein Deadlock, jedoch sind die Prozesse nicht im blocked Zustand. Sie erzielen ebenfalls keinen Fortschritt im Sinne der Programmausführung.
+-> gekoppelte Prozesse im ready Zustand
+
+schwerere Erkennung als Deadlocks
+- häufige Veränderung des Programmzählers
+
+=== notwendige und hinreichende Bedingungen
+
+vier Bedingungen notwendig
++ #underline([gegenseitiger Ausschluss]) bei der Benutzung der Betriebsmittel
+    - exklusives Vergeben der Betriebsmittel
++ #underline([Nachforderbarkeit]) von Betriebsmitteln ist möglich
+    - Nachforderung von weiteren Betriebsmitteln durch einen Prozess, welcher bereits Betriebsmittel belegt
++ #underline([Unentziehbarkeit]) der zugeteilten Betriebsmittel
+    - Freigabe von Betriebsmitteln ausschließlich und explizit durch den Prozess, welcher sie belegt
++ #underline([zirkuläres Warten]) muss eingetreten sein
+    - Es existiert eine geschlossene Kette von Belegungen und Anforderungen, an der mindestenz 2 Prozesse und 2 Betriebsmittel beteiligt sind
+
+Dabei
+- 1, 2, 3: notwendige Bedingung
+- 4: notwendige und hinreichende Bedingung
+
+Behandlung
+- Invalidierung mindestenz einer der Bedingungen
+
+=== Betriebssystemstrategien
+
++ #underline([Ignorieren])
+    - pragmatischer Ansatz
+    - Deadlocks sind selten und liegen in der Verantwortung der Anwendung
+    - UNIX
+
++ #underline([Vorbeugung]) (deadlock prevention)
+    - konstruktiver Ansatz
+    - statisches Vergabeprotokoll zur Sicherstellung des Nichtauftretens von Deadlocks
+    - direkte Methoden
+        - Aufheben der notwendigen und hinreichenden Bedingung
+        - 4: Definition einer linearen Ordnung über alle Betriebsmittel
+            - Zuteilung nur in aufsteigender oder absteigender Reihenfolge
+    - indirekte Methoden
+        - heben eine notwendige Bedingung auf
+        - 1: nichtblockierende Synchronisation
+        - 2: unteilbare Anforderung der Betriebsmittel
+        - 3: Virtualisierung der Betriebsmittel
+            - Unentziehbarkeit
+    - Vorbeigung auf Kosten der Betriebsmittelbelastung
+    - Vorraussetzung von Vorabwissen
+    - Nutzung in Echtzeitsystemen
+
++ #underline([Vermeidung]) (deadlock avoidance)
+    - analytischer Ansatz
+    - keine Stattgebung von Betriebsmittelanforderungen, welche einen Deadlock verursachen
+    - Überwachung von Prozessen und deren Betriebsmittelanforderungen
+        - Überprüfung jeder Anforderung auf einen möglichen unsicheren Zustand
+        - Ablehnung der Anforderung, falls dieser möglich ist
+        - Suspension des anfordernden Prozesses
+        - Zuteilung nur im sicheren Zustand
+    - Vorabwissen notwendig
+        - Vorabwissen über mögliche Betriebsmittelanforderungen aller Prozesse
+        - hohe Laufzeitkosten von Methode und Implementatierung
+    - geringe Bedeutung
+    - Bankieralgorithmus (Dijkstra, 1965)
+
++ #underline([Erkennen & Erholen]) (deadlock detection)
+    - optimiseriter Ansatz
+    - Inkaufnahme von Deadlocks
+    - kein Aufheben einer Bedingung
+    - Suchen nach Zirkeln im Wartegraphen
+    - Opfer muss Betriebsmittel abgeben
+        - Prozesszerstörung
+        - Betriebsmittelentzug
+    - sporadische Suche nach blockierten Prozessen
+        - Buchführung von Betribssystem über Anforderungen und Belegungen
+        - Such nach Zyklen in diesem Graphen
+    - Erkennenung wird Verwendet (optionaler Systemdienst)
 
 == Speicher
 
