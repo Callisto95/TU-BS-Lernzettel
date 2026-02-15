@@ -18,7 +18,7 @@
 
 = Virtuelle Maschinen
 
-== Semantische Lücke
+== semantische Lücke
 
 #quote(
     [
@@ -200,7 +200,7 @@ Server im Systemmodus, Reduktion der Laufzeitkosten des Betriebssystems
 
 = Multiplexing und Isolation durch Prozesse
 
-#underline([Konzeptionelle Sicht]): Nebenläufige Prozesse
+#underline([Konzeptionelle Sicht]): nebenläufige Prozesse
 
 #underline([Realzeit Sicht]): Betriebssystem multiplext CPU\
 (physische Zeit auf realer CPU)
@@ -781,7 +781,7 @@ Signal vom Betribssystem
 Aktivierung des Betribssystems
 - Aufruf des durch das Betribssystem realisierten Interpreters
 - synchron durch laufende Prozess (implizit und explizit)
-- asynchron durch ein Signal der Nebenläufigen Hardware
+- asynchron durch ein Signal der nebenläufigen Hardware
 
 ==== synchrones Signal
 
@@ -1768,3 +1768,263 @@ semantisch ein Betriebsmittel, in der Realisierung zwei
 - Verbraucher: produziert Pufferplätze, verbraucht Elemente
 
 => Realisierung mit zwei zählenden Semaphorn
+
+== Interprozesskommunikation (IPC)
+
+Verständigung unter Prozessen eines Rechnersystems mit Hilfe von Daten
+
+Kommunikation durch
+- gemeinsamer Speicher (shared memory)
+    - nebenläufiges Schreiben & Lesen von gemeinsamen Speicher
+    - explizite Synchronisation
+- Nachrichtenaustausch (massage passing)
+    - Senden & Empfangen von Nachrichten von Prozessen
+    - implizite Synchronisation über den Nachrichtenaustauschmechanismus
+    - Möglichkeit der Ortstransparenz
+        - Kommunikation über Rechnergrenzen
+
+Primitiven
+#grid(
+    columns: 2,
+    [
+        - `send(E,n)`
+        - `receive(S,n)`
+    ],
+    [
+        $S arrow.long^n E$ Sender S schickt Nachricht n an Empfänger E\
+        $E arrow.l.long^n S$ Empfänger E empfängt Nachricht n von Sender S
+    ],
+)
+-> Bereitstellung durch Kommunikationssystem (Betribssystem)
+
+semantische Unterschiede möglich
+- Synchronisation der Beteiligten
+- Adressierung von Sender S und Empfänger E
+    - k:m Kommunikation
+- Pufferung und Nachrichtenformat
+    - maximale Größe von n
+
+=== nachrichtenbasierte Kommunikation
+
+Kommunikation auf höherer Abstraktionsebene
+- kein gemeinsamer Speicher
+    - Ortstransparenz, strikte Isolation
+- explizite Kommunikation
+    - Trennung der Belange, Verständlichkeit
+- lose Kopplung der Paare
+    - Modularisierung, Asynchronität
+
+Kommunikation mit höherem Aufwand
+- unzureichende aprachliche Abbilung
+    - Programmieraufwand
+- Kopieren der Nachrichten
+    - Speicher- und Laufzeitkosten
+- Beschränkung der Nachrichtengröße
+    - Aufteilung großer Nutzlasten
+
+Optimierung viele der Kosten im lokalen Fall durch Betribssystem
+- Nutzlast in Registern (short IPC)
+- Übertragung einer ganzen Speicherseite in einen anderen Adressraum (zero copy)
+
+-> Ortstransparenz und Asynchronität bleiben Illusion
+- Begrenzung durch Pufferkapazität und Fehlerkorrektur des Kommunikationssystems
+- möglicherweise Blockierung und Fehlschläge von asynchronen Aufrufen
+
+==== technische Sicht
+
+keine direkte Kommunikation\
+-> immer über Kommunikationssystem KS
+#grid(
+    columns: 2,
+    [
+        - `send(E,n)`
+        - `receive(S,n)`
+    ],
+    [
+        $S arrow.long^(E,n) "KS"$ Übergabe von Nachricht and KS\
+        $E arrow.l.long^(S,n) "KS"$ Erhalt von Nachricht von KS
+    ],
+)
+
+durch Indirektion möglich
+- Ortstransparenz
+- Asynchronität
+-> funktionale Transparenz
+-> zusätzliche nichtfunktionale Kosten
+
+==== Semantiken
+
+4 verschiedenen Nachrichtensemantiken. Kombination aus Dimensionen
+
+===== Dimension 1
+
+Kommunikationsmuster (Interaktionen)
+
+#underline([Meldung])
+- Einwegnachricht
+    - Sender braucht kein Ergebnis
++ $S arrow.long^n E$ Nachricht
+
+#underline([Auftrag])
+- Zweiwegnachricht
+    - Sender auf Ergebis angewiesen
+#grid(
+    columns: 2,
+    [
+        + $S arrow.long^a E$
+        + E
+        + $E arrow.long^e S$
+    ],
+    [
+        Auftrag (in Nachricht a)\
+        Ausführung des Auftrags\
+        Ergebnis (in Antwortnachricht e)
+    ],
+)
+
+===== Dimension 2
+
+zeitliche Kopplung (Synchronität)
+
+#underline([Asynchron])
+- zeitliche Entkopplung der Verarbeitung in S und E
+
+#underline([Synchron])
+- zeitliche Kopplung der Verarbeitung in S und E
+
+====== asynchrone Meldung
+
+no-wait send: asynchrone Meldung "fire-and-forget"
+
+vollkommone Entkopplung von Sender und Empfänger
+
+- Ablieferung der Nachricht von Sender S an Kommunikationssystem
+- Sender S blockiert bis Erreichen der Nachricht vom Kommunikationssystem
+- Weiterarbeiten von Sender S
+-> Speicherung von Nachrichten im Kommunikationssystem notwendig
+
+Zulieferung an wartenden Empfänger E\
+Fall kein E wartet
+- Verwurf der Nachricht vom Kommunikationssystem
+- Zustellung der Nachricht an Warteschlange vom Kommunikationssystem
+
+====== synchrone Meldung
+
+synchronization send: synchrone Meldung mit Quittung
+
+- Ablieferung der Nachricht von Sender S and Kommunikationssystem
+- S blockiert bis Erreichen der Nachricht bei Empfänger E
+- Zustellen einer Quittung vom Kommunikationssystem
+- Entweder bei
+    - Zustellung in Warteschlange
+    - Zustellung bei Entgegennahme
+-> Verhinderung von zu schnellem Senden von Nachrichten
+
+====== synchroner Auftrag
+
+remote-invocation send: synchroner Auftrag mit Resultat
+- Bearbeitung beim Empfänger ist Teil der Transaktion
+- Sender S blockiert bis Eintreffen des Resultats
+- `reply(S,n)` $E arrow.long^n S$ zusätzliche Funktion zum Versenden der Antwort
+- starke Beschränkung der Parallelität zwischen S und E
+    - Prinzip des Fernaufrufes (remote procedure call, RPC)
+
+====== asynchroner Auftrag
+
+asynchronous remote-invocation send: Auftrag und Resultat in zwei unabhängigen Nachrichten; Verknüpfung über Auftragskennung
+
+- Sender S blockiert bis Erreichen der Nachricht vom Kommunikationssystem
+- ggf blockiert Sender S später, wenn das Ergebnis benötigt wird
+- Sender S kann mehrere Aufträge besitzen
+- gezieltes Auswählen von Aufträgen von Empfänger E (Planung)
+-> asynchroner Fernaufruf mit zeitlicher Entkopplung
+
+==== Zusammenfindung
+
+#underline([direkte Adressierung])
+- Empfänger als Server-prozess
+- Process-ID (Signale)
+- Kommunikationsendpunkt eines Prozesses (Port, Socket)
+
+#underline([indirekte Adressierung])
+- Entkopplung von Empfang und Server-prozess
+- Kanäle (Pipes)
+- Briefkästen (Mailboxes)
+- Nachrichtenpuffer (Message Queues)
+- Linux: Adressierung durch (benannte) Dateiobjekte
+
+#underline([zustätzliche Dimension])
+- Gruppenadressierung (1:n)
+- Einzelaufruf (Unicast)
+- Gruppenaufruf (Multicast)
+- Rundruf (Broadcast)
+
+=== UNIX: Signale, Pipes, Sockets
+
+==== asynchrone Signale als IPC
+
+asynchrones Signal: no-wait send einer direkt adressierten leeren Nachricht
+- implizit durch Kindprozess (`SIGCHLD`)
+- explizit durch anderen Prozess
+
+==== Pipes
+
+FIFO-Kanal zwischen zwei Kommunikationspartnern
+- unidirektional: Sender -> Empfänger
+- gepuffert (feste Puffergröße)
+- zuverlässig
+- stromortientiert (stream-based)
+    - Kommunikation auf Bytegranularität
+
+Operationen: Schreiben und Lesen
+- Beibehaltung der Ordnung der Daten (Bytestrom)
+- Sender blockiert bei voller Pipe, Empfänger bei leerer
+
+-> Semantik entspricht synchronization send
+
+==== Sockets
+
+allgemeiner Kommunikationsendpunkt im Rechnernetz
+- Bidirektional
+- gepuffert
+
+Abstraktion von Details des Kommunikationssystems
+- Bestimmung von möglichen Typen und Protokollen durch Domäne (Protokollfamilie)
+
+===== Domänen
+
+#underline([UNIX])
+- lokaler Rechner
+- Verhalten wie bidirektionale Pipe
+- Anlage einer Spezialdatei im Dateisystem möglich
+    - analog zu Named Pipe
+- Übertragung von Dateideskriptoren an anderen Prozess möglich
+
+#underline([Internet])
+- rechnerübergreifend mit IP
+
+#underline([Appletalk, DECNet, NetBIOS])
+- geringfügige Bedeutung
+
+Festlegung von Protokollen durch Domäne
+- z.B. Internet Domäne: TCP/IP, UDP/IP
+
+Definition der Adressierung durch Domäne
+- z.B. Internet Domäne: IP-Adresse und Portnummer
+
+Definition der Semantik der Datenübertragung durch Typ\
+typische Typen
+- stromortientiert, verbindungsorientiert und gesichert
+- nachrichtenorientiert und gesichert
+- nachrichtenorientiert und ungesichert
+
+Definition der Umsetzung der Nachrichtenübertragung durch Protokoll\
+z.B. Internet Domäne
+- TCP/IP
+    - stromortientiert, verbindungsorientiert und gesichert
+- UDP/IP
+    - nachrichtenorientiert, verbindungslos, ungesichert
+
+Praxis: oft Redundante Angabe von Protokoll und Typ
+- Definition eines möglichen Typen durch Protokoll
+    - ebenfalls umgekehrt
