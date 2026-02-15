@@ -8,6 +8,10 @@
 
 #let E2 = $E_2$
 #let E3 = $E_3$
+#let Ar = $A_r$
+#let Al = $A_l$
+#let Av = $A_v$
+#let maps = sym.arrow.bar
 
 #align(center, text([Betriebssysteme], weight: "bold", size: 16pt))
 
@@ -98,16 +102,16 @@ Befehle der Maschinenprogrammebene #E3
     - Ausführung vom Prozessor
     - unkritische Befehle, Ausführbar in jedem Kontext des Prozessors
 - "unnormale" Befehle der Befehlssatzebene #E2
-    - Ausführung vom Betribssystem
+    - Ausführung vom Betriebssystem
     - privilegierte Befehle, nur im Systemmodus Ausführbar
 
 === privilegierte Befehle
 
 Bereitstellung von Prozessen, Dateien, (Schutz)
-- Betribssystem ist Interpreter der #E3 Befehle
+- Betriebssystem ist Interpreter der #E3 Befehle
 - Umsetzung benötigt privilegierte #E2 Befehle
 
-Betribssystem ist nur ausnahmsweise Aktiv
+Betriebssystem ist nur ausnahmsweise Aktiv
 - Aktivierung von Außerhalb nötig
     - explizit: synchroner Systemaufruf (Syscall)
     - implizit: synchrone Programmunterbrechung (trap)
@@ -121,8 +125,8 @@ Betribssystem ist nur ausnahmsweise Aktiv
 
     #sym.arrow.b System Calls
 
-    Betribssystem-Server\
-    Betribssystem-Kern
+    Betriebssystem-Server\
+    Betriebssystem-Kern
 
     #sym.arrow.t Interrupts
 
@@ -140,7 +144,7 @@ Bereitstellung von weitergehenden Diensten, Programmen, und Bibliotheken zur Ver
 - Shells
 - Utilities
 
-== Betribssystem-Server
+== Betriebssystem-Server
 
 Erweiterung der Abstraktionen und Bereitstellung von Strategien zur Verwaltung und Zuteilung der (virtuellen) Hardwareressourcen and Benutzer und Prozesse.
 
@@ -151,7 +155,7 @@ Läuft im System- und Nutzermodus
 - Speicherverwaltung
 - Gerätesteuerung
 
-== Betribssystem-Kern
+== Betriebssystem-Kern
 
 #underline([Hauptaufgabe]): Steuerung der grundlegenden Mechanismen für Multiplexing und Isolation der Hardwareressourcen.
 
@@ -228,7 +232,7 @@ Repräsentation virtueller Hardwareressourcen durch grundlegende Konzepte des Be
 === Pseudodateien
 
 - Gerätedatei: physikalisches oder virtuelles Gerät (Festplatte, Drucker)
-- `procfs` Datei: Zustandsvariable des Betribssystem-Kerns (Anzahl der Prozesse)
+- `procfs` Datei: Zustandsvariable des Betriebssystem-Kerns (Anzahl der Prozesse)
 - Kommunikationskanal: Kommunikation zwischen Prozessen (IPC) (Pipe, Socket, stdout)
 
 === Dateisystem
@@ -236,7 +240,7 @@ Repräsentation virtueller Hardwareressourcen durch grundlegende Konzepte des Be
 Prinzip zur strukturellen Ablage von Informationen auf einem Datenträger.
 
 - Abbildung von Dateien und Verzeichnissen auf das Format des Datenträgers.
-- Bereitstellung von Metainformationen zur Einbindung in ein Betribssystem
+- Bereitstellung von Metainformationen zur Einbindung in ein Betriebssystem
 
 wesentliches internes Strukturelement: Block
 - FS Aufgabe: Abbildung von Dateien auf Blöcke
@@ -260,7 +264,7 @@ Benötigt Verwaltungsinformationen
 
 VFS; Anwender und Anwendungen benutzen idR nur das VFS
 
-Abstraktionsschicht des Betribssystems für die Integration und Verwendung von Dateisystemen
+Abstraktionsschicht des Betriebssystems für die Integration und Verwendung von Dateisystemen
 
 - virtualisierte Schnittstelle für den Zugriff auf konkrete Dateisysteme
 - Einbindung durch Montieren
@@ -343,7 +347,7 @@ zentrale Datenstruktur: statisches Array von Indexknoten
 
 Abbildungstabelle
 - Übersetzung symbolisch repräsentierter Namen in Indexknotennummern
-- spezielle Datei der Namensverwaltung des Betribssystems
+- spezielle Datei der Namensverwaltung des Betriebssystems
 
 ======= Datei
 
@@ -488,7 +492,7 @@ Variante: Verkettete Listen
 
 == Prozesse
 
-Mit Erzeugung, Bereitstellung, und Begleitung von Prozessen bringt das Betribssystem Programme zur Ausführung
+Mit Erzeugung, Bereitstellung, und Begleitung von Prozessen bringt das Betriebssystem Programme zur Ausführung
 
 Gleichzeitige Programmabläufe durch Prozesse
 - multiprogramming: mehrere Programme
@@ -496,7 +500,7 @@ Gleichzeitige Programmabläufe durch Prozesse
 - multithreading: mehrere Fäden eines oder mehrerer Programme
 
 #underline([Ablauf]): Teil eines einzelnen oder mehrerer Programme
-- Einlastung einen Prozesses vom Betribssystem zum Ablaufstart
+- Einlastung einen Prozesses vom Betriebssystem zum Ablaufstart
     - Einlasten: Wechsel von aktiven Prozessen
 - Einplanung von Prozessen durch das Betriebssystem
 - üblich: Zeitteilverfahren
@@ -504,7 +508,7 @@ Gleichzeitige Programmabläufe durch Prozesse
 === Simultanverarbeitung von Prozessen
 
 Programmablauf möglich, wenn
-+ er dem Betribssystem explizit gemacht worden ist
++ er dem Betriebssystem explizit gemacht worden ist
 + alle von ihm benötigten Betriebsmittel (real/virtuell) verfügbar sind
 
 === Zustände
@@ -520,8 +524,8 @@ weitere Zustände
 
 #grid(
     columns: 2,
-    [erzeugt], [vom Betribssystem bekannt, kein Zulass auf Verarbeitung],
-    [beendet], [keine Ausführung eines Programms, aber immer noch vom Betribssystem bekannt],
+    [erzeugt], [vom Betriebssystem bekannt, kein Zulass auf Verarbeitung],
+    [beendet], [keine Ausführung eines Programms, aber immer noch vom Betriebssystem bekannt],
     [anghalten], [temporärer Ausschluss von der Verarbeitung durch Überlastung oder Benutzerwunsch],
 )
 
@@ -547,7 +551,7 @@ Prozess #sym.equiv Programmablauf\
 Interaktive Ausführung durch einen Prozessor
 
 - (inter)aktive Elemente des Rechensystems
-- Ausführung durch Betribssystem
+- Ausführung durch Betriebssystem
 
 Unterscheidung zwischen Programm und Prozess:
 - statisches Programm (passiv)
@@ -603,28 +607,28 @@ Prozess #sym.equiv Anweisungsfolge
 - Folge von Anweisungen für einen Prozessor
 
 Prozess #sym.equiv Ausführungskontext
-- vom Betribssystem verwalteter Ausführungskontext (CPU, Speicher, Umgebung)
+- vom Betriebssystem verwalteter Ausführungskontext (CPU, Speicher, Umgebung)
 - seit Multics: eigener Adressraum
 - zusammengefasst in Prozesskontrollblock
--> Prozesse als Objekte des Betribssystems
+-> Prozesse als Objekte des Betriebssystems
 
-=> "Prozess" ist mehrdeutig (im Kontext Betribssystem)
+=> "Prozess" ist mehrdeutig (im Kontext Betriebssystem)
 - oft für Prozessobjekt, Programmablauf, oder beides
 - oft 1:1 Beziehung zwischen Objekt und Ablauf
     - Beziehung nicht garantiert
 
-=== Repräsentation im Betribssystem
+=== Repräsentation im Betriebssystem
 
 Bündlung aller zur partiellen Virtualisierung relevanten Attribute im Prozesskontrollblock
 - process control block, PCB
-- zentrale Informations- und Kontrollstruktur im Betribssystem
+- zentrale Informations- und Kontrollstruktur im Betriebssystem
 - typische Attribute
     - Adressraum, Speicherbelegung, Laufzeitkontext, geöffnete Dateien,...
     - Verarbeitungszustand, Blockierungsgrund, Dringlichkeit, Termin
     - Name, Domäne, Zugehörigkeit, Befähigung, Zugriffsrechte, Identifikation
 
 ein Prozesszeiger pro Prozessor
-- Verwaltung vom Betribssystem
+- Verwaltung vom Betriebssystem
 - Identifikation des laufenden Prozessobjektes
     - zeigt auf gegenwärtigen Prozess
     - ähnlich: Befehlszeiger der CPU zeigt auf laufenden Befehl
@@ -676,14 +680,14 @@ UNIX Prozesse als schwergewichtige Ausführungskontexte
 Prozessobjekt
 
 - schwergewichtig
-- Verwaltung des Ausführungskontextes durch Betribssystem
+- Verwaltung des Ausführungskontextes durch Betriebssystem
 - "virtueller Computer", virtueller Adressraum / Geräte / CPU's
 - Verwendet von mehreren Fäden des Programms
 
 ==== Faden (Thread)
 
 - leichtgewichtiger Prozess
-- vom Betribssystem verwalteter CPU-Kontext für einen Programmstrang
+- vom Betriebssystem verwalteter CPU-Kontext für einen Programmstrang
 - Manifest im Anwendungs- wie im Kernadressraum
 - Virtualisierung der CPU auf Ebene $L_3$, "virtueller Prozessor"
 - Ausführung in einem konkreten Prozessadressraum
@@ -698,7 +702,7 @@ Prozessobjekt
 
 === Aufgaben
 
-#underline([Buchung]) über die im Betribssystem vorhandenen Betriebsmittel
+#underline([Buchung]) über die im Betriebssystem vorhandenen Betriebsmittel
 - Art, Klasse
 - Zugriffsrechte, Prozesszuordnung, Nutzungsstand und -dauer
 
@@ -724,7 +728,7 @@ Durchsetzen der gewählten Betriebsstrategie in Abhängigkeit von Betriebsart un
 Betriebsmittelzugang frei von Verhungern / Verklemmung
 - Verhungern
     - zeitweilige Benachteiligung einzelner Prozesse
-    - Betribssystem macht weiterhin Fortschritt, kein Stillstand
+    - Betriebssystem macht weiterhin Fortschritt, kein Stillstand
 - Verklemmung
     - irreversible gegenseitige Blockierung von Prozessen
     - Stillstand des Prozessorsystems
@@ -740,7 +744,7 @@ steuerndes Element: Form der Zuteilung der Betriebsmittel
     [
         - vor der Laufzeit / Laufzeitabschnitt
         - Anforderung aller (im Abschnitt) benötigten Betriebsmittel
-        - Zuteilung der Betriebsmittel erfolgt ggf. lange vor ihrer eigentlichen Benutzung
+        - Zuteilung der Betriebsmittel erfolgt ggfs. lange vor ihrer eigentlichen Benutzung
         - Freigabe aller Betriebsmittel mit Laufzeitende / Laufzeitabschnittende
     ],
     [
@@ -770,16 +774,16 @@ seltene Ereignisse
 
 ==== Anwendungssicht
 
-Signal vom Betribssystem
-- Rückruf des Betribssystems an ein Programm in Ausführung
+Signal vom Betriebssystem
+- Rückruf des Betriebssystems an ein Programm in Ausführung
 - Auslösung durch
     - synchrones Ereignis: unmittelbarer Zusammenhang mit der Programmausführung
     - asynchrones Ereignis: kein Zusammenhang mit der Programmausführung
 
 ==== Systemsicht
 
-Aktivierung des Betribssystems
-- Aufruf des durch das Betribssystem realisierten Interpreters
+Aktivierung des Betriebssystems
+- Aufruf des durch das Betriebssystem realisierten Interpreters
 - synchron durch laufende Prozess (implizit und explizit)
 - asynchron durch ein Signal der nebenläufigen Hardware
 
@@ -790,7 +794,7 @@ Auslösung durch Aktivität des eigenen Prozesses
     - `SIGFPE`: Divison durch 0
     - `SIGSEGV`: segmention fault
     - `SIGILL`: illegal instruction
-- zusätzliche #E3 trap bei Ausführung eines syscalls durch das Betribssystem
+- zusätzliche #E3 trap bei Ausführung eines syscalls durch das Betriebssystem
     - `SIGPIPE`: pipe error
     - `SIGSYS`: illegal syscall
 
@@ -800,7 +804,7 @@ Auslösung durch externes Ereignis oder anderer Prozessor
 - durchgereichtes asynchrones Ereignis des $L_2$ Prozessors (CPU, Hardware Ereignis)
     - `SIGINT`: CTRL+C gedrückt
     - `SIGALRM`: timer expired
-- zusätzliche asynchrone Ereignisse eines #E3 Prozessors (anderer Prozess, Betribssystem)
+- zusätzliche asynchrone Ereignisse eines #E3 Prozessors (anderer Prozess, Betriebssystem)
     - `SIGCHLD`: child stopped / terminated
     - `SIGTERM`: terminate
     - `SIGHUP`: hangup
@@ -884,7 +888,7 @@ Allgemein: Behandlung von Ausnahmen ist für Anwendungen zwingend und prozessora
     - Betriebssystem: Ausnahmen der Software (UNIX/POSIX: Signale)
 - Behandlung erfolgt immer durch abstrakten Prozessor
     - CPU-Ausnahmen: #E2 (durch Betriebssystem)
-    - Betribssystem-Ausnahmen: #E3 (durch Prozess)
+    - Betriebssystem-Ausnahmen: #E3 (durch Prozess)
 
 Behandlung durch Ausnahmebehandler
 
@@ -907,7 +911,7 @@ CPU-Ausnahme
         - spezielles CPU Register entält Basisadresse
     - Modifikation der IVT ist eine privilegierte #E2 Anweisung
 
-Betribssystem Signal
+Betriebssystem Signal
 - POSIX: Registrierung mit `sigaction` für den Prozess
 - Ausführung nach dem Auftreten des Signals beim Einlasten des Prozesses
 
@@ -1427,7 +1431,7 @@ Behandlung
         - Prozesszerstörung
         - Betriebsmittelentzug
     - sporadische Suche nach blockierten Prozessen
-        - Buchführung von Betribssystem über Anforderungen und Belegungen
+        - Buchführung von Betriebssystem über Anforderungen und Belegungen
         - Such nach Zyklen in diesem Graphen
     - Erkennenung wird Verwendet (optionaler Systemdienst)
 
@@ -1696,7 +1700,7 @@ Wechsel in den blockiert-Zustand vor dem kritischen Gebiet
     - erneuter Eintrittsversuch
 -> Modifikation der Prozesszustände nötig\
 ->privilegierte Operation\
-=> Implementation der Synchronisationsprimitiven im Betribssystem-Kern
+=> Implementation der Synchronisationsprimitiven im Betriebssystem-Kern
 
 ===== Semaphor
 
@@ -1737,7 +1741,7 @@ void up(semaphore_t* sema) {
 }
 ```
 
-Implementatierung der Unteilbarkeit (atomic) durch Betribssystem-Kern.\
+Implementatierung der Unteilbarkeit (atomic) durch Betriebssystem-Kern.\
 Varianten von atomic
 - Unterbrechungssperren
     - `up` kann aus Unterbrechungsbehandlern aufgerufen werden
@@ -1769,6 +1773,320 @@ semantisch ein Betriebsmittel, in der Realisierung zwei
 
 => Realisierung mit zwei zählenden Semaphorn
 
+=== Speicherorganisation
+
+==== Strategien
+
+#underline([Allokationsstrategie]) (allocation policy)
+- Wann soll benötigter Speicher angefordert werden?
+    - statisch: Wenn man weiß, dass man ihn braucht
+    - dynamisch: Erst wenn dieser wirklich benötigt wird
+
+#underline([Platzierungsstrategie]) (placement policy)
+- Woher soll benötigter Speicher genommen werden?
+    - Verschnitt maximal/minimal
+    - Schnellstmöglich
+
+#underline([Ladestrategie]) (fetch policy)
+- Wann sind Speicherinhalte einzuladen?
+    - auf Anforderung
+    - im Voraus
+
+#underline([Ersetzungsstrategie]) (replacement policy)
+- Welche Speicherblöcke sind auszulagern, falls Speicher knapp wird?
+    - ältesten
+    - am längsten ungenutzten
+
+===== Allokation
+
+#underline([statische Allokation])
+- beim Übersetzen und Linken
+- globale / statische Variablen
+- Code
+- Allokation durch Platzierung in einer Sektion
+    - `.text`: Programmcode
+    - `.bss`: mit 0 initialisierten Variablen
+    - `.data`: mit anderen Werten initialisierten Variablen
+    - `.rodata`: unveränderliche Variablen
+
+#underline([dynamische Allokation])
+- Reservierung zur Laufzeit des Programms
+- lokale auto-Variablen
+- explizit angeforderter Speicher
+    - Stack: enthält alle aktuell lebendigen auto-Variablen
+    - Heap: mit `malloc` angeforderte Speicherbereiche
+
+====== dynamische Allocation: Heap
+
+Heap = vom Programm explizit verwalteter RAM-Speicher
+- Lebensdauer unabhängig von Programmstruktur
+- Anforderung und Freigabe mit `malloc` und `free`
+    - andere Methoden möglich
+
+====== dynamische Allocation: Stack
+
+Verwaltung von lokalen Variablen, Funktionsparametern, Rücksprungadressen durch Übersetzer und Prozessor auf dem Stack
+- architekturabhängiges Wachstum
+    - "oben nach unten" = hohe adresse zur niedrigere
+- Prozessorregister `[e]sp` zeigt auf nächsten freien Eintrag
+- Verwaltung in Form von Stack-Frames
+
+=== Freispeicherverwaltung
+
+==== Methoden
+
+generell: Bildung von kleinen Löchern -> externer Verschnitt
+
+===== Stack
+
+sehr effiziente Anforderung und Freigabe von Stapelspeicher
+- Anforderung von n Bytes = Verringerung des Stapelzeigers um n
+- Freigabe von n Bytes = Erhöhung des Stapelzeigers um n
+- Anforderung und Freigabe in LIFO-Reihenfolge
+    - kein Verschnitt, kein Loch
+
+===== Bitlisten
+
+Markierung von Speichereinheiten mit einem Bit als frei oder belegt
+- Speicherblöcke sind Vielfaches der Einheitsgröße
+- Bitindex -> Blockadresse
+
+===== verkettete Liste
+
+externe Verkettung der Speicherblöcke
+- Repräsentation auch von freien Blöcken
+
+bei Freigabe: Verschmelzung von Löchern
+- Reduktion der Fragmentierung
+
+==== Platzierung
+
+#underline([First Fit])
+- erstes passendes Loch
+- schnell
+- Konzentration auf kleine Lücken am Anfang der Löcherliste
+- Degenerierung des Aufwandes
+    - Anfang O(1)
+    - O(n) möglich
+
+#underline([Next Fit])
+- nächstes passendes Loch
+- wie First Fit, aber: Start bei zuletzt zugewiesenem Loch
+- bessere Verteilung kleinerer Löcher
+
+#underline([Best Fit])
+- kleinstes passendes Loch
+- minimiert Risiko, irgendwann kein genügend großes Loch mehr zu finden
+- Aufwand: immer O(n)
+
+#underline([Worst FIt])
+- größtes passendes Loch
+- minimiert Risiko in Zerstückelung in zu kleine Löcher
+- Aufwand: immer O(n)
+
+===== Halbierungsverfahren
+
+Einteilung in dynamische Bereiche der Größe $2^n$
+- Verminderung der Fragmentierung durch bessere Verschmelzbarkeit
+- effiziente Algorithmen für Anforderung udn Freigabe: $O(log n)$
+
+Aufrunden auf nächste Zweierpotenz -> interner Verschnitt
+
+==== Fragmentierung und Verschmelzung
+
+Ausprägung der Fragmentierung je nach Zuteilungsgranularität
+- interne Fragmentierung
+    - feste Granulatirät
+    - angeforderte Größe kleiner als zugeteilter Block
+    - lokaler Verschnitt durch Anforderer nutzbar (sollte es aber nicht)
+    - unvermeidbare Verschwendung
+- externe Fragmentierung
+    - beliebige Granulatirät
+    - angeforderte Größe ist zu groß für jedes Loch
+    - globale Verschnitt ggfs nicht mehr zuteilbar
+    - aufwendig vermeidbarer Verlust
+    - Verringerung durch Verschmelzung
+    - Auflösung durch Kompaktifizierung
+
+==== Ebenen
+
+#underline([innerhalb eines Prozesses])
+- Verwaltung des Heaps
+- dynamische Allokation von Speicher (`malloc`, `free`)
+
+#underline([innerhalb des Prozessadressraums])
+- Verwaltung von Adressbereichen (logischer Adressraum) für Segmente
+- dynamisch Allokation mit `mmap`
+- Laden dynamischer Bibliotheken
+
+#underline([innerhalb des Betriebssystem])
+- Verwaltung des physischen Speichers (realer Adressraum)
+- Verwaltung des Hintergrundspeichers (swap storage)
+
+#underline([innerhalb des Dateisystems])
+- Verwaltung der freien und belegten Blöcke des Datenträgers
+- Aufheben externer Fragmentierung durch Kompaktifizierung
+
+zu beachten:
+- Aufwand
+- interner Verschnitt
+- externer Verschnitt
+
+grundlegende Probleme und Strategien sind übertragbar
+
+=== Adressraumlehre ($E_3 arrow.squiggly E_2$)
+
+Generierung einer Folge von Adressraumzugriffen durch einen laufenden Prozess
+- anhand der im Programmtext codierten Daten und Zugriffmuster
+- abhängig von der statischen Abbildung durch Compiler und Interpreter
+- abhängig von den dynamischen Eingabedaten zur Laufzeit
+
+immer Beschränkung des Wertevorrates möglicher Adressen
+- obere Schranke
+    - Adressbreite der Hardware
+    - z.B. 32-Bit -> 4 GiB
+- untere Schranke
+    - initiale Speicherallokation des Maschinenprogramms
+- zur Laufzeit
+    - dynamisch wachsend oder schrumpfend
+
+Defintion des Adressraums eines Prozesses durch den zugebilligten Wertevorrat
+- logische / physische Einschluss des Prozesses
+- durch Hardware oder Betriebssystem
+    - oder auch: bereits konstruktiv auf der Maschinenprogrammebene
+        - typsichere Sprachen, JVM
+
+=> Implementatierung von horizontaler Isolation
+
+==== Grundbegriffe
+
+#underline([realer Adressraum]) #Ar
+- #E2 (Befehlssatzebene)
+- Durch Prozessor und Rechensystem definierter Wertvorrat von Adressen
+- $abs(A_r) = 2^n$ mit (üblicherweise) $n in {16,32,48,64}$
+- nicht jede reale Adresse $"ra" in A_r$ ist gültig
+    - #Ar kann Lücken besitzen
+-> Hauptspeicher HS adressierbar durch einen / mehrere Bereiche aus #Ar
+
+#underline([logischer Adressraum]) #Al
+- $E_(5,4,3)$ (Maschinenprogrammebene)
+- Durch ein Programm P definierter Wertvorrat von validen Adressen, der der ausführenden virtuellen Maschine (Prozess p von P) zugebilligt wird
+    - Übernahme der Abbildung $A_l -> A_r$ durch Prozessor der virtuellen Maschine
+    - jede logische Adresse $"la" in A_l$ ist gültig
+        - konzeptionell keine Lücken in #Al
+-> Arbeitsspeicher AS des Prozesses p, auf HS abgebildet
+
+#underline([virtueller Adressraum]) #Av
+- #E3 (Maschinenprogrammebene)
+- Durch das Betriebssystem definierter (erweiterteter) Wertvorrat an Adressen, der für einen logischen Adressraum zur Verfügung gestellt wird.
+- $A_v = A_l$ aber $A_v arrow.bar A_r or "HGS"$ (Abbildung auf den Hintergrundspeicher HGS)
+- partielle Interpretation von Speicherzugriffen auf das BHG durch das Betriebssystem
+-> virtueller Arbeitsspeicher VAS, des Prozesses p, durch das Betriebssystem dynamisch auf HS oder HGS abgebildet
+
+#underline([Adressraumbelegunsplan]) (memory map)
+- Festlegung von #Ar
+- welche Hardwareeinheiten sind über welche Adressbereiche zugreifbar
+- Festlegung durch Hersteller des Rechensystems
+- Adressbereiche zur allgemeinen Verwendung existieren
+    - Hauptspeicher für Maschinenprogramme und ihre Daten
+    - Zugriff kann Schutzfehler (protection fault trap) liefern
+
+==== Grundprinzip virtueller Adressraum
+
+Übersetzung der vom Prozess p generierten logischen Adressen
+- transparent durch eine prozessspezifische Abbildung $p: A_l arrow.bar A_r$
+- idR: Realisierung über die Hardware (z.B. memory management unit, MMU)
+- Abbildung auf Adressen im realen Adressraum #Ar
+- Abbildung erfolgt in Einheiten...
+    - gleicher Größe (Seiten)
+    - unterschiedlicher Größe (Segmente)
+
+Grundlage des Speicherschutzes zwischen Prozessen (horizontale Isolation) unter der Vorraussetzung des Schutzes von p (vertikale Isolation)
+
+===== Varianten
+
+kleiner logischer #maps größerer realer Adressraum
+- 16/32-Bit Systeme
+- Varianten
+    - 8086: $abs(A_l) = 2^(16) lt abs(A_r) = 2^(20)$ (64 KiB #maps 24 MiB)
+    - IA-32: $abs(A_l) = 2^(32) lt abs(A_r) = 2^(36)$ (4 GiB #maps 64 GiB)
+
+größerer logischer #maps kleiner realer Adressraum
+- 32/64=Bit Systeme
+
+lineare logische #maps unzusammenhängende reale Adressbreite
+
+linear logische #maps zweigeteilte realre Adressbreite
+- Zweiteilung in Hauptspeicher und Hintergrundspeicher
+
+Aktivierung des Betriebssystems bei Speicherzugriff auf den HGS
+- Signalisiert durch trap von MMU
+- partielle Interpretation von Betriebssystem (-> Speichervirtualisierung)
+    - Einlagerung des entsprechenden Bereiches aus dem HGS in den HS
+    - ggfs Auslagerung von Bereich aus HS in HGS
+
+===== Implementatierung
+
+Implementierung von $p: A_l arrow.bar A_r$ erfolgt in der MMU
+- Teil der CPU
+- falls aktiv: Transformation jeder Adresse auf dem Speicherbus
+
+typische Varianten: Segmentbasiert, Seitenbasiert
+#underline([Segmentbasiert])
+- Strukturierung in Einheiten verschiedener Größe
+- Umrechnung logischer Adressen über die MMU auf zusammenhängende Bereiche aus #Ar mit Basisregister
+    - $"ra" = "la" + "seg"_"base"$ für $"la" lt "seg"_"limit"$
+    - ansonsten trap
+- Ermöglichung einfacher Implementation von Relokation
+
+#underline([Seitenbasiert])
+- Strukturierung in Einheiten gleicher Größe
+- Abbildung logischer Adressen über die MMU auf nichtzusammenhängende Bereiche der Größe $2^k$ mit Tabelle
+    - Aufteilung von la an Bit k in Seitennummer $"la"_"pn"$ und Versatz $"la"_o$
+    - $"ra" = "page"["la"_"pn"] + "la"_o$ für $"page"("la"_"pn") eq.not bot$
+    - ansonsten trap
+- Ermöglichung einfacher Implementation von virtuellem Speicher
+
+==== Relokation
+
+Erforderlich, wenn die Sektionen eines Programms nicht an der beim Linken angenommenen Stelle im Adressraum geladen werden können
+
+#underline([Variante A]) patchen
+- Anpassung des Codes beim Ladevorgang
+- Anpassung jedes Verweises (Zeiger) auf ein Symbol
+- Export von Tabelle der Symbolreferenzen durch Compiler und Linker
+    - Anpassung jeder Symbolreferenz entsprechend der Ladeadresse
+
+#underline([Variante B]) position-indipendent code (PIC)
+- Positionsunabhängiger Code
+- Zugriff auf Code und Daten erfolgen immer über Adressregister-indirekt
+    - Codezugriffe: (wenn möglich) über PC (PC-relative Sprünge)
+    - Datenzugriffe: Basisregister + Offset
+    - Legen des Basisregister in Sektion beim Laden auf Ladeadresse
+- Unterstützung durch Compiler und Linker bei der Codegeneration erforderlich
+
+#underline([Variante C]) logischer Adressraum
+- hardwaregestützte durch Segmentierung
+
+==== Laden eines Programms
+
+Laden eines Maschinenprogramms (#E3) in den realen Adressraum (#E2)
+- Einprogrammbetrieb
+- exklusiver Ablauf
+- Strukturierung des Programms nach Adressraumbelegunsplan
+- überlappungsfreie Abbildung von Symbolen und Sektionen durch Compiler und Linker auf #Ar
+
+bei genügendem Platz im Adressraum #Ar
+- einfache Platzierung
+
+bei ungenügend zusammenhängendem Speicher im Adressraum #Ar
+- deutlich mehr Arbeit
+- Speicherverwaltung und Platzierung:
+    - Freispeicherverwaltung
+    - Platzierungsstrategie
+    - Verhinderung von Fragmentierung
+- Relokation der Symboladressen beim Laden erforderlich
+
 == Interprozesskommunikation (IPC)
 
 Verständigung unter Prozessen eines Rechnersystems mit Hilfe von Daten
@@ -1795,7 +2113,7 @@ Primitiven
         $E arrow.l.long^n S$ Empfänger E empfängt Nachricht n von Sender S
     ],
 )
--> Bereitstellung durch Kommunikationssystem (Betribssystem)
+-> Bereitstellung durch Kommunikationssystem (Betriebssystem)
 
 semantische Unterschiede möglich
 - Synchronisation der Beteiligten
@@ -1822,7 +2140,7 @@ Kommunikation mit höherem Aufwand
 - Beschränkung der Nachrichtengröße
     - Aufteilung großer Nutzlasten
 
-Optimierung viele der Kosten im lokalen Fall durch Betribssystem
+Optimierung viele der Kosten im lokalen Fall durch Betriebssystem
 - Nutzlast in Registern (short IPC)
 - Übertragung einer ganzen Speicherseite in einen anderen Adressraum (zero copy)
 
@@ -1934,7 +2252,7 @@ remote-invocation send: synchroner Auftrag mit Resultat
 asynchronous remote-invocation send: Auftrag und Resultat in zwei unabhängigen Nachrichten; Verknüpfung über Auftragskennung
 
 - Sender S blockiert bis Erreichen der Nachricht vom Kommunikationssystem
-- ggf blockiert Sender S später, wenn das Ergebnis benötigt wird
+- ggfs blockiert Sender S später, wenn das Ergebnis benötigt wird
 - Sender S kann mehrere Aufträge besitzen
 - gezieltes Auswählen von Aufträgen von Empfänger E (Planung)
 -> asynchroner Fernaufruf mit zeitlicher Entkopplung
