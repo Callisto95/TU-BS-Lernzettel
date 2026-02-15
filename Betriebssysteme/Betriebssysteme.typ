@@ -5,6 +5,7 @@
 #show link: underline
 #set line(length: 100%)
 #show math.equation: set text(font: "Fira Math")
+// #set heading(numbering: "1.") // takes up way too much space, keep disabled
 
 #let E2 = $E_2$
 #let E3 = $E_3$
@@ -1963,23 +1964,23 @@ Defintion des Adressraums eines Prozesses durch den zugebilligten Wertevorrat
 #underline([realer Adressraum]) #Ar
 - #E2 (Befehlssatzebene)
 - Durch Prozessor und Rechensystem definierter Wertvorrat von Adressen
-- $abs(A_r) = 2^n$ mit (üblicherweise) $n in {16,32,48,64}$
-- nicht jede reale Adresse $"ra" in A_r$ ist gültig
+- $abs(#Ar) = 2^n$ mit (üblicherweise) $n in {16,32,48,64}$
+- nicht jede reale Adresse $"ra" in #Ar$ ist gültig
     - #Ar kann Lücken besitzen
 -> Hauptspeicher HS adressierbar durch einen / mehrere Bereiche aus #Ar
 
 #underline([logischer Adressraum]) #Al
 - $E_(5,4,3)$ (Maschinenprogrammebene)
 - Durch ein Programm P definierter Wertvorrat von validen Adressen, der der ausführenden virtuellen Maschine (Prozess p von P) zugebilligt wird
-    - Übernahme der Abbildung $A_l -> A_r$ durch Prozessor der virtuellen Maschine
-    - jede logische Adresse $"la" in A_l$ ist gültig
+    - Übernahme der Abbildung $#Al -> #Ar$ durch Prozessor der virtuellen Maschine
+    - jede logische Adresse $"la" in #Al$ ist gültig
         - konzeptionell keine Lücken in #Al
 -> Arbeitsspeicher AS des Prozesses p, auf HS abgebildet
 
 #underline([virtueller Adressraum]) #Av
 - #E3 (Maschinenprogrammebene)
 - Durch das Betriebssystem definierter (erweiterteter) Wertvorrat an Adressen, der für einen logischen Adressraum zur Verfügung gestellt wird.
-- $A_v = A_l$ aber $A_v arrow.bar A_r or "HGS"$ (Abbildung auf den Hintergrundspeicher HGS)
+- $A_v = #Al$ aber $A_v arrow.bar #Ar or "HGS"$ (Abbildung auf den Hintergrundspeicher HGS)
 - partielle Interpretation von Speicherzugriffen auf das BHG durch das Betriebssystem
 -> virtueller Arbeitsspeicher VAS, des Prozesses p, durch das Betriebssystem dynamisch auf HS oder HGS abgebildet
 
@@ -1994,7 +1995,7 @@ Defintion des Adressraums eines Prozesses durch den zugebilligten Wertevorrat
 ==== Grundprinzip virtueller Adressraum
 
 Übersetzung der vom Prozess p generierten logischen Adressen
-- transparent durch eine prozessspezifische Abbildung $p: A_l arrow.bar A_r$
+- transparent durch eine prozessspezifische Abbildung $p: #Al arrow.bar #Ar$
 - idR: Realisierung über die Hardware (z.B. memory management unit, MMU)
 - Abbildung auf Adressen im realen Adressraum #Ar
 - Abbildung erfolgt in Einheiten...
@@ -2008,8 +2009,8 @@ Grundlage des Speicherschutzes zwischen Prozessen (horizontale Isolation) unter 
 kleiner logischer #maps größerer realer Adressraum
 - 16/32-Bit Systeme
 - Varianten
-    - 8086: $abs(A_l) = 2^(16) lt abs(A_r) = 2^(20)$ (64 KiB #maps 24 MiB)
-    - IA-32: $abs(A_l) = 2^(32) lt abs(A_r) = 2^(36)$ (4 GiB #maps 64 GiB)
+    - 8086: $abs(#Al) = 2^(16) lt abs(#Ar) = 2^(20)$ (64 KiB #maps 24 MiB)
+    - IA-32: $abs(#Al) = 2^(32) lt abs(#Ar) = 2^(36)$ (4 GiB #maps 64 GiB)
 
 größerer logischer #maps kleiner realer Adressraum
 - 32/64=Bit Systeme
@@ -2027,11 +2028,12 @@ Aktivierung des Betriebssystems bei Speicherzugriff auf den HGS
 
 ===== Implementatierung
 
-Implementierung von $p: A_l arrow.bar A_r$ erfolgt in der MMU
+Implementierung von $p: #Al arrow.bar #Ar$ erfolgt in der MMU
 - Teil der CPU
 - falls aktiv: Transformation jeder Adresse auf dem Speicherbus
 
 typische Varianten: Segmentbasiert, Seitenbasiert
+
 #underline([Segmentbasiert])
 - Strukturierung in Einheiten verschiedener Größe
 - Umrechnung logischer Adressen über die MMU auf zusammenhängende Bereiche aus #Ar mit Basisregister
@@ -2086,6 +2088,65 @@ bei ungenügend zusammenhängendem Speicher im Adressraum #Ar
     - Platzierungsstrategie
     - Verhinderung von Fragmentierung
 - Relokation der Symboladressen beim Laden erforderlich
+
+=== Speichervirtualisierung
+
+Segmentierung = Strukturierung des logischen Adressraums in Einheiten verschiedener Größe
+- Einheiten: Segmente
+    - Definition einer linearen Folge von Granulaten (Bytes, Seiten)
+        - Bytes #maps zusammenhängend im realen Adressraum
+        - Seiten: #maps zusammenhängend in der Seitentabelle
+    - Idee ($E_5$-) Modul #maps (#[E3]-) Segment
+
+Paarbildung (s,a) aus der vom Prozess generierten logischen Adresse\
+2 Dimensionen:
++ s ist Segmentname (auch Segmentnummer)
+    - explizit gegeben (über den opcode)
+        - zweikomponentige Adresse
+    - implizit gegeben (durch Zugriffsart)
+        - einkomponentige Adresse
+    - Wertebereich für $s = [0, 2^M - 1]$
+        - IA-32: M=13
++ a ist Adresse (auch Versatz) innerhalb des Segments S
+    - Wertebereich für $a = [0, 2^N - 1]$
+        - IA-32: N=32
+
+üblich: numerische Werte für s
+- Interpretation als Segmentindex
+- Auswahl des Segmentdeskriptors aus einer Segmenttabelle
+
+#underline([Segmentdeskriptor])
+- von der Hardware vorgegebener Verbund von Attributen zur partiellen Beschreibung von $#Al #maps #Ar$
+- Basis
+    - Segmentierungsadresse in #Ar
+- Limit
+    - Segmentlänge als Anzahl der Elemente
+- Attribute
+    - Zugriffsrechte
+    - Expansionrichtung (aufwärts, abwärts)
+    - im Hauptspeicher? (presence bit)
+    - kürlich Verwendet? (accessed bit)
+
+übliche Granulatiräten
+- 1 Maschinenwort
+    - "klassische" Segmentierung
+- 4KiB, 8KiB, 4MiB, 1GiB
+    - seitenbasierte Segmentierung
+- Kombination
+    - mehrstufige Segmentierung
+
+Beispiel
+- Zugriff auf Adresse `0x78d` im Segment `0xface`
+- Übersetzung des Segmentnamens in der Segmenttabelle `0xface` #maps `0x51f`
+- wenn Versatz < Limit -> Schutzfehler
+- ansonsten `0x51f` + `0x78d`
+=> Implementatierung von Relokation ogne Code-Patching
+
+Seitennummerierung steht für eine Unterteilung des Adressraums in linear aufzählbare Einheiten gleicher Größe, bezeichnet als
+- Kachel / Seitenrahmen (page frame)
+    - im realen Adressraum
+- Seite (page)
+    - im logischen / virtuellen Adressraum
 
 == Interprozesskommunikation (IPC)
 
