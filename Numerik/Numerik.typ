@@ -412,17 +412,208 @@ $
 
 = Interpolation
 
-== Interpolationspolynom
+und Interpolationspolynom
+
+Gegeben sind $f(0) = 1, f(1) = 4, f(2) = 11, f(3) = 22$
+
+
+Das zugehörige Schema der dividierten Differenzen lautet
+
+#table(
+    columns: 2,
+    table.header($t$, $f_t$),
+    [0], $[t_0]f = 1$,
+    [1], $[t_1]f = 4; [t_0, t_1]f = 3$,
+    [2], $[t_2]f = 11; [t_1, t_2]f = 7; [t_0,t_1,t_2]f = 2$,
+    [3], $[t_3]f = 22; [t_2,t_3]f = 11; [t_1,t_2,t_3]f = 2; [t_0,t_1,t_2,t_3]f = 0$,
+)
+
+1. Gebe das zu den obigen Daten gehörige Interpolationspolynom an.
+
+$
+    P_3(x) = & f[t_0] + \
+             & f[t_0,t_1](x - t_0) + \
+             & f[t_0,t_1,t_2](x - t_0)(x - t_1) + \
+             & f[t_0,t_1,t_2,t_3](x - t_0)(x - t_1)(x - t_2) \
+           = & 1 + \
+             & 3(x - 0) \
+             & 2(x - 0)(x - 1) \
+             & 0(x - 0)(x - 1)(x - 2) \
+           = & 1 + 3x + 2x(x - 1) \
+           = & 2x^2 + x + 1
+$
+
+2. Welches Interpolationspolynom ergibt sich, wenn der Stützpunkt $f(3) = 22$ gestrichen wird.
+
+Der letzte Stützpunkt ist sowieso 0, daher ist $f(3) = 22$ irrelevant.
+
+$f$ bleibt gleich.
+
+#pagebreak()
 
 == Splines
+
+Bestimme die stückweise Darstellung des quadratischen Splines $S(x)$, welcher die Daten $f(0) = 0, f(1) = 1, f(2) = 2$ interpoliert und die Bedingung $s'(0) = 2$ erfüllt.
+
+Gesucht: quadratische Spline mit zwei Teilintervallen $[0,1], [1,2]$
+
+Ansatz:
+$
+    S(x) = cases(S_1(x) = a_1 x^2 + b_1 x + c_1\, 0 lt.eq x lt.eq 1, S_1(x) = a_2 x^2 + b_2 x + c_2\, 1 lt.eq x lt.eq 2)
+$
+
+Interpolation:
+$
+    S(0) = 0, S(1) = 1, S(2) = 2
+$
+
+Damit:
+$
+    S_0(0) & = c_1 = 0 \
+    S_1(1) & = a_1 + b_1 + c_2 = 1 \
+    S_2(1) & = a_2 + b_2 + c_2 = 1 \
+    S_2(2) & = 4a_2 = 2b_2 + c_2 = 2
+$
+
+Stetigkeit der ersten Ableitung in $x = 1$: $S'_1(1) = S'_2(1)$
+$
+    S'_1(x) & = 2a_1x + b_1 \
+    S'_2(x) & = 2a_2 x + b_2
+$
+
+bei $x = 1$:
+$
+    2a_1 + b_1 = 2a_2 + b_2
+$
+
+Randbedingung:
+$
+    S'(0) = 2, S'_1(0) = b_1 = 2
+$
+
+Gleichungssystem lösen:
+
+bekannt: $c_1 = 0, b_1 = 2$
+
+aus $S_1(1) = 1$:
+$
+    a_1 + 2 = 1 => a_1 = -1
+$
+
+aus Ableitungsbedingung:
+$
+    2(-1)+2 = 2a_2 + b_2 => b_2 = -2a_2
+$
+
+Interpolation auf dem zweiten Intervall:
+$
+      a_2 + b_2 + c_2 & = 1 \
+    4a_2 + 2b_2 + c_2 & = 2
+$
+
+Setze $b_2 = -2a_2$:
+
+erste Gleichung:
+$
+    a_2 - 2a_2 + c_2 & = 1 \
+                 c_2 & = 1 + a_2
+$
+
+zweite Gleichung:
+$
+    4a_2 + 2(-2a_2) + c_2 & = 2 \
+                  c_2 = 2
+$
+
+Ergebnis:
+$
+    S(x) = cases(-x^2 + 2x\, 0 lt.eq x lt.eq 1, x^2 -2x + 2\, 1 lt.eq x lt.eq 2)
+$
 
 = lineares Gleichungssystem
 
 == LR-Zerlegung
 
+Zerlegung beliebiger Matrix A in links (L) und rechts (R) Teil
+
+- normales Gaußverfahren
+- 0 werden mit Vielfachen der Zeilenauslöschungen gefüllt ($Z_2: +2 dot Z_1, Z_3: -frac(1, 2) dot Z_1 arrow 2 "in Zeile" Z_2, frac(1, 2) "in Zeile" Z_3$)
+
+Beispiel (parametrisierte Matrix):
+
+#image("LR-Zerlegung.png")
+
+=== Vorwärts- und Rückwärtseinsetzen
+
+Zu einer Matrix $A in RR^4$ sei die Zerlegung
+
+$
+    A = mat(1, 4, 9, 16; 0, 4, 9, 16; 0, 0, 9, 16; 0, 0, 0, 16) mat(1, 0, 0, 0; 1, 1, 0, 0; 1, 1, 1, 0; 1, 1, 1, 1) = R L
+$
+
+gegeben. Löse das Gleichungssystem $A x = b$ mit
+$
+    b = mat(1; 0; 0; 0)
+$
+
+ohne Matrix A explizit zu berechnen.
+
+Lösung:
+
+Rückwärtseinsetzen:
+$
+    R y = b\
+    mat(1, 4, 9, 16; 0, 4, 9, 16; 0, 0, 9, 16; 0, 0, 0, 16) mat(y_1; y_2; y_3; y_4) = mat(1; 0; 0; 0)\
+    => y_4, y_3, y_2 = 0; y_1 = 1\
+    => y = mat(1; 0; 0; 0)
+$
+
+
+Vorwärtsseinsetzen:
+$
+    L x = y\
+    mat(1, 0, 0, 0; 1, 1, 0, 0; 1, 1, 1, 0; 1, 1, 1, 1) mat(x_1; x_2; x_3; x_4) = mat(1; 0; 0; 0)\
+    => "Zeile 1": x_1 = 1, "Zeile 2": x_1 + x_2 = 0 => x_2 = -1, "Zeile 3,4": x_3, x_4 = 0\
+    x = mat(1; -1; 0; 0)
+$
+
 = Integration
 
 == Quadraturformel
+
+Bestimme für die Quadraturformel $I(f) = f(-x_0) + f(x_0)$ die Stelle $x_0$ derart, dass $I(p) = integral^1_(-1) p(x) dif x$ exakt ist für alle Polynome $p(x) in Pi_2$ vom Grad 2.
+
+Lösung:
+
+für $p(x) = 1$:
+$
+    I(1) = 1 + 1 = 2\
+    integral^1_(-1) 1 dif x = 2
+$
+
+für $p(x) = x$:
+$
+    I(x) = (-x_0) + x_0 = 0\
+    integral^1_(-1) x dif x = 0
+$
+
+für $p(x) = x^2$:
+$
+    I(x^2) = x_0^2 + x_0^2 = 2x_0^2\
+    integral^1_(-1) x^2 dif x = [frac(x^3, 3)]^1_(-1) = frac(1, 3) - (-frac(1, 3)) = frac(2, 3)
+$
+
+für Exaktheit:
+$
+    2x_0^2 & = frac(2, 3) \
+           & => x_0^2 = frac(1, 3) \
+           & => x_0 = frac(1, sqrt(3))
+$
+
+Somit:
+$
+    x_0 = frac(1, sqrt(3))
+$
 
 = Euler-Verfahren
 
