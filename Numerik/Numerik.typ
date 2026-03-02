@@ -168,7 +168,8 @@ Spektralnorm:
 größtmöglichster Streckungsfaktor, der durch die Anwendung der Matrix auf einen Vektor der Länge Eins entsteht
 
 $
-    A in RR^(n times m): cond(A)_2 = max_(x!=0) frac(cond(A x)_2, cond(x)_2) = max_(cond(x)_2 = 1) cond(A x)_2
+    A in RR^(n times m): cond(A)_2 & = max_(x!=0) frac(cond(A x)_2, cond(x)_2) \
+                                   & = max_(cond(x)_2 = 1) cond(A x)_2
 $
 
 allgemein:
@@ -290,11 +291,11 @@ $
 Fixpunktsuche:
 
 $
-    x = frac((x+2), (x+1))\
-    x(x+1) = x + 2\
-    x^2 + x = x + 2\
-    x^2 = 2\
-    x = plus.minus sqrt(2)
+          x & = frac((x+2), (x+1)) \
+     x(x+1) & = x + 2 \
+    x^2 + x & = x + 2 \
+        x^2 & = 2 \
+          x & = plus.minus sqrt(2)
 $
 
 $
@@ -403,11 +404,15 @@ $
 $
 
 $
-    cond(r)_2^2 = (-36/31)^2 + (-6/31)^2 + (26/31)^2 + (-2/31)^2 = (1296+36+676+4)/32^2 = 2012/31^2
+    cond(r)_2^2 & = (-36/31)^2 + (-6/31)^2 + (26/31)^2 + (-2/31)^2 \
+                & = (1296+36+676+4)/32^2 \
+                & = 2012/31^2
 $
 
 $
-    min cond(A x - b)_2 = sqrt(2012/31^2) = sqrt(2012)/31 approx 1.overline(4)
+    min cond(A x - b)_2 & = sqrt(2012/31^2) \
+                        & = sqrt(2012)/31 \
+                        & approx 1.overline(4)
 $
 
 = Interpolation
@@ -459,7 +464,7 @@ Gesucht: quadratische Spline mit zwei Teilintervallen $[0,1], [1,2]$
 
 Ansatz:
 $
-    S(x) = cases(S_1(x) = a_1 x^2 + b_1 x + c_1\, 0 lt.eq x lt.eq 1, S_1(x) = a_2 x^2 + b_2 x + c_2\, 1 lt.eq x lt.eq 2)
+    S(x) = cases(S_1(x) = a_1 x^2 + b_1 x + c_1\,& 0 lt.eq x lt.eq 1, S_1(x) = a_2 x^2 + b_2 x + c_2\,& 1 lt.eq x lt.eq 2)
 $
 
 Interpolation:
@@ -527,7 +532,7 @@ $
 
 Ergebnis:
 $
-    S(x) = cases(-x^2 + 2x\, 0 lt.eq x lt.eq 1, x^2 -2x + 2\, 1 lt.eq x lt.eq 2)
+    S(x) = cases(-x^2 + 2x\,& 0 lt.eq x lt.eq 1, x^2 -2x + 2\,& 1 lt.eq x lt.eq 2)
 $
 
 = lineares Gleichungssystem
@@ -636,20 +641,7 @@ $
 
 bei $R^(n times n)$ Matrizen:
 
-#grid(
-    columns: 2,
-    align: horizon,
-    $
-        n = 2
-    $,
-    $
-        det(mat(a_11, a_12; a_21, a_22)) = a_11 a_22 - a_21 a_12
-    $,
-
-    $
-        n = 3
-    $,
-    $
-        det(mat(a_11 a_12 a_13; a_21 a_22 a_23; a_31 a_32 a_33)) = a_11 mat(a_22, a_23; a_32, a_33) - a_21 mat(a_12, a_13; a_32, a_33) + a_31 mat(a_12, a_13; a_22, a_23)
-    $,
-)
+$
+    n = 2:& det(mat(a_11, a_12; a_21, a_22)) = a_11 a_22 - a_21 a_12\
+    n = 3:& det(mat(a_11 a_12 a_13; a_21 a_22 a_23; a_31 a_32 a_33)) = a_11 mat(a_22, a_23; a_32, a_33) - a_21 mat(a_12, a_13; a_32, a_33) + a_31 mat(a_12, a_13; a_22, a_23)
+$
