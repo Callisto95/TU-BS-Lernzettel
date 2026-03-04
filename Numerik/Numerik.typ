@@ -148,6 +148,11 @@ $
     frac(cond(Delta x), cond(x)) lt.eq kappa(A) frac(cond(Delta b), cond(b))
 $
 
+relative Kondition an der Stelle $x$:
+$
+    kappa_"rel" (f,x) = abs(x dot f'(x)) / abs(f(x))
+$
+
 #pagebreak()
 
 == Normen
@@ -155,32 +160,30 @@ $
 Zeilensummennorm:
 
 $
-    A in RR^(n times m): cond(A)_infinity = max_(i=1,...,n) sum^m_(j=1) abs(a_(i j))
+    A in RR^(n times m): kappa_infinity (A) = cond(A)_infinity = max_(i=1,...,n) sum^m_(j=1) abs(a_(i j))
 $
 
 Spaltensummennorm:
 
 $
-    A in RR^(n times m): cond(A)_1 = max_(i=1,...,m) sum^n_(j=1) abs(a_(j i))
+    A in RR^(n times m): kappa_1 (A) = cond(A)_1 = max_(i=1,...,m) sum^n_(j=1) abs(a_(j i))
 $
 
 Spektralnorm:
 
 größtmöglichster Streckungsfaktor, der durch die Anwendung der Matrix auf einen Vektor der Länge Eins entsteht
-
 $
-    A in RR^(n times m): cond(A)_2 & = max_(x!=0) frac(cond(A x)_2, cond(x)_2) \
-                                   & = max_(cond(x)_2 = 1) cond(A x)_2
+    A in RR^(n times m): kappa_2 (A) & = cond(A)_2 \
+                                     & = max_(x!=0) frac(cond(A x)_2, cond(x)_2) \
+                                     & = max_(cond(x)_2 = 1) cond(A x)_2
 $
 
 allgemein:
-
 $
     cond(A)_2 = sqrt(lambda_max (A^T A))
 $
 
 dabei
-
 $
     cond(A)_2 = sigma_max (A)
 $
@@ -615,6 +618,9 @@ Zerlegung beliebiger Matrix A in links (L) und rechts (R) Teil
 - normales Gaußverfahren
 - 0 werden mit Vielfachen der Zeilenauslöschungen gefüllt ($Z_2: +2 dot Z_1, Z_3: -frac(1, 2) dot Z_1 arrow 2 "in Zeile" Z_2, frac(1, 2) "in Zeile" Z_3$)
 
+LR-Zerlegung existiert, wenn $A in RR^(n times n): forall k < n: det A_k != 0$\
+-> $A_k$ ist die $k times k$ Matrix oben links in $A$
+
 Beispiel (parametrisierte Matrix):
 
 #image("LR-Zerlegung.png")
@@ -741,7 +747,15 @@ $
     n = 3:& det(mat(a_11 a_12 a_13; a_21 a_22 a_23; a_31 a_32 a_33)) = a_11 mat(a_22, a_23; a_32, a_33) - a_21 mat(a_12, a_13; a_32, a_33) + a_31 mat(a_12, a_13; a_22, a_23)
 $
 
-= Newton Verfahren
+= Newton-Basis
+
+$
+    p(x) = a_0 + a_1 (x - x_0) + a_2 (x - x_0)(x - x_1) + ...
+$
+
+= Newton-Verfahren
+
+Approximation von nichtlinearen Gleichungen.
 
 $
     x_(k+1) = x_k - frac(f(x_k), f'(x_k))
@@ -788,3 +802,23 @@ Dann gilt:
 
 Kontraktionsbedingung zeigen: $forall x in [a,b]: abs(Phi'(x)) lt.eq L lt 1$\
 für $RR$: $sup_(x in [a,b]) abs(Phi'(x)) lt 1$
+
+= dividierte Differenzen
+
+0. Ordnung: Funktionswerte selbst
+$
+    f[x_0] = & y_0 \
+    f[x_1] = & y_1 \
+    f[x_2] = & y_2
+$
+
+1. Ordnung
+$
+    f[x_0, x_1] = & (y_1 - y_0) / (x_1 - x_0) \
+    f[x_1, x_2] = & (y_2 - y_1) / (x_2 - x_1)
+$
+
+2. Ordnung
+$
+    f[x_0, x_1, x_2] = (f[x_1, x_2] - f[x_0, x_1]) / (x_2 - x_0)
+$
