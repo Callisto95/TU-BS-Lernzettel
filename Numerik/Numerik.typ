@@ -5,6 +5,7 @@
 #set math.mat(delim: "[")
 
 #let cond(body) = $abs(abs(body))$
+#let fp = $x^ast.op$
 
 #align(center, text([Numerik], weight: "bold", size: 16pt))
 
@@ -303,8 +304,8 @@ $
 $
 
 => g besitzt genau einen Fixpunkt: $sqrt(2)$
-- Fixpunkt ist eindeutig: $x^star = sqrt(2)$
-- $x_(k+1) = g(x_k)$ konvergiert eindeutig für jeden Startwert in $I$ gegen $x^star$
+- Fixpunkt ist eindeutig: $#fp = sqrt(2)$
+- $x_(k+1) = g(x_k)$ konvergiert eindeutig für jeden Startwert in $I$ gegen #fp
 
 = lineares Ausgleichsproblem
 
@@ -693,7 +694,31 @@ $
 = Euler-Verfahren
 
 $
-    y_(n+1) = y_n + h f(t_n, y_n)
+    y_(n+1) = y_n + h dot f(t_n, y_n)
+$
+
+== explizit
+
+$
+    y_(n + 1) = & y_n + h v_n \
+    v_(n + 1) = & v_n + h dot (-y_n)
+$
+
+== implizit
+
+$
+    y_(n + 1) = & y_n + h v_(n + 1) \
+    v_(n + 1) = & v_n + h dot (-y_(n + 1))
+$
+
+== Differentialgleichungen
+
+gegeben: Differentialgleichung der Form $y'(x) = f(x,y)$ mit $y(x_0) = y_0$
+
+Verfahren mit Schrittweite $h$:
+$
+    x_(n + 1) = & x_n + h \
+    y_(n + 1) = & y_n + h dot f(x_n, y_n)
 $
 
 = Determinante
@@ -715,3 +740,51 @@ $
     n = 2:& det(mat(a_11, a_12; a_21, a_22)) = a_11 a_22 - a_21 a_12\
     n = 3:& det(mat(a_11 a_12 a_13; a_21 a_22 a_23; a_31 a_32 a_33)) = a_11 mat(a_22, a_23; a_32, a_33) - a_21 mat(a_12, a_13; a_32, a_33) + a_31 mat(a_12, a_13; a_22, a_23)
 $
+
+= Newton Verfahren
+
+$
+    x_(k+1) = x_k - frac(f(x_k), f'(x_k))
+$
+
+== Banachscher Fixpunktsatz
+
+auch: Kontraktionssatz
+
+Zentrales Resultat der Analysis, das Existenz, Eindeutigkeit, und Konvergenz von Fixpunkten garantiert.
+
+$
+    abs(Phi'(x)) lt.eq L lt 1
+$
+
+Kontraktionskonstante $L$ ($L lt 1$ = Kontraktion)
+
+Dabei muss gelten:
+- $(X, d)$ ein vollständig metrischer Raum
+- $Phi: X -> X$ eine Kontraktion
+- Selbstabbildung: $Phi([a,b]) subset.eq [a,b]$
+
+#line()
+
+Definitionen:
+
+metrischer Raum $(X, d)$:
+- Menge $M$
+- $d: M times M -> [0, infinity)$
+
+Kontraktion:
+$
+    forall x,y in X: exists L in (0,1): d(Phi(x), Phi(y)) lt.eq L d(x, y)
+$
+
+#line()
+
+Dann gilt:
+
+1. Existenz: es gibt genau einen Fixpunkt $#fp in X: Phi(#fp) = #fp$
+2. Eindeutigkeit: dieser Fixpunkt ist eindeutig
+3. Konvergenz der Iteration: für jede Folge $x_(k+1) = Phi(x_k)$ gilt $lim_(k -> infinity) x_k = #fp$
+4. Fehlerabschätzung: $d(x_k, #fp) lt.eq frac(L^k, 1 - L) d(x_1, x_0)$
+
+Kontraktionsbedingung zeigen: $forall x in [a,b]: abs(Phi'(x)) lt.eq L lt 1$\
+für $RR$: $sup_(x in [a,b]) abs(Phi'(x)) lt 1$
