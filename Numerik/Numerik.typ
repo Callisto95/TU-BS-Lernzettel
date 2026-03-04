@@ -166,7 +166,7 @@ $
 Spaltensummennorm:
 
 $
-    A in RR^(n times m): kappa_1 (A) = cond(A)_1 = max_(i=1,...,m) sum^n_(j=1) abs(a_(j i))
+    A in RR^(n times m): kappa_1 (A) = cond(A)_1 = max_(j=1,...,m) sum^n_(i=1) abs(a_(i j))
 $
 
 Spektralnorm:
@@ -538,18 +538,18 @@ Gesucht: quadratische Spline mit zwei Teilintervallen $[0,1], [1,2]$
 
 Ansatz:
 $
-    S(x) = cases(S_1(x) = a_1 x^2 + b_1 x + c_1\,& 0 lt.eq x lt.eq 1, S_1(x) = a_2 x^2 + b_2 x + c_2\,& 1 lt.eq x lt.eq 2)
+    S(x) = cases(S_1(x) = a_1 x^2 + b_1 x + c_1\,& 0 lt.eq x lt.eq 1, S_2(x) = a_2 x^2 + b_2 x + c_2\,& 1 lt.eq x lt.eq 2)
 $
 
 Interpolation:
 $
-    S(0) = 0, S(1) = 1, S(2) = 2
+    S(0) = 0, S(1) = 1, S(2) = 1, S(2) = 2
 $
 
 Damit:
 $
-    S_0(0) & = c_1 = 0 \
-    S_1(1) & = a_1 + b_1 + c_2 = 1 \
+    S_1(0) & = c_1 = 0 \
+    S_1(1) & = a_1 + b_1 + c_1 = 1 \
     S_2(1) & = a_2 + b_2 + c_2 = 1 \
     S_2(2) & = 4a_2 = 2b_2 + c_2 = 2
 $
@@ -601,7 +601,7 @@ $
 zweite Gleichung:
 $
     4a_2 + 2(-2a_2) + c_2 & = 2 \
-                  c_2 = 2
+                      c_2 & = 2
 $
 
 Ergebnis:
@@ -771,7 +771,7 @@ $
     abs(Phi'(x)) lt.eq L lt 1
 $
 
-Kontraktionskonstante $L$ ($L lt 1$ = Kontraktion)
+Kontraktionskonstante $L$ ($L lt 1 =>$ Kontraktion)
 
 Dabei muss gelten:
 - $(X, d)$ ein vollständig metrischer Raum
@@ -782,7 +782,7 @@ Dabei muss gelten:
 
 Definitionen:
 
-metrischer Raum $(X, d)$:
+metrischer Raum $(M, d)$:
 - Menge $M$
 - $d: M times M -> [0, infinity)$
 
