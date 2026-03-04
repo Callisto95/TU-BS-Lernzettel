@@ -441,8 +441,8 @@ $
              & f[t_0,t_1,t_2](x - t_0)(x - t_1) + \
              & f[t_0,t_1,t_2,t_3](x - t_0)(x - t_1)(x - t_2) \
            = & 1 + \
-             & 3(x - 0) \
-             & 2(x - 0)(x - 1) \
+             & 3(x - 0) + \
+             & 2(x - 0)(x - 1) + \
              & 0(x - 0)(x - 1)(x - 2) \
            = & 1 + 3x + 2x(x - 1) \
            = & 2x^2 + x + 1
@@ -453,6 +453,76 @@ $
 Der letzte Stützpunkt ist sowieso 0, daher ist $f(3) = 22$ irrelevant.
 
 $f$ bleibt gleich.
+
+#pagebreak()
+
+== Lagrange Polynome
+
+spezielle Basis-Polynome, mit denen das Interpolationspolynom zu gegebenen Stützstellen konstruieren kann.
+
+Ausgangssituation:
+
+- gegeben: $n + 1$ Stützstellen $x_0,...,x_1$ mit Funktionswerten $f(x_0),...,f(x_n)$
+- gesucht: Polynom $P(x): deg P lt.eq n and forall i: P(x_i) = f(x_i)$
+
+Basis-Polynom der Stützstelle $x_i$:
+$
+    L_i (x) = product_(j=0\ j!=i)^n frac(x - x_j, x_i - x_j)
+$
+
+damit:
+$
+    L_i (x_j) = cases(1 space & i = j, 0 & i != j)
+$
+
+-> erfüllt "Kronecker-Delta-Eigenschaft"
+
+Interpolationspolynom aus den Lagrange Polynomen:
+$
+    P(x) = sum^n_(i = 0) f(x_i) L_i (x)
+$
+
+#line()
+
+Beispiel:
+
+Stützstellen $x_0 = 0, x_1 = 1$
+
+$
+    L_0 (x) = & frac(x - 1, 0 - 1) && = 1 - x \
+    L_1 (x) = & frac(x - 0, 1 - 0) && = x
+$
+
+Interpolationspolynom:
+$
+    P(x) = f(0)(1 - x) + f(1)x
+$
+
+#pagebreak()
+
+== Hermite-Interpolationsbasis
+
+Verallgemeinerung der Lagrange-Basis
+
+Ableitungen und Funktionswerte
+
+#table(
+    columns: (auto, 1fr, 1fr, 1fr, 1fr),
+    table.header([], [Wert bei 0], [Wert bei 1], [Ableitung bei 0], [Ableitung bei 1]),
+    $L_0$, [1], [0], [0], [0],
+    $L_1$, [0], [1], [0], [0],
+    $L_2$, [0], [0], [1], [0],
+    $L_3$, [0], [0], [0], [1],
+)
+
+allgemeine Hermite Darstellung:
+$
+    H(x) = f_0 L_0 (x) + f_1 L_1 (x) + f'_0 L_2 (x) + f'_1 L_3 (x)
+$
+bei Daten
+$
+    (x_0, f_0), (x_0, f'_0), (x_1, f_1), (x_1, f'_1)
+$
 
 #pagebreak()
 
