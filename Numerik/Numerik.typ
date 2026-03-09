@@ -1,4 +1,5 @@
 #set text(font: "Inter", size: 1.25em, lang: "de")
+// #show math.equation: set text(font: "Fira Math")
 #set grid(column-gutter: 1em, row-gutter: 1em)
 #set page(margin: 3em)
 #set line(length: 100%)
