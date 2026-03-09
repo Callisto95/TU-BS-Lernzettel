@@ -3,8 +3,8 @@
 #set grid(column-gutter: 1em, row-gutter: 1em)
 #set page(margin: 3em)
 #set line(length: 100%)
-#set math.mat(delim: "[")
 
+#set math.mat(delim: "[")
 #let cond(body) = $abs(abs(body))$
 #let fp = $x^ast.op$
 
