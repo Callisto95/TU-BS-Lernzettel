@@ -542,3 +542,8 @@ $
     - gestricheltes Oval
     - nicht in Datenbank gespeichert
     - aus anderen Attributen berechnet
+
+== Vererbung
+
+TODO:
+- Union types
