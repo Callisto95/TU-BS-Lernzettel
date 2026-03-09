@@ -545,5 +545,9 @@ $
 
 == Vererbung
 
-TODO:
-- Union types
+=== Union
+
+- `u` in einem Kreis
+- A und B nicht verwandt, aber trotzdem verbunden
+- Beispiel
+    - Dozent ist ein Angestellter von der Universität oder Unternehmensvertreter
