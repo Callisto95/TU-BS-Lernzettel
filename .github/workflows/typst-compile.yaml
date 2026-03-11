@@ -19,9 +19,13 @@ jobs:
             - name: prepare Install fonts
               uses: fontist/setup-fontist@v2
             - name: Install fonts
+              run: fontist install --no-progress "Inter"
+              # fontist doesn't have Fira Math in its repos, manual install is needed
+            - name: Install Fira Math font
               run: |
-                  fontist install "Inter"
-                  fontist install "Fira Math"
+                  mkdir -p ~/.local/share/fonts
+                  curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
+                  fc-cache -f -v
             - name: Install Typst
               uses: typst-community/setup-typst@v4
             - name: Compile Typst documents
@@ -31,7 +35,6 @@ jobs:
                     name=$(basename "$file" .typ)
                     typst compile --font-path ~/.fontist/fonts "$file" "build/$name-${{ github.sha }}.pdf"
                   done
-
             - name: Create Release
               id: create_release
               uses: softprops/action-gh-release@v2
@@ -42,5 +45,3 @@ jobs:
                   files: build/*.pdf
                   prerelease: true
                   make_latest: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
