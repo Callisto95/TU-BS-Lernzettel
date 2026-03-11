@@ -15,7 +15,7 @@ jobs:
         steps:
             # Cache fonts to speed up workflow
             - name: Cache fonts
-              uses: actions/cache@v3
+              uses: actions/cache@v5
               with:
                   path: ~/.local/share/fonts
                   key: fonts-cache-v1
@@ -23,7 +23,7 @@ jobs:
               run: |
                   mkdir -p ~/.local/share/fonts
                   # Download Inter zip if not cached
-                  if [ ! -f ~/.local/share/fonts/Inter-Regular.ttf ]; then
+                  if [ ! -f ~/.local/share/fonts/Inter-Regular.otf ]; then
                     curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
                     unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
                   fi
@@ -37,7 +37,7 @@ jobs:
               run: echo "font-path=${HOME}/.local/share/fonts" >> $GITHUB_OUTPUT
             # Cache Typst to speed up installation
             - name: Cache Typst
-              uses: actions/cache@v3
+              uses: actions/cache@v5
               with:
                   path: ~/.typst
                   key: typst-cache-v1
@@ -61,7 +61,7 @@ jobs:
                   done
             # Upload all PDFs as an artifact for release
             - name: Upload PDFs
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v7
               with:
                   name: typst-pdfs
                   path: build/*.pdf
@@ -73,7 +73,7 @@ jobs:
             contents: write
         steps:
             - name: Download PDFs artifact
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v8
               with:
                   name: typst-pdfs
                   path: build
