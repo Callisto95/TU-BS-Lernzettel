@@ -4,7 +4,7 @@ on:
     push:
         paths:
             - "**.typ"
-            - ".github/workflows/typst-compile.yml"
+            - ".github/workflows/typst-compile.yaml"
     workflow_dispatch:
 
 jobs:
@@ -14,24 +14,12 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-            - name: Install fonts
+            - name: prepare Install fonts
               uses: fontist/setup-fontist@v2
-              run: fontist install "Inter"
             - name: Install Typst
               uses: typst-community/setup-typst@v4
-
-            # - name: Install Inter font
-            #   run: |
-            #     mkdir -p ~/.local/share/fonts
-            #     curl -L -o /tmp/inter.zip https://github.com/rsms/inter/releases/latest/download/Inter.zip
-            #     unzip /tmp/inter.zip -d /tmp/inter
-            #     find /tmp/inter -name "*.ttf" -exec cp {} ~/.local/share/fonts/ \;
-            #     fc-cache -f -v
-
-            # - name: Install Typst
-            #   run: |
-            #       curl -fsSL https://typst.community/typst-install/install.sh | sh
-            #       echo "$HOME/.typst/bin" >> $GITHUB_PATH
+            - name: Install fonts
+              run: fontist install "Inter"
 
             - name: Compile Typst documents
               run: |
