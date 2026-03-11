@@ -25,7 +25,7 @@ jobs:
                   # Download Inter zip if not cached
                   if [ ! -f ~/.local/share/fonts/Inter-Regular.ttf ]; then
                     curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
-                    unzip -j /tmp/Inter.zip "Inter-4.1/ttf/*.ttf" -d ~/.local/share/fonts
+                    unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
                   fi
                   # Download Fira Math if not cached
                   if [ ! -f ~/.local/share/fonts/FiraMath-Regular.otf ]; then
