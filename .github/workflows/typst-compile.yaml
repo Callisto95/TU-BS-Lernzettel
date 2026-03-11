@@ -35,14 +35,6 @@ jobs:
             - name: Set font path output
               id: fonts
               run: echo "font-path=${HOME}/.local/share/fonts" >> $GITHUB_OUTPUT
-            # Cache Typst to speed up installation
-            - name: Cache Typst
-              uses: actions/cache@v5
-              with:
-                  path: ~/.typst
-                  key: typst-cache-v1
-            - name: Install Typst
-              uses: typst-community/setup-typst@v4
 
     build:
         runs-on: ubuntu-latest
@@ -50,6 +42,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v6
+            - name: Install Typst
+              uses: typst-community/setup-typst@v4
             - name: Compile Typst documents
               run: |
                   set -e
