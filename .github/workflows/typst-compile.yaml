@@ -8,11 +8,11 @@ on:
     workflow_dispatch:
 
 jobs:
-    prepare:
+    build:
         runs-on: ubuntu-latest
-        outputs:
-            font-path: ${{ steps.fonts.outputs.font-path }}
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
             # Cache fonts to speed up workflow
             - name: Cache fonts
               uses: actions/cache@v5
@@ -32,16 +32,6 @@ jobs:
                     curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
                   fi
                   fc-cache -f -v
-            - name: Set font path output
-              id: fonts
-              run: echo "font-path=${HOME}/.local/share/fonts" >> $GITHUB_OUTPUT
-
-    build:
-        runs-on: ubuntu-latest
-        needs: prepare
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
             - name: Install Typst
               uses: typst-community/setup-typst@v4
             - name: Compile Typst documents
@@ -51,7 +41,7 @@ jobs:
                   find . -type f -name "*.typ" -print0 | while IFS= read -r -d '' file; do
                     name=$(basename "$file" .typ)
                     echo "Compiling $file..."
-                    typst compile --font-path ${{ needs.prepare.outputs.font-path }} "$file" "build/$name.pdf"
+                    typst compile --font-path ~/.local/share/fonts/ "$file" "build/$name.pdf"
                   done
             # Upload all PDFs as an artifact for release
             - name: Upload PDFs
