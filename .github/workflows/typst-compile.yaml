@@ -1,0 +1,48 @@
+name: Build Typst Documents
+
+on:
+    push:
+        paths:
+            - "**.typ"
+            - ".github/workflows/typst-compile.yml"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Install fonts
+              uses: fontist/setup-fontist@v2
+              run: fontist install "Inter"
+            - name: Install Typst
+              uses: typst-community/setup-typst@v4
+
+            # - name: Install Inter font
+            #   run: |
+            #     mkdir -p ~/.local/share/fonts
+            #     curl -L -o /tmp/inter.zip https://github.com/rsms/inter/releases/latest/download/Inter.zip
+            #     unzip /tmp/inter.zip -d /tmp/inter
+            #     find /tmp/inter -name "*.ttf" -exec cp {} ~/.local/share/fonts/ \;
+            #     fc-cache -f -v
+
+            # - name: Install Typst
+            #   run: |
+            #       curl -fsSL https://typst.community/typst-install/install.sh | sh
+            #       echo "$HOME/.typst/bin" >> $GITHUB_PATH
+
+            - name: Compile Typst documents
+              run: |
+                  mkdir -p build
+                  for file in $(find . -name "*.typ"); do
+                    name=$(basename "$file" .typ)
+                    typst compile "$file" "build/$name.pdf"
+                  done
+
+            - name: Upload PDFs
+              uses: actions/upload-artifact@v4
+              with:
+                  name: typst-pdfs
+                  path: build/*.pdf
