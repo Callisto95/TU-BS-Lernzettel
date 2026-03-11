@@ -33,7 +33,7 @@ jobs:
                   mkdir -p build
                   for file in $(find . -name "*.typ"); do
                     name=$(basename "$file" .typ)
-                    typst compile --font-path ~/.fontist/fonts "$file" "build/$name-${{ github.sha }}.pdf"
+                    typst compile --font-path ~/.fontist/fonts "$file" "build/$name.pdf"
                   done
             - name: Create Release
               id: create_release
@@ -45,3 +45,4 @@ jobs:
                   files: build/*.pdf
                   prerelease: true
                   make_latest: true
+                  overwrite_files: true
