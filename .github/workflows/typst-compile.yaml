@@ -16,11 +16,12 @@ jobs:
               uses: actions/checkout@v4
             - name: prepare Install fonts
               uses: fontist/setup-fontist@v2
+            - name: Install fonts
+              run: |
+                  fontist install "Inter"
+                  fontist install "firamath"
             - name: Install Typst
               uses: typst-community/setup-typst@v4
-            - name: Install fonts
-              run: fontist install "Inter"
-
             - name: Compile Typst documents
               run: |
                   mkdir -p build
