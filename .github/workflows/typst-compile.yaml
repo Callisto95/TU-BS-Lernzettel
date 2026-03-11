@@ -13,39 +13,40 @@ jobs:
         outputs:
             font-path: ${{ steps.fonts.outputs.font-path }}
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
-            # - name: Prepare Install fonts
-            #   uses: fontist/setup-fontist@v2
-            # - name: Install Inter font
-            #   run: fontist install --no-progress "Inter"
-            # - name: Install Fira Math font
-            #   run: |
-            #       mkdir -p ~/.local/share/fonts
-            #       curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
-            #       fc-cache -f -v
+            # Cache fonts to speed up workflow
+            - name: Cache fonts
+              uses: actions/cache@v3
+              with:
+                  path: ~/.local/share/fonts
+                  key: fonts-cache-v1
             - name: Download fonts
               run: |
                   mkdir -p ~/.local/share/fonts
-                  # Download Inter zip
-                  curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
-                  # Unzip only the TTF files (regular, bold, etc.)
-                  unzip -j /tmp/Inter.zip "Inter-4.1/ttf/*.ttf" -d ~/.local/share/fonts
-                  # Download Fira Math
-                  curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
-                  # Refresh font cache
+                  # Download Inter zip if not cached
+                  if [ ! -f ~/.local/share/fonts/Inter-Regular.ttf ]; then
+                    curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
+                    unzip -j /tmp/Inter.zip "Inter-4.1/ttf/*.ttf" -d ~/.local/share/fonts
+                  fi
+                  # Download Fira Math if not cached
+                  if [ ! -f ~/.local/share/fonts/FiraMath-Regular.otf ]; then
+                    curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
+                  fi
                   fc-cache -f -v
             - name: Set font path output
               id: fonts
               run: echo "font-path=${HOME}/.local/share/fonts" >> $GITHUB_OUTPUT
+            # Cache Typst to speed up installation
+            - name: Cache Typst
+              uses: actions/cache@v3
+              with:
+                  path: ~/.typst
+                  key: typst-cache-v1
             - name: Install Typst
               uses: typst-community/setup-typst@v4
 
     build:
         runs-on: ubuntu-latest
         needs: prepare
-        outputs:
-            build-dir: build
         steps:
             - name: Checkout repository
               uses: actions/checkout@v6
@@ -53,11 +54,17 @@ jobs:
               run: |
                   set -e
                   mkdir -p build
-                  for file in $(find . -name "*.typ"); do
+                  find . -type f -name "*.typ" -print0 | while IFS= read -r -d '' file; do
                     name=$(basename "$file" .typ)
                     echo "Compiling $file..."
                     typst compile --font-path ${{ needs.prepare.outputs.font-path }} "$file" "build/$name.pdf"
                   done
+            # Upload all PDFs as an artifact for release
+            - name: Upload PDFs
+              uses: actions/upload-artifact@v3
+              with:
+                  name: typst-pdfs
+                  path: build/*.pdf
 
     release:
         runs-on: ubuntu-latest
@@ -65,16 +72,19 @@ jobs:
         permissions:
             contents: write
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
+            - name: Download PDFs artifact
+              uses: actions/download-artifact@v3
+              with:
+                  name: typst-pdfs
+                  path: build
             - name: Create Release
               id: create_release
               uses: softprops/action-gh-release@v2
               with:
                   tag_name: latest
                   name: auto-generated latest notes
-                  body: "Automatically generated PDFs from the latest commit (currently `${{ github.sha }}`)"
-                  files: ${{ needs.build.outputs.build-dir }}/*.pdf
+                  body: "Automatically generated PDFs from the latest commit (currently from `${{ github.sha }}`)"
+                  files: build/*.pdf
                   prerelease: true
                   make_latest: true
                   overwrite_files: true
