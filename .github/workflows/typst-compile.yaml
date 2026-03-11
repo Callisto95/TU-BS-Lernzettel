@@ -77,7 +77,7 @@ jobs:
               with:
                   tag_name: latest
                   name: auto-generated latest notes
-                  body: "Automatically generated PDFs from the latest commit (currently from `${{ github.sha }}`)"
+                  body: "Automatically generated PDFs from the latest commit (currently from [${{ github.sha }}](https://github.com/Callisto95/TU-BS-Lernzettel/tree/${{ github.sha }}))"
                   files: build/*.pdf
                   prerelease: true
                   make_latest: true
