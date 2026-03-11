@@ -27,11 +27,18 @@ jobs:
                   mkdir -p build
                   for file in $(find . -name "*.typ"); do
                     name=$(basename "$file" .typ)
-                    typst compile "$file" "build/$name.pdf"
+                    typst compile --font-path ~/.fontist/fonts "$file" "build/$name.pdf"
                   done
 
-            - name: Upload PDFs
-              uses: actions/upload-artifact@v4
+            - name: Create Release
+              id: create_release
+              uses: softprops/action-gh-release@v2
               with:
-                  name: typst-pdfs
-                  path: build/*.pdf
+                  tag_name: latest
+                  name: latest version of the notes
+                  body: Automatically generated PDFs from the latest commit.
+                  files: build/*.pdf
+                  prerelease: true
+                  make_latest: true
+              # env:
+              #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
