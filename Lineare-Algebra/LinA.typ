@@ -48,6 +48,13 @@ $
     forall z in Z: exists_1 x in D: z = f(x)
 $
 
+== Gauß-algorithmus
+
+=== reduzierte Zeilenstufenform
+
+- Pivots sind 1
+- alle Einträge über den Pivots sind 0
+
 = Vektorraum
 
 elementare Operationen:

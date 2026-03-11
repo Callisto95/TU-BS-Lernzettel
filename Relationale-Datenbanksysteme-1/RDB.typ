@@ -551,3 +551,13 @@ $
 - A und B nicht verwandt, aber trotzdem verbunden
 - Beispiel
     - Dozent ist ein Angestellter von der Universität oder Unternehmensvertreter
+
+= Anfragen
+
+== SQL
+
+- no `WHERE` without `GROUP BY`
+
+== DRC
+
+== TRC
