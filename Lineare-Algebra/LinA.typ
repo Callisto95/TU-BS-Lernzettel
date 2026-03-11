@@ -5,7 +5,11 @@
 #set line(length: 100%)
 
 #set math.mat(delim: "[")
-#let map = $"Map"$
+#let map = math.op("Map")
+#let span = math.op("Span")
+#let ker = math.op("Ker")
+#let img = math.op("Img")
+#let mid = $mid(|)$
 #let vspace = $cal(V)$
 #let vspaceW = $cal(W)$
 #let vspaceU = $cal(U)$
@@ -21,6 +25,28 @@
 
 // apparently the outline header is a heading and so this must be here
 #show heading.where(level: 1): content => [#pagebreak();#content]
+
+= Grundlagen
+
+== Abbildungen
+
+sei $f: D -> Z$
+
+- Injektivität
+$
+    forall x,y in D: f(x) = f(z) => x = y
+$
+
+- Surjektivität
+$
+    img f = Z\
+    forall z in Z: exists x in D: z = f(x)
+$
+
+- Bijektivität: sowohl injektiv als auch surjektiv
+$
+    forall z in Z: exists_1 x in D: z = f(x)
+$
 
 = Vektorraum
 
@@ -79,6 +105,7 @@ $
 ist eine Linearkombination der Vektoren $x_1,...,x_n in vspace$
 
 == Vektorraum von Abbildungen
+
 /*
 Menge aller reellen Funktionen $f: RR -> RR$ ist ein (reeler) Vektorraum, da
 $
@@ -116,7 +143,7 @@ $
 
 Menge aller linearen Abbildungen von #vspace nach $vspaceW$:
 $
-    cal(L)(vspace, vspaceW) := {F: vspace -> vspaceW | F "ist linear"}
+    cal(L)(vspace, vspaceW) := {F: vspace -> vspaceW mid F "ist linear"}
 $
 
 === Verkettung
@@ -160,6 +187,40 @@ Falls $f$ linear ist, ist $f^(-1)$ ebenfalls linear
 seien #vspace und #vspaceW lineare Abbildungen über $K$, $F in cal(L)(vspace, vspaceW)$ bijektiv\
 $F^(-1) : vspaceW -> vspace$ ist linear
 
+=== Bild
+
+seien #vspace, #vspaceW Vektorräume über demselben Körper K, $F: vspace -> vspaceW$ linear
+
+$
+    img F := {F(x) mid x in vspace} subset.eq vspaceW
+$
+
+Das Bild gibt an, welche Vektoren von der Abbildung erreicht werden
+
+=== Kern
+
+seien #vspace, #vspaceW Vektorräume über demselben Körper K, $F: vspace -> vspaceW$ linear
+
+$
+    ker F :={x in vspace mid F(x) = 0} subset.eq vspace
+$
+
+der Kern darüber Auskunft, welche Vektoren zu einem einzigen Bild "zusammengefaltet" werden. Der Kern enthält dabei stets mindestens den Nullvektor.
+
+=== Zusammenhang mit Nullvektoren
+
+sei $F: vspace -> vspaceW$ linear
+
+Es gilt
+$
+    F(0_vspace) = 0_vspaceW
+$
+
+und damit
+$
+    0_vspace in ker F
+$
+
 == Unterraum
 
 sei #kvspace #vspace
@@ -181,12 +242,12 @@ sei Körper $K$
 
 Im Vektorraum $K^nxn$ gibt es den Unterraum der symmetrischen Matrizen
 $
-    K^nxn_"sym" := {A in K^nxn | A^T = A}
+    K^nxn_"sym" := {A in K^nxn mid A^T = A}
 $
 
 zudem existiert der Unterraum der schiefsymmetrischen Matrizen
 $
-    K^nxn_"skew" := {A in K^nxn | A^T = -A}
+    K^nxn_"skew" := {A in K^nxn mid A^T = -A}
 $
 
 === Unterraum aus linearen Abbildungen
@@ -200,7 +261,54 @@ $
 
 === Schnitt von Unterräumen
 
+sei #kvspace #vspace, Menge $J$, $(U_j)_(j in J)$ eine Familie von Unterräumen
 
+Der Schnitt aller $U_j$ ist ein Unterraum von #vspace
+
+$
+    inter.big_(j in J) U_j := {v in vspace mid forall j in J: v in U_j} lt.eq vspace
+$
+
+Die Vereinigung zweier Unterräume $U_1 union U_2$ muss kein Unterraum von #vspace sein.
+
+=== (linearer) Spann
+
+auch: lineare Hülle; Erzeugnis von $M$
+
+sei #kvspace #vspace, $M subset.eq vspace: M != emptyset$
+
+$span M$ ist die Menge aller Linearkombination von Vektoren aus $M$
+$
+    span M := {x in V mid forall n in NN: forall u_1,...,u_n in M: forall alpha_1,...,alpha_n in K: x = sum^n_j=1 alpha_j u_j}
+$
+
+dabei $span emptyset = {0}$
+
+=> kleinster Unterraum von #vspace, der $M$ enthält
+
+=== Zusammenhang mit linearen Abbildungen
+
+seien #vspace, #vspaceW zwei $K$-Vektorräume, $F in cal(L)(vspace, vspaceW)$
+
+1. für $cal(X) lt.eq vspace$ ist sein Bild unter $F$ ein Unterraum
+$
+    F(cal(X)) = {F(x) mid x in cal(X)} lt.eq vspaceW
+$
+#h(1.25em) insbesondere gilt dies für das Bild von $F$
+$
+    img F = F(vspace) lt.eq vspaceW
+$
+
+2. für $scr(L) lt.eq vspaceW$ ist sein Urbild unter F ein Unterraum
+$
+    F^arrow.l scr(L) = {x in vspace mid F(x) in scr(L)} lt vspace
+$
+#h(1.25em) insbesondere gilt
+$
+    ker F = F^arrow.l ({0}) lt.eq vspace
+$
+
+3. die lineare Abbildung $F$ ist genau dann injektiv, wenn $ker F = {0}$ gilt
 
 == Innenprodukträume
 
