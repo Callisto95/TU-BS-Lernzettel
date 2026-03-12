@@ -444,8 +444,8 @@ Mehrfache Speicherung identischer Informationen
     #grid(
         columns: 2,
         [- Theta Join], [$join_theta$ (boolean condition $theta$)],
-        [- Semi-Left Join], $S times.l R = pi_("alle Attribute in R") (R join S)$,
-        [- Left-Outer-Join], [$S join.l R$ alle Tupel von S werden beibehalten],
+        [- Semi-Left Join], $R times.l S = pi_("alle Attribute in R") (R join S)$,
+        [- Left-Outer-Join], [$R join.l S$ alle Tupel von R werden beibehalten],
     )
 - Division: $R div S$
     - $S$ only contains attributes that are also present in $R$
