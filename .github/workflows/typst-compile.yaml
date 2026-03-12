@@ -29,7 +29,7 @@ jobs:
                   key: fonts-cache-v1
             - name: Download fonts
               run: |
-                  mkdir -p ~/.local/share/fonts
+                  mkdir ~/.local/share/fonts
                   if not (~/.local/share/fonts/Inter-Regular.otf | path exists) {
                       curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
                       unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
@@ -42,7 +42,7 @@ jobs:
               uses: typst-community/setup-typst@v4
             - name: Compile Typst documents
               run: |
-                  mkdir -p build
+                  mkdir build
                   ^find . -type f -name "*.typ" | lines | par-each { |file|
                     let output = $file | str replace ".typ" ".pdf"
                     echo $"Compiling ($file)..."
