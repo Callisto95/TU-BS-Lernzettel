@@ -30,11 +30,11 @@ jobs:
             - name: Download fonts
               run: |
                   mkdir ~/.local/share/fonts
-                  if not (~/.local/share/fonts/Inter-Regular.otf | path exists) {
+                  if not ("~/.local/share/fonts/Inter-Regular.otf" | path exists) {
                       curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
                       unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
                   }
-                  if not (~/.local/share/fonts/FiraMath-Regular.otf | path exists) {
+                  if not ("~/.local/share/fonts/FiraMath-Regular.otf" | path exists) {
                       curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
                   }
                   fc-cache -f -v
