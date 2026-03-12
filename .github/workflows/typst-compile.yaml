@@ -7,12 +7,20 @@ on:
             - ".github/workflows/typst-compile.yaml"
     workflow_dispatch:
 
+defaults:
+    run:
+        shell: nu {0}
+
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
               uses: actions/checkout@v6
+            - name: Setup Nu
+              uses: hustcer/setup-nu@v3
+              with:
+                  version: "*"
             # Cache fonts to speed up workflow
             - name: Cache fonts
               uses: actions/cache@v5
@@ -22,27 +30,24 @@ jobs:
             - name: Download fonts
               run: |
                   mkdir -p ~/.local/share/fonts
-                  # Download Inter zip if not cached
-                  if [ ! -f ~/.local/share/fonts/Inter-Regular.otf ]; then
-                    curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
-                    unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
-                  fi
-                  # Download Fira Math if not cached
-                  if [ ! -f ~/.local/share/fonts/FiraMath-Regular.otf ]; then
-                    curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
-                  fi
+                  if not (~/.local/share/fonts/Inter-Regular.otf | path exists) {
+                      curl -L -o /tmp/Inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
+                      unzip -j /tmp/Inter.zip "extras/otf/*.otf" -d ~/.local/share/fonts
+                  }
+                  if not (~/.local/share/fonts/FiraMath-Regular.otf | path exists) {
+                      curl -L -o ~/.local/share/fonts/FiraMath-Regular.otf https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf
+                  }
                   fc-cache -f -v
             - name: Install Typst
               uses: typst-community/setup-typst@v4
             - name: Compile Typst documents
               run: |
-                  set -e
                   mkdir -p build
-                  find . -type f -name "*.typ" -print0 | while IFS= read -r -d '' file; do
-                    name=$(basename "$file" .typ)
-                    echo "Compiling $file..."
-                    typst compile --font-path ~/.local/share/fonts/ "$file" "build/$name.pdf"
-                  done
+                  ^find . -type f -name "*.typ" | lines | par-each { |file|
+                    let output = $file | str replace ".typ" ".pdf"
+                    echo $"Compiling ($file)..."
+                    typst compile --font-path ~/.local/share/fonts/ $file $"build/($output)"
+                  }
             # Upload all PDFs as an artifact for release
             - name: Upload PDFs
               uses: actions/upload-artifact@v7
