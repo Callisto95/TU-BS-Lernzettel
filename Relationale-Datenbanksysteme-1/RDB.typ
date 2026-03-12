@@ -113,6 +113,8 @@
     - Details über Speicherort und Zugriffsmethoden bleiben verborgen
 - Bei Transaktionen: Operationen beeinflussen sich gegenseitig nicht, auch bei gleichzeitigem Zugriff
 
+#pagebreak()
+
 == Charakteristiken
 
 - Kontrollierte Redundanz
@@ -332,6 +334,8 @@ Mehrfache Speicherung identischer Informationen
     - Fokus auf Entitäten, Attribute, Beziehungen und Constraints
 - Diagramme (ERD) zeigen Entitätstypen, keine Einzelobjekte
 
+#pagebreak()
+
 == Relationen
 
 - Generische Modelle
@@ -421,13 +425,23 @@ Mehrfache Speicherung identischer Informationen
 
 #pagebreak()
 
-== Abfragen
-
-=== SQL
+== SQL
 
 - keine `HAVING` ohne `GROUP BY`
 
-== relational Algebra
+=== Datentypen
+
+- `SMALLINT`
+- `INTEGER`
+- `NUMERIC(precision?,scale?)`
+- `FLOAT`
+- `CHAR(length?)`
+- `varchar(length?)`
+- `DATE`
+- `TIME`
+- `TIMESTAMP`
+
+= relational Algebra
 
 - set operations
     - operands must be union-compatible (consist of the same attributes)
@@ -458,6 +472,8 @@ Mehrfache Speicherung identischer Informationen
         - $(R times S) div S = R$
 - Aggregation: $aggregation("grouping", "function")$
 
+#pagebreak()
+
 == TRC
 
 "objektorientieres DRC"
@@ -483,7 +499,68 @@ $
             not exists anr'''("Reparatur"(anr''', f, d) and anr''' > anr))}
 $
 
-= Constraints
+#pagebreak()
+
+== Trigger
+
+```SQL
+ON [EVENT]
+IF [CONDITION]
+DO [ACTION]
+```
+
+generally
+
+```SQL
+CREATE TRIGGER [name]
+[BEFORE|AFTER] [[event]]
+ON [table_name] [trigger_type]
+BEGIN
+    [[logic]]
+END
+```
+
+- new value can be referenced as `NEW`
+    - insert
+    - rename via `REFERENCING NEW AS [name]`
+- old value can be referenced as `OLD`
+    - delete
+- `OLD` and `NEW` must be explicitly referenced to access it
+- `FOR EACH [ROW|STATEMENT]`
+
+example
+
+```SQL
+CREATE TRIGGER kill_bugs
+    AFTER UPDATE OF location ON bugs
+    REFERENCING NEW AS bn
+    FOR EACH ROW
+    WHEN EXISTS(
+        SELECT *
+        FROM pesicides p
+        WHERE p.name = "Glyphosat" AND p.location = bn.location
+    )
+    BEGIN
+        DELETE FROM bugs b WHERE b.id = bn.id;
+    END
+```
+
+```SQL
+CREATE TRIGGER Mitarbeiter
+    AFTER UPDATE ON Mitarbeiter
+    REFERENCING NEW as new, OLD as old
+    FOR EACH ROW
+    WHEN new.gehalt > old.gehalt * 2
+BEGIN
+    UPDATE SET gehalt = old.gehalt * 2
+    FROM Mitarbeiter
+    WHERE id = new.mid
+END
+```
+
+#pagebreak()
+
+== Constraints
 
 - Allgemein
     - Regeln, die für alle Instanzen eines Schemas gelten müssen
@@ -492,6 +569,62 @@ $
     - erzwingt Eindeutigkeit (Unique Key Constraint)
 - FK Constraint (Foreign Key)
     - Erzeugt Links/Verknüpfungen zwischen verschiedenen Relationen
+\
+- `NOT NULL`
+- `DEFAULT`
+    - oft: `DEFAULT NULL`
+- `UNIQUE`
+- `PRIMARY KEY` (= `NOT NULL UNIQUE`)
+    - composed PK:\
+    ```SQL
+    CREATE TABLE table (
+        column-1 [TYPE],
+        ...
+        column-N [TYPE],
+        PRIMARY KEY(column-1,...,column-N)
+    )
+    ```
+
+#pagebreak()
+
+- `REFERENCES [table_name(column_name?,...,column_name_n?)]`
+    - ```SQL
+        CREATE TABLE managed_by (
+            employee INTEGER NOT NULL
+                REFERENCES employee
+            manager INTEGER NOT NULL
+                REFERENCES employee
+        )
+        ```
+    - reference can be created later
+        - `FOREIGN KEY(column_name) REFERENCES other_table [ON DELETE?...]`
+    - -> column created as normal, then constrained
+    - referential integrity
+        - `ON DELETE [NO ACTION|SET NULL|CASCADE]`
+            - `NO ACTION`: reject deletion
+            - `SET NULL`: set referencing FK's to #null
+            - `CASCADE`: delete referencing rows as well
+        - `ON UPDATE [NO ACTION|CASCADE]` (PK modified)
+            - `NO ACTION`: reject update
+            - `CASCADE`: change values of referencing FK's
+        - default: `ON DELETE NO ACTION ON UPDATE NO ACTION`
+    - ```SQL
+        CREATE TABLE Angestellt (
+            variete varchar FOREIGN KEY REFERENCES (Variete),
+            akrobat varchar FOREIGN KEY REFERENCES (Akrobat),
+            gehalt real NULL,
+            PRIMARY KEY (variete, akrobat)
+        )
+        ```
+
+example:
+```SQL
+CREATE TABLE person (
+    name VARCHAR(200),
+    age INTEGER CONSTRAINT adult
+        CHECK (age >= 18)
+)
+```
 
 = Normalformen
 
@@ -507,18 +640,34 @@ $
     - Minimierung von Redundanz
     - Verhinderung von Modifikations-Anomalien
 
-== funktionale Abhängigkeiten (FD)
+== funktionale Abhängigkeit (FD)
 
 - Kern der Normalisierung
     - Y hängt von X ab, wenn gleiche X-Werte zwingend gleiche Y-Werte bedeuten
 - Verletzungen von FDs sind Hauptursache für Redundanz und Update-Anomalien
 
-== BCNF (Boyce Codd Normalform)
+== transitive Abhängigkeit
+
+- wenn Y von X funktional abhängig ist und Z von Y, so ist Z von X funktional abhängig
+
+== erste Normalform
+
+- jedes Attribut in atomare Form
+
+== zweite Normalform
+
+- jedes Nichtschlüsselattribut ist von jedem Schlüsselkandidaten voll funktional abhängig
+
+== dritte Normalform
+
+- kein Nichtschlüsselattribut hängt transitiv von einem Kandidatenschlüssel ab
+
+== Boyce Codd Normalform (BCNF)
+
+- wenn jede Determinante vom Relationstyp ein Kandidatenschlüssel ist
 
 - Strikter als 3NF; für jede nicht-triviale funktionale Abhängigkeit $X -> Y$ muss $X$ ein Superschlüssel sein
 - "Jedes Attribut hängt vom Schlüssel ab, vom ganzen Schlüssel und von nichts als dem Schlüssel"
-
-TODO
 
 = Views
 
@@ -545,6 +694,13 @@ TODO
 - Isolation
     - Transaktionen müssen voneinander isoliert ablaufen
 - (Hinweis: Die explizite Definition von Durability fehlt in den vorliegenden Ausschnitten)
+
+= CRUD
+
+- Create
+- Read
+- Update
+- Delete
 
 = EER-Diagram
 
