@@ -44,7 +44,7 @@ jobs:
               run: |
                   mkdir build
                   ^find . -type f -name "*.typ" | lines | par-each { |file|
-                    let output = $file | str replace ".typ" ".pdf"
+                    let output = $file | path basename | str replace ".typ" ".pdf"
                     echo $"Compiling ($file)..."
                     typst compile --font-path ~/.local/share/fonts/ $file $"build/($output)"
                   }
