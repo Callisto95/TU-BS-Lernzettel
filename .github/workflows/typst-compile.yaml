@@ -47,6 +47,7 @@ jobs:
                     let output = $file | path basename | str replace ".typ" ".pdf"
                     echo $"Compiling ($file)..."
                     typst compile --font-path ~/.local/share/fonts/ $file $"build/($output)"
+                    $output
                   }
             # Upload all PDFs as an artifact for release
             - name: Upload PDFs
