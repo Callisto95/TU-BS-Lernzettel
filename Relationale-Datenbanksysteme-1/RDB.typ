@@ -1,10 +1,12 @@
 #set text(font: "Inter", size: 1.25em, lang: "de")
 #show math.equation: set text(font: "Fira Math")
-#set grid(column-gutter: 1em, row-gutter: 1em)
+#set grid(column-gutter: 1em, row-gutter: 1em, align: horizon)
 #set page(margin: 3em)
 #set line(length: 100%)
 
 #let null = `NULL`
+#let aggregation(grouping, function) = $attach(frak(F), bl: grouping, br: function)$
+#let mid = $mid(|)$
 
 #align(center, text([Relationale Datenbanksysteme 1], weight: "bold", size: 16pt))
 
@@ -421,38 +423,64 @@ Mehrfache Speicherung identischer Informationen
 
 == Abfragen
 
-=== Set Operationen
+=== SQL
 
-Schema innerhalb der Mengen muss einheitlich sein (union-compatible)
+- keine `HAVING` ohne `GROUP BY`
 
-- union $R union S$
-- intersection $R inter S$
-- difference $R without S$
+== relational Algebra
 
-=== kartesisches Produkt
+- set operations
+    - operands must be union-compatible (consist of the same attributes)
+    - union $R union S$
+    - intersection $R inter S$
+    - difference $R without S$
+    - kartesisches Produkt $S times R$
+        - Kombination jedes Tupels aus $R$ mit jedem Tupel aus $S$
+- Projection: $pi_"attr"$ retains only specified attributes
+- Selection: $sigma_"condition"$ selects all tuples from a relation that satisfy the given boolean condition
+- Rename: $rho_("new-table-name" ("column-1-name", ... ,"column-N-name"))$
+    - also possible: $rho_("column-1-name",...,"column-N-name")$
+- Joins:
+    #grid(
+        columns: 2,
+        [- Theta Join], [$join_theta$ (boolean condition $theta$)],
+        [- Semi-Left Join], $S times.l R = pi_("alle Attribute in R") (R join S)$,
+        [- Left-Outer-Join], [$S join.l R$ alle Tupel von S werden beibehalten],
+    )
+- Division: $R div S$
+    - $S$ only contains attributes that are also present in $R$
+    - result attributes: those in $R$, but not in $S$
+    - result tuples: those in $R$ such that every tuple in S is a join partner
+    - formal:
+        - let $A_R = {"Attributes of" R}, A_S = {"Attributes of" S}, A_S subset.eq A_R$
+        - $A = A_R without A_S$
+        - $R div S eq.triple pi_A R without pi_A (((pi_A R) times S) without R)$
+        - $(R times S) div S = R$
+- Aggregation: $aggregation("grouping", "function")$
 
-auch: Kreuzprodukt
+== TRC
 
-Kombination jedes Tuples aus $R$ mit jedem Tuple aus $S$
-
-$R times S$
-
-=== Projection
-
-$pi$ retains only specified attributes
-
-=== Selection
-
-$sigma$ selects all tuples from a relation that satisfy the given boolean condition
-
-=== Rename
-
-$rho_("new-table-name" ("column-1-name", ... ,"column-N-name"))$
-
-=== Semi-Left Join
+"objektorientieres DRC"
 
 $
-  S times.l R = pi_("alle Attribute in R") (R join S)
+    {"b.kundennr" mid "Fahrzeugbesitzer"(b) and \
+        forall f (("Fahrzeug"(f) and "f.besitzer" = "b.kundennr")\
+            -> (exists p ("Prüfung"(p) and "p.fahrzeug" = "f.fahrzeugnr") and \
+                not exists r ("Reparatur"(r) and "r.fahrzeug" = "f.fahrzeugnr")))}
+$
+
+== DRC
+
+filtern von beliebigen Werten im allgemeinen Universum
+
+#let anr = "anr"
+
+$
+    {anr, f, d mid "Reparatur"(anr, f, d) and \
+        exists anr', anr'' ("Reparatur"(anr', f, d) and \
+            "Reparatur"(anr'', f, d) and \
+            anr != anr' and anr != anr'' and anr' != anr'' and \
+            not exists anr'''("Reparatur"(anr''', f, d) and anr''' > anr))}
 $
 
 = Constraints
@@ -489,6 +517,8 @@ $
 
 - Strikter als 3NF; für jede nicht-triviale funktionale Abhängigkeit $X -> Y$ muss $X$ ein Superschlüssel sein
 - "Jedes Attribut hängt vom Schlüssel ab, vom ganzen Schlüssel und von nichts als dem Schlüssel"
+
+TODO
 
 = Views
 
@@ -551,13 +581,3 @@ $
 - A und B nicht verwandt, aber trotzdem verbunden
 - Beispiel
     - Dozent ist ein Angestellter von der Universität oder Unternehmensvertreter
-
-= Anfragen
-
-== SQL
-
-- no `WHERE` without `GROUP BY`
-
-== DRC
-
-== TRC
