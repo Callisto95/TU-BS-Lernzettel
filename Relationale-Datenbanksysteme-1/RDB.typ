@@ -282,15 +282,15 @@ Mehrfache Speicherung identischer Informationen
 
 == Phasen
 
-- Requirements Analysis
++ Requirements Analysis
     - Interviews mit Stakeholdern
     - Definition von Daten- und Funktionsbedarf
-- Conceptual Design
++ Conceptual Design
     - Datenbedarf in konzeptuelles Modell (z. B. ER) bringen
     - unabhängig von Software/Hardware.
-- Logical Design
++ Logical Design
     - Abbildung des konzeptuellen Modells auf DBMS-Technik (z. B. relationales Modell)
-- Physical Design
++ Physical Design
     - Erstellung interner Strukturen für effiziente Speicherung (Tabellenbereiche, Indizes)
 
 = Entitäten
@@ -371,10 +371,10 @@ Mehrfache Speicherung identischer Informationen
 == Bereichsatome (range atoms)
 
 - TRC
-    - Bindet Relation R an Tupelvariable t (R(t))
-    - Wahr, wenn Tupel tatsächlich Element der Relation R ist
+    - Bindet Relation $R$ an Tupelvariable $t$ ($R(t)$)
+    - Wahr, wenn Tupel tatsächlich Element der Relation $R$ ist
 - DRC
-    - Relationsatom R(x1,…,xn) prüft, ob Wertekombination in Relation existiert
+    - Relationsatom $R(x_1,...,x_n)$ prüft, ob Wertekombination in Relation existiert
 - Dienen als Filter
     - Nur existierende Daten der DB werden betrachtet
 
@@ -421,7 +421,7 @@ Mehrfache Speicherung identischer Informationen
 
 - Teil des SQL:2008 Standards
 - begrenzt Zeilenanzahl im Ergebnisset
-- nützlich für schnellen Überblick (z.B. FETCH FIRST 10 ROWS ONLY)
+- nützlich für schnellen Überblick (z.B. `FETCH FIRST 10 ROWS ONLY`)
 
 #pagebreak()
 
@@ -441,15 +441,15 @@ Mehrfache Speicherung identischer Informationen
 - `TIME`
 - `TIMESTAMP`
 
-= relational Algebra
+= relational Algebra in Abfragen
 
 - set operations
     - operands must be union-compatible (consist of the same attributes)
     - union $R union S$
     - intersection $R inter S$
     - difference $R without S$
-    - kartesisches Produkt $S times R$
-        - Kombination jedes Tupels aus $R$ mit jedem Tupel aus $S$
+- kartesisches Produkt $S times R$
+    - Kombination jedes Tupels aus $R$ mit jedem Tupel aus $S$
 - Projection: $pi_"attr"$ retains only specified attributes
 - Selection: $sigma_"condition"$ selects all tuples from a relation that satisfy the given boolean condition
 - Rename: $rho_("new-table-name" ("column-1-name", ... ,"column-N-name"))$
@@ -665,7 +665,6 @@ CREATE TABLE person (
 == Boyce Codd Normalform (BCNF)
 
 - wenn jede Determinante vom Relationstyp ein Kandidatenschlüssel ist
-
 - Strikter als 3NF; für jede nicht-triviale funktionale Abhängigkeit $X -> Y$ muss $X$ ein Superschlüssel sein
 - "Jedes Attribut hängt vom Schlüssel ab, vom ganzen Schlüssel und von nichts als dem Schlüssel"
 
@@ -705,7 +704,7 @@ CREATE TABLE person (
 = EER-Diagram
 
 - Schlüssel #sym.eq.not Schlüsselattribut
-
+\
 - simple attribute
     - Attribut aus einzelnen Komponent
     - unabhängige Existenz
@@ -713,7 +712,7 @@ CREATE TABLE person (
     - Beispiel
         - SQL: `Car(brand, license_plate(district_id,letter_id, numeric_id), year)`
         - Erstellung: `(Mercedes,(BS,CL,797),1998)`
-
+\
 - single-valued attribute
     - z.B. Name, registration Nummer
 - multi-valued attribute
@@ -721,7 +720,7 @@ CREATE TABLE person (
     - Reihenfolge der Attribute irrelevant
     - mehrfacher Wert für Attribut
         - z.B. Telefonnummer
-
+\
 - stored attribute
     - Attribut direkt in der Datenbank gespeichert
 - derived attribute
@@ -737,3 +736,7 @@ CREATE TABLE person (
 - A und B nicht verwandt, aber trotzdem verbunden
 - Beispiel
     - Dozent ist ein Angestellter von der Universität oder Unternehmensvertreter
+
+=== Disjunktion
+
+=== Overlap
