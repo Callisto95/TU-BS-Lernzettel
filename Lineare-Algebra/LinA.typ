@@ -5,10 +5,11 @@
 #set line(length: 100%)
 
 #set math.mat(delim: "[")
-#let map = math.op("Map")
-#let span = math.op("Span")
-#let ker = math.op("Ker")
-#let img = math.op("Img")
+#let Map = math.op("Map")
+#let Span = math.op("Span")
+#let Ker = math.op("Ker")
+#let Img = math.op("Img")
+#let Pol = math.op("Pol")
 #let mid = $mid(|)$
 #let vspace = $cal(V)$
 #let vspaceW = $cal(W)$
@@ -19,6 +20,8 @@
 #let mxn = $m times n$
 #let nxn = $n times n$
 
+// TODO: dimensionenformel, unterräume überprüfen, orthogonalität, normalvektor
+
 #align(center, text([Lineare Algebra], weight: "bold", size: 16pt))
 
 #outline()
@@ -27,6 +30,14 @@
 #show heading.where(level: 1): content => [#pagebreak();#content]
 
 = Grundlagen
+
+== binomische Formeln
+
+$
+            (a+b)^2 & = a^2 + 2 a b + b^2 \
+            (a-b)^2 & = a^2 - 2 a b + b^2 \
+    (a+b) dot (a-b) & = a^2 - b^2
+$
 
 == Abbildungen
 
@@ -39,7 +50,7 @@ $
 
 - Surjektivität
 $
-    img f = Z\
+    Img f = Z\
     forall z in Z: exists x in D: z = f(x)
 $
 
@@ -123,7 +134,7 @@ $
 
 sei #kvspace #vspace, Menge $M$
 
-$vspace^M = map(M, vspace)$ (Menge der Abbildungen von M nach #vspace) durch Operationen
+$vspace^M = Map(M, vspace)$ (Menge der Abbildungen von M nach #vspace) durch Operationen
 $
       +: && vspace^M times vspace^M -> vspace^M, defspace & (f+g): x mapsto f(x) + g(x) \
     dot: &&        K times vspace^M -> vspace^M, defspace & (alpha dot f): x mapsto alpha dot f(x)
@@ -175,6 +186,66 @@ $
     forall F in cal(L)(vspace, vspaceW): forall n in NN: forall v_1,..., v_n in vspace: forall alpha_1,...,alpha_n in K: F(sum^n_(j=1) alpha_j v_j) = sum^n_(j=1) alpha_j F(v_j)
 $
 
+==== Überprüfung der Linearität
+
+// [Zettel]
+
+0. Vereinfachung des Polynoms (optional)
+    - Ausklammern
+    - binomische Formeln
+    - ...
+0. Überprüfung des Nullvektors
+    - schnelle Überprüfung, ob Linearität überhaupt existiert
+    - kein Nachweis
+    - Nullvektor einsetzen
+    - $
+            phi(0) = cases(0: "Linearität möglich", 1: "Linearität unmöglich")
+        $
+1. Überprüfung der Additivität
+    0. Definition: $phi(x + y) = phi(x) + phi(y)$
+    1. Wähle 2 Matrizen $M_1: alpha_1, beta_1, delta_1,...; M_2: alpha_2, beta_2, delta_2,...$
+    2. Berechnung von $phi(M_1 + M_2)$
+    3. Berechnung von $phi(M_1) + phi(M_2)$
+    4. Vergleich: Sind 2. und 3. Identisch?
+2. Überprüfung der Homogenität (Multiplikation / Skalar)
+    0. Definition: $phi(lambda dot x) = lambda phi(x)$
+    1. Wähle Matrix $M: alpha, beta, gamma,...; lambda in K$
+    2. Berechnung von $phi(lambda dot M)$
+    3. Berechnung von $lambda dot phi(M)$
+    4. Vergleich: sind 2. und 3. Identisch?
+
+#pagebreak()
+
+=== Darstellungsmatrix
+
+// [Zettel]
+
+Die Darstellungsmatrix $[F]^B_C$ beschreibt eine lineare Abbildung zwischen zwei Vektorräumen in Form einer Matrix.
+
+Dabei ist $B$ die Basis der Urmenge und $C$ die Basis der der Zielmenge.
+
+#line()
+
+Beispiel:\
+sei
+$
+    F: B -> C, defspace F: (x,y) mapsto (2x, x+y)\
+    "Basen" B: {vec(1, 0), vec(0, 1)}, "Basen" C: {vec(1, 1), vec(1, 0)}
+$
+dann
+$
+    F(b_1) = vec(2, 1), F(b_2) = vec(0, 1) -> mat(2, 0; 1, 1) = M_I
+$
+$M_I$ durch Basen von $C$ darstellen:
+$
+    vec(2, 1) = alpha_1 vec(1, 1) + beta_1 vec(1, 0); vec(0, 1) = alpha_2 vec(1, 1) + beta_2 vec(1, 0)\
+    => alpha_1 = 1, beta_1 = 1, alpha_2 = 1, beta_2 = -1
+$
+Zusammenfassung in Matrix:
+$
+    mat(1, 1; 1, -1) = [F]^C_B
+$
+
 === inverse lineare Abbildungen
 
 Bijektivität:
@@ -194,12 +265,14 @@ Falls $f$ linear ist, ist $f^(-1)$ ebenfalls linear
 seien #vspace und #vspaceW lineare Abbildungen über $K$, $F in cal(L)(vspace, vspaceW)$ bijektiv\
 $F^(-1) : vspaceW -> vspace$ ist linear
 
+#pagebreak()
+
 === Bild
 
 seien #vspace, #vspaceW Vektorräume über demselben Körper K, $F: vspace -> vspaceW$ linear
 
 $
-    img F := {F(x) mid x in vspace} subset.eq vspaceW
+    Img F := {F(x) mid x in vspace} subset.eq vspaceW
 $
 
 Das Bild gibt an, welche Vektoren von der Abbildung erreicht werden
@@ -284,12 +357,12 @@ auch: lineare Hülle; Erzeugnis von $M$
 
 sei #kvspace #vspace, $M subset.eq vspace: M != emptyset$
 
-$span M$ ist die Menge aller Linearkombination von Vektoren aus $M$
+$Span M$ ist die Menge aller Linearkombination von Vektoren aus $M$
 $
-    span M := {x in V mid forall n in NN: forall u_1,...,u_n in M: forall alpha_1,...,alpha_n in K: x = sum^n_j=1 alpha_j u_j}
+    Span M := {x in V mid forall n in NN: forall u_1,...,u_n in M: forall alpha_1,...,alpha_n in K: x = sum^n_j=1 alpha_j u_j}
 $
 
-dabei $span emptyset = {0}$
+dabei $Span emptyset = {0}$
 
 => kleinster Unterraum von #vspace, der $M$ enthält
 
@@ -303,7 +376,7 @@ $
 $
 #h(1.25em) insbesondere gilt dies für das Bild von $F$
 $
-    img F = F(vspace) lt.eq vspaceW
+    Img F = F(vspace) lt.eq vspaceW
 $
 
 2. für $scr(L) lt.eq vspaceW$ ist sein Urbild unter F ein Unterraum
@@ -323,6 +396,17 @@ $
 
 === Orthogonalität
 
+= Polynome
+
+== Rechnen
+
+z.B.
+$
+    F: RR^(2 times 2) -> Pol^2_RR, defspace mat(alpha, beta; gamma, delta) mapsto "X"^2 + alpha + 2 delta "X" + beta ("X"^2 + 1) - ("X" - gamma)^2 + gamma^2 "X"^2
+$
+
+Das $"X"$ steht für die Variable des Polynoms (bei $f(x)$ das $x$, bei $h(z)$ das z)
+
 = Tupel
 
 sei Menge $M$, natürliche Zahl $n in NN$ heißt eine Abbildung
@@ -335,7 +419,7 @@ Abkürzung: $x = (x_k)^n_(k=1)$
 
 für Zahlentupel (mit Einträgen aus Körper $K$): $arrow(x) = (x_k)^n_(k=1)$. Darstellung als Zeile oder Spalte möglich.
 
-Dabei $M^n := M^({1,...,n}) = map({1,...,n}, M)$ Menge aller $n$-Tupel
+Dabei $M^n := M^({1,...,n}) = Map({1,...,n}, M)$ Menge aller $n$-Tupel
 
 Einträge aus $M$ sind geordnete Liste vorgegebener Anzahl $n$ von Einträgen
 
@@ -355,7 +439,7 @@ für $arrow(x), arrow(y) in K^n, alpha in K$ erklärten Verknüpfungen ein Vekto
 
 sei Körper $K$, $n,m in NN$:
 $
-    K^nxm := K^({1,...,n} times {1,...,m}) = map({1,...,n} times {1,...,m}, K)
+    K^nxm := K^({1,...,n} times {1,...,m}) = Map({1,...,n} times {1,...,m}, K)
 $
 Menge der ($nxm$)-Matrizen mit Einträgen aus $M$
 
@@ -431,6 +515,44 @@ $
     forall A in K^(mu times m): forall B in K^mxn: forall C in K^(n times v): (A dot B) dot C = A dot (B dot C)
 $
 
+== Basis
+
+- gegeben ist Matrix $A$
+- Matrix in reduzierter Zeilenstufenform
+- Vektoren mit `1` sind unabhängig -> Index für Vektoren aus $A$
+
+#line()
+
+$
+    A = & mat(2, 1, 3, 2; 4, 2, 1, 1; 8, 4, 17, 11) \
+        & ... \
+        & mat(1, 1/2, 0, 1/10; , -1, , 0; 0, 0, 1, 3/5; , 0, , -1)
+$
+
+Spalte 1 und 3 sind unabhängig -> Basis des Bildes ist
+$
+    {vec(2, 4, 8),vec(3, 1, 17)}
+$
+
+== Kern
+
+- gegeben ist Matrix $A$
+- Matrix in reduzierter Zeilenstufenform
+- Vektoren nicht mit `1` sind nicht unabhängig -> Basis des Kerns von $A$
+
+#line()
+
+$
+    A = & mat(2, 1, 3, 2; 4, 2, 1, 1; 8, 4, 17, 11) \
+        & ... \
+        & mat(1, 1/2, 0, 1/10; , -1, , 0; 0, 0, 1, 3/5; , 0, , -1)
+$
+
+Spalte 2 und 4 sind nicht unabhängig -> Basis des Kerns ist
+$
+    {vec(1, -2, 0, 0),vec(1, 0, 6, -10)}
+$
+
 == Elementarmatrix
 
 = lineare Gleichungssysteme
@@ -492,5 +614,3 @@ $
 === Drehspiegelung
 
 === Funktionen von Endomorphismen
-
-
