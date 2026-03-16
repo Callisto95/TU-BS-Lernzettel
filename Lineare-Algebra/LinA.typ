@@ -9,13 +9,19 @@
 #let Span = math.op("Span")
 #let Ker = math.op("Ker")
 #let Img = math.op("Img")
+// Ran: "Bildraum" einer Matrix
+// = Img
+#let Ran = Img
 #let Pol = math.op("Pol")
+#let Sol = math.op("Sol")
+
 #let mid = $mid(|)$
 #let vspace = $cal(V)$
 #let vspaceW = $cal(W)$
 #let vspaceU = $cal(U)$
 #let kvspace = [$K$-Vektorraum]
 #let defspace = h(2em)
+
 #let nxm = $n times m$
 #let mxn = $m times n$
 #let nxn = $n times n$
@@ -279,7 +285,7 @@ Das Bild gibt an, welche Vektoren von der Abbildung erreicht werden
 
 === Kern
 
-seien #vspace, #vspaceW Vektorräume über demselben Körper K, $F: vspace -> vspaceW$ linear
+seien #vspace, #vspaceW Vektorräume über demselben Körper $K$, $F: vspace -> vspaceW$ linear
 
 $
     ker F :={x in vspace mid F(x) = 0} subset.eq vspace
@@ -534,6 +540,27 @@ $
     {vec(2, 4, 8),vec(3, 1, 17)}
 $
 
+=== Basis des Kerns
+
+// [Zettel]
+
+- reduzierte Zeilenstufenform
+- leere Zeilen mit -1 auffüllen
+- Spalten mit -1 in der Diagonale sind Vektoren der Basis
+
+=== Basis des Bildes
+
+// [Zettel]
+
+- reduzierte Zeilenstufenform
+- Spalten mit 1 sind unabhängig und Indizes aus der unveränderten Matrix
+
+ODER
+
+- Spalten zu Zeilen
+- in Zeilenstufenform
+- unabhängige Zeilen sind Basis
+
 == Kern
 
 - gegeben ist Matrix $A$
@@ -556,6 +583,11 @@ $
 == Elementarmatrix
 
 = lineare Gleichungssysteme
+
+$
+    x in RR^3; A in RR^(3 times 4);"Basis von " Ker A: {vec(alpha_1, alpha_2, alpha_3, alpha_4),vec(beta_1, beta_2, beta_3, beta_4)}\
+    Sol(A, arrow(x)) = {vec(x_1, x_2, x_3, 0) + s dot vec(alpha_1, alpha_2, alpha_3, alpha_4) + t dot vec(beta_1, beta_2, beta_3, beta_4) mid s,t in RR}
+$
 
 = Basen
 
