@@ -14,6 +14,7 @@
 #let Ran = Img
 #let Pol = math.op("Pol")
 #let Sol = math.op("Sol")
+#let Eig = math.op("Eig")
 
 #let mid = $mid(|)$
 #let vspace = $cal(V)$
@@ -36,6 +37,18 @@
 #show heading.where(level: 1): content => [#pagebreak();#content]
 
 = Grundlagen
+
+== Polynom dritten Grades
+
+1. Nullstelle raten ($x_1 = s$)
+2. Polynomdivision mit $P : (x - s)$
+
+== PQ
+
+$
+                0 & = x^2 + p x + q \
+    x_(1 slash 2) & = - p/2 plus.minus sqrt((p/2)^2 - q)
+$
 
 == binomische Formeln
 
@@ -71,6 +84,11 @@ $
 
 - Pivots sind 1
 - alle Einträge über den Pivots sind 0
+
+== Matrix invertieren
+
+- Einheitsmatrix rechts von $A$
+- Einheitsmatrix auf der linken Seite erzeugen
 
 = Vektorraum
 
@@ -584,65 +602,153 @@ $
 
 = lineare Gleichungssysteme
 
+// [Zettel]
+
 $
     x in RR^3; A in RR^(3 times 4);"Basis von " Ker A: {vec(alpha_1, alpha_2, alpha_3, alpha_4),vec(beta_1, beta_2, beta_3, beta_4)}\
     Sol(A, arrow(x)) = {vec(x_1, x_2, x_3, 0) + s dot vec(alpha_1, alpha_2, alpha_3, alpha_4) + t dot vec(beta_1, beta_2, beta_3, beta_4) mid s,t in RR}
 $
 
-= Basen
+= Diagonalisierung
 
-== geordnete Basen von Koordinaten
+Matrix $A$
 
-== Existenz von Basen
+$
+    S^(-1) A S & = D = mat(lambda_1, , 0; , dots.down, ; 0, , lambda_n) \
+             A & = S D S^(-1) \
+           A S & = S D
+$
 
-== Dimension und Berechnung
+mit Einheitsvektoren $e_i$:
 
-== Quotientenraum und Dimensionsformeln
+$
+    A S e_i = S D e_i = S dot lambda_i e_i = lambda_i dot S e_i
+$
 
-== Orthonormalbasen
+dabei
 
-== Orthogonalprojektion
+$
+    S e_i = arrow(x)_i
+$
 
-== Darstellung von Linearprojektionen
+also
 
-= lineare Abbildungen
+$
+    A arrow(x)_i = lambda_i arrow(x)_i, arrow(x)_i != 0
+$
 
-== geordnete Basen und Koordinaten
+#line()
 
-== lineare Abbildung in Koordinaten
-
-= komplexe Zahlen
-
-= Skalarprodukt und Normen
-
-== Darstellung durch Matrizen
-
-= Determinanten
-
-== im dreidimensionalen, euklidischen Raum
-
-== Konstruktion
-
-== Berechnung
-
-= Spektraltheorie
-
-== Eigenvektor
+$
+    A = mat(-3, 4; 4, 3)
+$
 
 == Eigenwerte
 
-== Diagonalisierbarkeit
+(weiterhin im Beispiel Diagonalisierung)
 
-(Zerlegung in Eigenwerte)
+$
+    0 = det mat(-3 - lambda, 4; 4, 3 - lambda) = (-3 - lambda)(3 - lambda) - 16 = lambda^2 - 9 - 16 = lambda^2 - 25\
+    -> lambda^2 = 25 <=> lambda = sqrt(25) <=> lambda = plus.minus 5
+$
 
-== Hermitesche Endomorphismen
+== Eigenvektor
 
-== normale Endomorphismen
+(weiterhin im Beispiel Diagonalisierung)
 
-== Anwendung
+zu $lambda = 5$:
+$
+           mat(-3 - (5), 4; 4, 3 - (5)) & = mat(-8, 4; 4, -2) \
+    mat(-8, 4; 4, -2) dot vec(x_1, x_2) & = vec(0, 0)
+$
 
-=== Drehung
+da zwei nicht unabhängige Zeilen: ein Wert zu Parameter ($x = t$ oder $y = t$)\
+hier: $y = t$
+$
+    -2 x + t = 0 <=> x = frac(1, 2) t\
+    => arrow(x)_1 = vec(frac(1, 2) t, t) = t vec(frac(1, 2), 1), t in RR without {0} = t vec(1, 2), t in RR without {0}
+$
 
-=== Drehspiegelung
+erneute Rechnung für $lambda_2 = -5$
 
-=== Funktionen von Endomorphismen
+Aber hier: symmetrische Matrix. Also:
+$
+    arrow(x)_2 = vec(-2, 1)
+$
+
+-> $x,y$ tauschen, dann ein Vorzeichen verändern
+
+$
+    D = mat(5, 0; -5, 0), S = mat(1, -2; 2, 1), S^(-1) = frac(1, 5) mat(1, 2; -2, 1)\
+    => A = frac(1, 5) mat(1, -2; 2, 1) mat(5, 0; 0, -5) mat(1, 2; -2, 1)
+$
+
+Da $D^m$ aus $lambda_1$ *dann* $lambda_2$ besteht, müssen die Zeilen von $S$ $arrow(x)_1$ *dann* $arrow(x)_2$ sein.
+
+$
+    A^m = S D^m S^(-1)
+$
+
+Diagonalmatrix hoch m:
+$
+    D^m = mat(d_11^m, ..., 0; 0, dots.down, 0; 0, ..., d_(n n)^m)
+$
+
+== charakteristisches Polynom
+
++ Vorzeichenwechsel bei allen Werten
++ in Hauptdiagonale $X - a_(i i)$, dann Determinante ausrechnen
+
+#sym.arrow.squiggly Eigenwerte
+
+== Determinante
+
+=== Laplacescher Entwicklungssatz:
+
+$
+    mat(
+        +, -, +, dots;
+        -, +, -, dots;
+        +, -, +, dots;
+        dots, dots, dots, dots;
+    )
+$
+
+bei $R^nxn$ Matrizen:
+
+$
+    n = 2:& det(mat(a_11, a_12; a_21, a_22)) = a_11 a_22 - a_21 a_12\
+    n = 3:& det(mat(a_11 a_12 a_13; a_21 a_22 a_23; a_31 a_32 a_33)) = a_11 mat(a_22, a_23; a_32, a_33) - a_21 mat(a_12, a_13; a_32, a_33) + a_31 mat(a_12, a_13; a_22, a_23)
+$
+
+=== Regel von Sarrus
+
+Diagonale zusammenrechnen, basierend auf Hauptdiagonale (addieren) und Nebendiagonale (subtrahieren)
+
+$
+    mat(a_11, a_12, a_13, a_11, a_12; a_21, a_22, a_23, a_21, a_22; a_31, a_32, a_33, a_31, a_32)
+    #line(start: (-145pt, 0pt), end: (-65pt, 50pt), stroke: 1pt + green)
+    #line(start: (-125pt, 0pt), end: (-45pt, 50pt), stroke: 1pt + green)
+    #line(start: (-105pt, 0pt), end: (-25pt, 50pt), stroke: 1pt + green)
+    #line(start: (-158pt, 50pt), end: (-82pt, 0pt), stroke: 1pt + red)
+    #line(start: (-137pt, 50pt), end: (-61pt, 0pt), stroke: 1pt + red)
+    #line(start: (-116pt, 50pt), end: (-40pt, 0pt), stroke: 1pt + red)
+$
+
+== Berechnung des Kerns
+
+== lineare Unabhängigkeit / Basen
+
+== Eigenräume
+
+$
+    A = mat(1, 3, -3; 6, 4, -6; 3, 3, -5) in CC^(3 times 3), lambda = -2\
+    A - (-2)bb(1) = mat(3, 3, -3; 6, 6, -6; 3, 3, -3) arrow.long_"Gauß" mat(1, 1, -1; , -1, ; , , -1)\
+    => Eig(A, -2) = Span{vec(1, -1, 0), vec(-1, 0, -1)}
+$
+
+== Orthogonalprojektion
+
+=== Orthonormalbasis
+
+=== Gram-Schmidt-Algorithmus
