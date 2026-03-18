@@ -174,6 +174,8 @@ sei #kvspace $vspace, vspaceW$ (über dem gleichen Körper)
 $
     F: vspace -> vspaceW, defspace v mapsto F(v)
 $
+
+// [Zettel]
 $F$ ist eine lineare Abbildung, wenn
 - $F$ ist ein Gruppen-Homomorphismus von $(vspace,+)$ nach $(vspaceW,+)$
 $
@@ -182,6 +184,10 @@ $
 - Homogenität
 $
     forall v in vspace: forall alpha in K: F(alpha dot v) = alpha dot F(v)
+$
+Schnelle Überprüfung der Linearität:
+$
+    F(arrow(0)) = arrow(0)
 $
 
 Menge aller linearen Abbildungen von #vspace nach $vspaceW$:
@@ -841,3 +847,57 @@ $
 === Orthonormalbasis
 
 Orthogonalbasis, wobei jeder Vektor die Länge 1 hat
+
+= Spiegelung
+
+#let vecN = $arrow(n)$
+#let vecR = $arrow(r)$
+#let vecS = $arrow(s)$
+#let vecV = $arrow(v)$
+#let vecZ = $arrow(z)$
+#let vecP = $arrow(p)$
+
+== Vektor an Geraden
+
+=== Umformung der Geraden
+
+Gerade gegeben durch
+$
+    G = {vecX in EE_2; 3x_1 - 2 = 5(x_2 + 1)}
+$
+Umformung zu
+$
+    G = {vecX in EE_2; 3x_1 - 5x_2 = 7} = {vecX in EE_2; chevron.l vecX, vecN chevron.r = 7}
+$
+
+- Normalenvektor $vecN = vec(3, -5)$
+
+- Richtungsvektor $vecR = vec(5, 3)$
+
+- Stützvektor $vecS = vec(4, 1)$
+
+$
+    => G = vecS + Span {vecR} = {vecS + alpha vecR; alpha in RR}
+$
+
+=== Vektor an Gerade anlegen
+
+// [Zettel]
+Note: Orthogonalprojektion an Geraden ist nicht parallel zur Geraden, sie ist auf der Geraden
+
+gesucht: Orthogonalprojektion von #vecV an $G$
+
+Vektor an gerade anlegen:
+$
+    vecX := vecV - vecS
+$
+
+Orthogonalprojektion durchführen (auf den Unterraum $U = Span{vecR}$)
+$
+    P_U (vecX) = frac(vecX^T vecR, abs(vecR)^2) vecR = vecZ
+$
+
+Vektor wieder richtig zurück schieben:
+$
+    P_G (vecX) = vecP = vecS + P_U (vecX)
+$
