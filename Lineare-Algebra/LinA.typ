@@ -775,8 +775,8 @@ $
 
 Generell:
 $
-    vec_vecQ = & lambda dot vecQ \
-    vec_vecQ = & frac(vec^T vecQ, abs(vecQ)) dot vecQ
+    vecX_vecQ = & lambda dot vecQ \
+    vecX_vecQ = & frac(vecX^T vecQ, abs(vecQ)) dot vecQ
 $
 
 === Vektor-Matrix
