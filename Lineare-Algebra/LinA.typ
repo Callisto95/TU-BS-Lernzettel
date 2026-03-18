@@ -776,7 +776,7 @@ $
 Generell:
 $
     vecX_vecQ = & lambda dot vecQ \
-    vecX_vecQ = & frac(vecX^T vecQ, abs(vecQ)) dot vecQ
+    vecX_vecQ = & frac(vecX^T vecQ, abs(vecQ)^2) dot vecQ
 $
 
 === Vektor-Matrix
@@ -828,7 +828,7 @@ Teilweise auch $u_n$ anstatt $q_n$
 
 *Orthonogalprojektion ausrechnen*
 $
-    sum^n_(i=1) vecX_(vecQ_i) = sum^n_(i=1) frac(vecX^T vecQ_i, abs(vecQ_i)) dot arrow(q)_i
+    vecX_o = sum^n_(i=1) vecX_(vecQ_i) = sum^n_(i=1) frac(vecX^T vecQ_i, abs(vecQ_i)^2) dot arrow(q)_i
 $
 
 === Orthogonalbasis
