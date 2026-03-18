@@ -15,6 +15,7 @@
 #let Pol = math.op("Pol")
 #let Sol = math.op("Sol")
 #let Eig = math.op("Eig")
+#let vecnorm = content_ => $bar.v.double #content_ bar.v.double$
 
 #let mid = $mid(|)$
 #let vspace = $cal(V)$
@@ -78,7 +79,7 @@ $
     forall z in Z: exists_1 x in D: z = f(x)
 $
 
-== Gauß-algorithmus
+== Gauß-Algorithmus
 
 === reduzierte Zeilenstufenform
 
@@ -747,8 +748,96 @@ $
     => Eig(A, -2) = Span{vec(1, -1, 0), vec(-1, 0, -1)}
 $
 
+#pagebreak()
+
 == Orthogonalprojektion
+
+// [Zettel]
+
+#let vecX = $arrow(x)$
+#let vecB = $arrow(b)$
+#let vecQ = $arrow(q)$
+
+=== Grundlagen
+
+$
+    vecB^T vecB = abs(vecB)^2
+$
+
+==== Normierung eines Vektors
+
+Vektor durch seine Länge teilen
+$
+    vecnorm(vecX) = frac(1, abs(vecX)) vecX
+$
+
+=== Vektor-Vektor
+
+Generell:
+$
+    vec_vecQ = & lambda dot vecQ \
+    vec_vecQ = & frac(vec^T vecQ, abs(vecQ)) dot vecQ
+$
+
+=== Vektor-Matrix
+
+$
+    A = mat(1, 3, -3; 6, 4, -6; 3, 3, -5);vecX = vec(1, 2, -1); Eig(A, -2)
+$
+
+Bestimme Orthogonalprojektion von $vecX$ auf den Eigenraum $Eig(A, -2)$ zum Eigenwert $lambda = -2$ von A
+
+Lösung:
+
+- Hauptdiagonale in $A$ durch $- lambda$ ergänzen (durch $lambda = -2$: alle Einträge $+ 2$)
+- $A$ durch Gauß-Algorithmus in reduzierte Zeilenstufenform
+- Nullzeilen in der Hauptdiagonalen durch "-1" ersetzen und als Basis Nutzen.
+
+$
+    A arrow.squiggly mat(1, 1, -1; 0, 0, 0; 0, 0, 0) arrow.squiggly mat(1, 1, -1; , -1, ; , , -1) => Span {vec(1, -1, 0), vec(-1, 0, -1)}
+$
+
+==== Gram-Schmidt-Algorithmus
+
+(weiter mit $A$ und $vec$ aus Vektor-Matrix)
+
+Der Gram-Schmidt-Algorithmus dient dazu, aus einem beliebigen System von Vektoren ein Orthogonalsystem zu konstruieren.
+
+Allgemein:
+
+Für Ausgangsvektoren $v_1,...,v_n$ und orthogonale Vektoren $q_1,...,q_n$
+$
+    q_n = v_n - sum^(n-1)_(i=1) frac(v^T_n q_i, vecnorm(q_i)^2) q_i
+$
+
+dabei
+$
+    RR: vecnorm(vecX) = & sqrt(x_1^2 + ... + x_n^2)           && = abs(vecX) \
+    CC: vecnorm(vecX) = & sqrt(abs(x_1)^2 + ... + abs(x_n)^2) &&
+$
+
+Teilweise auch $u_n$ anstatt $q_n$
+
+=> $q_1 = v_1$\
+=> $q_2 = v_2 - frac(v_2^T q_1, abs(q_1)^2) dot q_1$
+
+=> $q_3 = v_3 - (frac(v_3^T q_1, abs(q_1)^2) dot q_1 + frac(v_3^T q_2, abs(q_2)^2) dot q_2)$\
+=> $q_4 = ...$
+
+- Brüche idealerweise Ausklammern
+
+*Orthonogalprojektion ausrechnen*
+$
+    sum^n_(i=1) vecX_(vecQ_i) = sum^n_(i=1) frac(vecX^T vecQ_i, abs(vecQ_i)) dot arrow(q)_i
+$
+
+=== Orthogonalbasis
+
+Die aus dem Gram-Schmidt-Algorithmus entstehenden Vektoren $q_1,...,q_n$:
+$
+    "OB" = Span{q_1,...,q_n}
+$
 
 === Orthonormalbasis
 
-=== Gram-Schmidt-Algorithmus
+Orthogonalbasis, wobei jeder Vektor die Länge 1 hat
