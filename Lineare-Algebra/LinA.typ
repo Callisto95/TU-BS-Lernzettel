@@ -15,6 +15,7 @@
 #let Pol = math.op("Pol")
 #let Sol = math.op("Sol")
 #let Eig = math.op("Eig")
+#let Spec = math.op("Spec")
 #let vecnorm = content_ => $bar.v.double #content_ bar.v.double$
 
 #let mid = $mid(|)$
@@ -251,6 +252,8 @@ $
 
 // [Zettel]
 
+==== Matrix-Matrix
+
 Die Darstellungsmatrix $[F]^B_C$ beschreibt eine lineare Abbildung zwischen zwei Vektorräumen in Form einer Matrix.
 
 Dabei ist $B$ die Basis der Urmenge und $C$ die Basis der der Zielmenge.
@@ -275,6 +278,57 @@ $
 Zusammenfassung in Matrix:
 $
     mat(1, 1; 1, -1) = [F]^C_B
+$
+
+#pagebreak()
+
+===== ohne gegebene Basen
+
+// [Zettel]
+
+sei
+$
+    phi: RR^(2 times 2) -> RR^(2 times 2), defspace A mapsto A dot mat(1, 2; 3, 4)
+$
+
+Basis: *Standardbasis* von $RR^(2 times 2)$
+$
+    E_(1 1) = mat(1, 0; 0, 0), E_(1 2) = mat(0, 1; 0, 0), E_(2 1) = mat(0, 0; 1, 0), E_(2 2) = mat(0, 0; 0, 1)
+$
+
+einsetzen:
+$
+    phi(E_(1 1)) = & mat(1, 2; 0, 0) \
+    phi(E_(1 2)) = & mat(3, 4; 0, 0) \
+    phi(E_(2 1)) = & mat(0, 0; 1, 2) \
+    phi(E_(2 2)) = & mat(0, 0; 3, 4)
+$
+
+Daraus:
+$
+    mat(1, 3, 0, 0; 2, 4, 0, 0; 0, 0, 1, 3; 0, 0, 2, 4)
+$
+
+#pagebreak()
+
+==== Vektor
+
+// [Zettel]
+
+Bestimmen sie die Darstellungsmatrix von $phi$ bezüglich der Einheitsbasis
+
+dabei:\
+$phi$ ist die Orthogonalprojektion auf den Unterraum aufgespannt durch $arrow(u) = vec(1, -3)$
+
+=> eindimensionaler Unterraum
+
+Also: $P = frac(u u^T, u^T u)$
+
+hier also:
+$
+    u^T u = & 1 + 9 = 10 \
+    u u^T = & mat(1, -3; -3, 9) \
+        P = & frac(1, 10) mat(1, -3; -3, 9)
 $
 
 === inverse lineare Abbildungen
@@ -748,11 +802,28 @@ $
 
 == Eigenräume
 
+=== Matrix
+
 $
     A = mat(1, 3, -3; 6, 4, -6; 3, 3, -5) in CC^(3 times 3), lambda = -2\
     A - (-2)bb(1) = mat(3, 3, -3; 6, 6, -6; 3, 3, -3) arrow.long_"Gauß" mat(1, 1, -1; , -1, ; , , -1)\
     => Eig(A, -2) = Span{vec(1, -1, 0), vec(-1, 0, -1)}
 $
+
+=== Vektor
+
+#let vecU = $arrow(u)$
+#let vecW = $arrow(w)$
+
+sei Unterraum $U$ aufgespannt durch $arrow(u) = vec(1, -3)$ und $phi$ die Orthogonalprojektion auf $U$
+
+Dann:
+- $phi(vecU) = vecU$
+- $vecW = vec(3, 1): phi(vecW) = arrow(0)$
+
+Also $1,0 in Spec(phi)$ mit *Eigenvektoren* $vecU$ bzw. $vecW$
+
+Da $dim EE_2 = 2$ bleibt nur $Eig(phi, 1) = Span{vecU}$ und $Eig(phi, 0) = Span{vecW}$
 
 #pagebreak()
 
