@@ -280,6 +280,10 @@ $
     mat(1, 1; 1, -1) = [F]^C_B
 $
 
+#line()
+
+bei $M^B_B$: reduzierte Zeilenstufenform
+
 #pagebreak()
 
 ===== ohne gegebene Basen
@@ -304,7 +308,7 @@ $
     phi(E_(2 2)) = & mat(0, 0; 3, 4)
 $
 
-Daraus:
+Daraus entsteht die Darstellungsmatrix:
 $
     mat(1, 3, 0, 0; 2, 4, 0, 0; 0, 0, 1, 3; 0, 0, 2, 4)
 $
@@ -475,12 +479,6 @@ $
 
 3. die lineare Abbildung $F$ ist genau dann injektiv, wenn $ker F = {0}$ gilt
 
-== Innenprodukträume
-
-(Vektorraum mit Skalaren)
-
-=== Orthogonalität
-
 = Polynome
 
 == Rechnen
@@ -490,48 +488,48 @@ $
     F: RR^(2 times 2) -> Pol^2_RR, defspace mat(alpha, beta; gamma, delta) mapsto "X"^2 + alpha + 2 delta "X" + beta ("X"^2 + 1) - ("X" - gamma)^2 + gamma^2 "X"^2
 $
 
-Das $"X"$ steht für die Variable des Polynoms (bei $f(x)$ das $x$, bei $h(z)$ das z)
+Das $"X"$ steht für die Variable des Polynoms (bei $f(x)$ das $x$, bei $h(z)$ das $z$)
 
-= Tupel
+// = Tupel
 
-sei Menge $M$, natürliche Zahl $n in NN$ heißt eine Abbildung
-$
-    x:{1,...,n} -> M, #defspace k mapsto x_k
-$
-ein $n$-Tupel mit Einträgen aus $M$
+// sei Menge $M$, natürliche Zahl $n in NN$ heißt eine Abbildung
+// $
+//     x:{1,...,n} -> M, #defspace k mapsto x_k
+// $
+// ein $n$-Tupel mit Einträgen aus $M$
 
-Abkürzung: $x = (x_k)^n_(k=1)$
+// Abkürzung: $x = (x_k)^n_(k=1)$
 
-für Zahlentupel (mit Einträgen aus Körper $K$): $arrow(x) = (x_k)^n_(k=1)$. Darstellung als Zeile oder Spalte möglich.
+// für Zahlentupel (mit Einträgen aus Körper $K$): $arrow(x) = (x_k)^n_(k=1)$. Darstellung als Zeile oder Spalte möglich.
 
-Dabei $M^n := M^({1,...,n}) = Map({1,...,n}, M)$ Menge aller $n$-Tupel
+// Dabei $M^n := M^({1,...,n}) = Map({1,...,n}, M)$ Menge aller $n$-Tupel
 
-Einträge aus $M$ sind geordnete Liste vorgegebener Anzahl $n$ von Einträgen
+// Einträge aus $M$ sind geordnete Liste vorgegebener Anzahl $n$ von Einträgen
 
-== Rechnen
+// == Rechnen
 
-$M$ muss z.B. Körper sein
+// $M$ muss z.B. Körper sein
 
-sei Körper $K$, $n in NN$
+// sei Körper $K$, $n in NN$
 
-Dann ist $K^n$ durch
-$
-    arrow(x) + arrow(y) := (x_k + y_k)^n_(k=1), #defspace alpha dot arrow(x) := (alpha dot x_k)^n_(k=1)
-$
-für $arrow(x), arrow(y) in K^n, alpha in K$ erklärten Verknüpfungen ein Vektorraum
+// Dann ist $K^n$ durch
+// $
+//     arrow(x) + arrow(y) := (x_k + y_k)^n_(k=1), #defspace alpha dot arrow(x) := (alpha dot x_k)^n_(k=1)
+// $
+// für $arrow(x), arrow(y) in K^n, alpha in K$ erklärten Verknüpfungen ein Vektorraum
 
 = Matrizen
 
-sei Körper $K$, $n,m in NN$:
-$
-    K^nxm := K^({1,...,n} times {1,...,m}) = Map({1,...,n} times {1,...,m}, K)
-$
-Menge der ($nxm$)-Matrizen mit Einträgen aus $M$
+// sei Körper $K$, $n,m in NN$:
+// $
+//     K^nxm := K^({1,...,n} times {1,...,m}) = Map({1,...,n} times {1,...,m}, K)
+// $
+// Menge der ($nxm$)-Matrizen mit Einträgen aus $M$
 
-Matrix $A$ ist somit eine Abbildung
-$
-    A:{1,...,n} times {1,...,m} -> M, defspace (k,j) mapsto a_(k j)
-$
+// Matrix $A$ ist somit eine Abbildung
+// $
+//     A:{1,...,n} times {1,...,m} -> M, defspace (k,j) mapsto a_(k j)
+// $
 
 Notation:
 $
@@ -543,24 +541,24 @@ $
 
 => $a_(y x)$ und $A^(y times x)$ ($A^("Zeilen" times "Spalten")$), *nicht* $a_(x y)$ und $A^(x times y)$
 
-== Rechnen
+// == Rechnen
 
-sei Körper $K$, Matrizen $K^nxm$
-$
-                      forall A,B in K^nxm: & A + B        && := (a_(k j) + b_(k j))^(n,m)_(k=1, j=1) \
-    forall lambda in K: forall A in K^nxm: & lambda dot A && := (lambda a_(k j))^(n,m)_(k=1,j=1)
-$
+// sei Körper $K$, Matrizen $K^nxm$
+// $
+//                       forall A,B in K^nxm: & A + B        && := (a_(k j) + b_(k j))^(n,m)_(k=1, j=1) \
+//     forall lambda in K: forall A in K^nxm: & lambda dot A && := (lambda a_(k j))^(n,m)_(k=1,j=1)
+// $
 
-=> $K^nxm$ ist ein #kvspace
+// => $K^nxm$ ist ein #kvspace
 
-=== Transposition
+// === Transposition
 
-sei $A = (a_(j k))^(n,m)_(j=1,k=1) in K^nxm$
-$
-    A^T = (b_(k j))^(n,m)_(j=1,n=1) in K^mxn; b_(k j) = a_(j k)
-$
+// sei $A = (a_(j k))^(n,m)_(j=1,k=1) in K^nxm$
+// $
+//     A^T = (b_(k j))^(n,m)_(j=1,n=1) in K^mxn; b_(k j) = a_(j k)
+// $
 
-=> Zeilen zu Spalten, Spalten zu Zeilen
+// => Zeilen zu Spalten, Spalten zu Zeilen
 
 === Matrix-Tupel Multiplikation
 
@@ -631,14 +629,16 @@ $
 
 // [Zettel]
 
-- reduzierte Zeilenstufenform
-- Spalten mit 1 sind unabhängig und Indizes aus der unveränderten Matrix
+1. reduzierte Zeilenstufenform
+    - Spalten mit 1 sind unabhängig und Indizes aus der unveränderten Matrix
 
 ODER
 
-- Spalten zu Zeilen
-- in Zeilenstufenform
-- unabhängige Zeilen sind Basis
+2. Spalten zu Zeilen
+    - in Zeilenstufenform
+    - unabhängige Zeilen sind Basis
+
+\2. auch bei "Bestimmen sie eine Basis des Bilds der Abbildung $mu_A: RR^5 -> RR^4, x mapsto A x$"
 
 == Kern
 
@@ -919,7 +919,9 @@ $
 
 Orthogonalbasis, wobei jeder Vektor die Länge 1 hat
 
-= Spiegelung
+#pagebreak()
+
+== Vektor an Geraden
 
 #let vecN = $arrow(n)$
 #let vecR = $arrow(r)$
@@ -928,7 +930,55 @@ Orthogonalbasis, wobei jeder Vektor die Länge 1 hat
 #let vecZ = $arrow(z)$
 #let vecP = $arrow(p)$
 
+=== Umformung der Geraden
+
+Gerade gegeben durch
+$
+    G = {vecX in EE_2; 3x_1 - 2 = 5(x_2 + 1)}
+$
+Umformung zu
+$
+    G = {vecX in EE_2; 3x_1 - 5x_2 = 7} = {vecX in EE_2; chevron.l vecX, vecN chevron.r = 7}
+$
+
+- Normalenvektor $vecN = vec(3, -5)$
+
+- Richtungsvektor $vecR = vec(5, 3)$
+
+- Stützvektor $vecS = vec(4, 1)$
+
+$
+    => G = vecS + Span {vecR} = {vecS + alpha vecR; alpha in RR}
+$
+
+=== Vektor an Gerade anlegen
+
+! Keine Spiegelung an der Geraden !
+
+// [Zettel]
+
+gesucht: Orthogonalprojektion von #vecV an $G$
+
+Vektor an gerade anlegen:
+$
+    vecX := vecV - vecS
+$
+
+Orthogonalprojektion durchführen (auf den Unterraum $U = Span{vecR}$)
+$
+    P_U (vecX) = frac(vecX^T vecR, abs(vecR)^2) vecR = vecZ
+$
+
+Vektor wieder richtig zurück schieben:
+$
+    P_G (vecX) = vecP = vecS + P_U (vecX)
+$
+
+= Spiegelung
+
 == Vektor an Geraden
+
+! Keine Orthogonalprojektion an der Geraden !
 
 === Umformung der Geraden
 
@@ -954,21 +1004,39 @@ $
 === Vektor an Gerade anlegen
 
 // [Zettel]
-Note: Orthogonalprojektion an Geraden ist nicht parallel zur Geraden, sie ist auf der Geraden
-
-gesucht: Orthogonalprojektion von #vecV an $G$
+gesucht: Spiegelung von #vecV an $G$
 
 Vektor an gerade anlegen:
 $
     vecX := vecV - vecS
 $
 
-Orthogonalprojektion durchführen (auf den Unterraum $U = Span{vecR}$)
+kürzester Weg von Punkt bei $vecV$ zur Geraden ausrechnen
 $
-    P_U (vecX) = frac(vecX^T vecR, abs(vecR)^2) vecR = vecZ
+    P_U (vecX) = frac(vecX^T vecN, abs(vecN)^2) vecN = vecZ
 $
 
-Vektor wieder richtig zurück schieben:
+Vektor spiegeln:
 $
-    P_G (vecX) = vecP = vecS + P_U (vecX)
+    P_G (vecX) = vecP = vecV - 2 dot vecZ
 $
+
+= idk aber wichtig
+
+Gegeben sei die lineare Abbildung $F$ und die Menge $M$
+$
+    F: RR^2 -> RR^2, defspace F(vecX) := A dot vecX, A = mat(1, -2; 2, 3)\
+    M := {vecX in RR^2 mid 1 lt.eq x_1 lt.eq 2 and -1 lt.eq x_2 lt.eq 1}
+$
+
+1. Bestimmen sie das Bild $F(M)$ der Menge $M$ unter der Abbildung $F$
+
+$M$ als $M = {vec(1, 1) + alpha vec(1, 0) + beta vec(0, -2) mid alpha, beta in [0,1]}$ schreiben
+
+$vec(1, 1), vec(1, 0), vec(0, -2)$ in $F$ einsetzen, dann wieder Gleichung bilden
+
+=> $F(M) = {vec(-1, 5) + alpha vec(1, 2) + beta vec(4, -6) mid alpha, beta in [0,1]}$
+
+2. Berechnen sie die Determinante von $F$
+
+$= det A$
