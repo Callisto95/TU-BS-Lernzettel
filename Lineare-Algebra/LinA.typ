@@ -282,7 +282,13 @@ $
 
 #line()
 
-bei $M^B_B$: reduzierte Zeilenstufenform
+bei $[M]^B_B$:
+
+$
+    mat(1, 0; 0, 1)mat(1, 0; 1, 1)
+$
+
+dann linke Seite in reduzierter Zeilenstufenform; rechte Seite ist $[M]^B_B$
 
 #pagebreak()
 
@@ -371,7 +377,7 @@ Das Bild gibt an, welche Vektoren von der Abbildung erreicht werden
 seien #vspace, #vspaceW Vektorräume über demselben Körper $K$, $F: vspace -> vspaceW$ linear
 
 $
-    ker F :={x in vspace mid F(x) = 0} subset.eq vspace
+    Ker F :={x in vspace mid F(x) = 0} subset.eq vspace
 $
 
 der Kern darüber Auskunft, welche Vektoren zu einem einzigen Bild "zusammengefaltet" werden. Der Kern enthält dabei stets mindestens den Nullvektor.
@@ -387,7 +393,7 @@ $
 
 und damit
 $
-    0_vspace in ker F
+    0_vspace in Ker F
 $
 
 == Unterraum
@@ -474,10 +480,10 @@ $
 $
 #h(1.25em) insbesondere gilt
 $
-    ker F = F^arrow.l ({0}) lt.eq vspace
+    Ker F = F^arrow.l ({0}) lt.eq vspace
 $
 
-3. die lineare Abbildung $F$ ist genau dann injektiv, wenn $ker F = {0}$ gilt
+3. die lineare Abbildung $F$ ist genau dann injektiv, wenn $Ker F = {0}$ gilt
 
 = Polynome
 
@@ -644,7 +650,7 @@ ODER
 
 - gegeben ist Matrix $A$
 - Matrix in reduzierter Zeilenstufenform
-- Vektoren nicht mit `1` sind nicht unabhängig -> Basis des Kerns von $A$
+- Vektoren nicht mit `-1` sind nicht unabhängig -> Basis des Kerns von $A$
 
 #line()
 
@@ -659,7 +665,7 @@ $
     {vec(1, -2, 0, 0),vec(1, 0, 6, -10)}
 $
 
-== Elementarmatrix
+// == Elementarmatrix
 
 = lineare Gleichungssysteme
 
@@ -723,8 +729,8 @@ $
     mat(-8, 4; 4, -2) dot vec(x_1, x_2) & = vec(0, 0)
 $
 
-da zwei nicht unabhängige Zeilen: ein Wert zu Parameter ($x = t$ oder $y = t$)\
-hier: $y = t$
+da zwei abhängige Zeilen und zwei Parameter: ein Wert zu Parameter ($x = t$ oder $y = t$)\
+hier: $x_2 = t$
 $
     -2 x + t = 0 <=> x = frac(1, 2) t\
     => arrow(x)_1 = vec(frac(1, 2) t, t) = t vec(frac(1, 2), 1), t in RR without {0} = t vec(1, 2), t in RR without {0}
@@ -740,7 +746,7 @@ $
 -> $x,y$ tauschen, dann ein Vorzeichen verändern
 
 $
-    D = mat(5, 0; -5, 0), S = mat(1, -2; 2, 1), S^(-1) = frac(1, 5) mat(1, 2; -2, 1)\
+    D = mat(5, 0; 0, -5), S = mat(1, -2; 2, 1), S^(-1) = frac(1, 5) mat(1, 2; -2, 1)\
     => A = frac(1, 5) mat(1, -2; 2, 1) mat(5, 0; 0, -5) mat(1, 2; -2, 1)
 $
 
@@ -876,7 +882,7 @@ $
 
 ==== Gram-Schmidt-Algorithmus
 
-(weiter mit $A$ und $vec$ aus Vektor-Matrix)
+(weiter mit $A$ und $vecX$ aus Vektor-Matrix)
 
 Der Gram-Schmidt-Algorithmus dient dazu, aus einem beliebigen System von Vektoren ein Orthogonalsystem zu konstruieren.
 
@@ -971,7 +977,7 @@ $
 
 Vektor wieder richtig zurück schieben:
 $
-    P_G (vecX) = vecP = vecS + P_U (vecX)
+    P_G (vecX) = vecP = vecS + P_U (vecX) = vecS + vecZ
 $
 
 = Spiegelung
@@ -1001,7 +1007,7 @@ $
     => G = vecS + Span {vecR} = {vecS + alpha vecR; alpha in RR}
 $
 
-=== Vektor an Gerade anlegen
+=== Vektor an Normalenvektor anlegen
 
 // [Zettel]
 gesucht: Spiegelung von #vecV an $G$
@@ -1013,12 +1019,12 @@ $
 
 kürzester Weg von Punkt bei $vecV$ zur Geraden ausrechnen
 $
-    P_U (vecX) = frac(vecX^T vecN, abs(vecN)^2) vecN = vecZ
+    S_U (vecX) = frac(vecX^T vecN, abs(vecN)^2) vecN = vecZ
 $
 
 Vektor spiegeln:
 $
-    P_G (vecX) = vecP = vecV - 2 dot vecZ
+    S_G (vecX) = vecP = vecV - 2 dot vecZ = vecV - 2 dot S_U (vecX)
 $
 
 = idk aber wichtig
