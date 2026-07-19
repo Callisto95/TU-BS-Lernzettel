@@ -1,6 +1,7 @@
 #set text(font: "Inter", size: 1.25em, lang: "de")
 #show math.equation: set text(font: "Fira Math")
 #set math.mat(delim: "[")
+#set grid(columns: 2)
 
 #set line(length: 100%)
 #show image: img => align(center, img)
@@ -746,6 +747,204 @@ $
     U = cases((k Tit)/(Tit + 2 Tp) = k/(1 + 2 Tp/Tit) & "wenn" k < 1 + 2 Tp/Tit, 1 & "sonst")
 $
 
+== LAN
+
+Ein LAN ist ein Netzwerk für die bit serielle Übertragung von Informationen zwischen Komponenten, die unabhängig und miteinander verbunden sind.
+Das Netzwerk ist zudem legal von dem Nutzer kontrolliert und die Reichweite is (normalerweise) auf die Grundstücksgrenzen beschränkt.
+
+Eigenschaften:
+- relativ hohe Geschwindigkeit
+- leichte und (relativ) billige Verbindungen
+- keine Regulierungen bezüglich Telekommunikations
+- limitierte Distanz (wenige Kilometer)
+- Übertragung von verschiedenen Arten von Daten
+    - Text
+    - generelle Daten
+    - Bilder
+    - Audio
+    - Video
+- Verbindung von verschiedenen Geräten
+    - Computer
+    - Terminals
+    - Drucker
+    - Speichereinheiten
+- mehrere Sender und Empfänger teilen einen Kommunikationskanal bzw. Kommunikationsmedium
+    - Medium Access Control (MAC) wird benötigt
+
+MAC wird benötigt, da ansonsten mehrere Geräte gleichzeitig kommunizieren.
+Statische Kanalvergabe, durch Multiplexing wie FDM oder TDM, ist einfach, funktioniert aber nicht gut mit sprunghaften Übertragungen.
+
+=== Dynamic Channel Allocation
+
+Annahmen
+1. Stationsmodell
+    - $N$ unabhängige Stationen (z.B. Computer), welche Frames für die Übertragung erstellen
+    - Stationen blockieren Verbindung, bis der Frame erfolgreich versendet wurde
+2. Einkanalannahme
+    - Es existiert nur ein Kanal für die gesamte Kommunikation
+3. Kollisionsannahme
+    - Wenn 2 Frames gleichzeitig gesendet werden, überlagern sich diese. Somit ist das Signal verzerrt. (= Kollision)
+    - Stationen können eine Kollision erkennen
+4.
+    a. kontinuierliche Zeit
+    - Übertragung eines Frames kann zu jeder Zeit beginnen
+    b. Zeitfenster
+    - Zeit ist in diskrete Intervalle (Slots) unterteilt
+    - Übertragung eines Frames beginnt am Anfang eines Slots
+    - Ein Slot kann 0 (Leerlauf), 1 (erfolgreiche Übertragung), 2+ (Kollision) Frames enthalten
+5.
+    a. Kanalwahrnehmung
+    - Stationen wissen, ob ein Kanal in Benutzung ist, bevor sie versuchen ihn zu verwenden
+    - Wenn ein Kanal in Verwendung ist, versucht keine Station zu senden bis dieser frei ist
+    b. keine Kanalwahrnehmung
+    - Stationen können den Kanal nicht untersuchen
+
+=== Polling
+
+Kontrollstation gibt an, wann und wer senden darf.
+Ein Ausfall der Kontrollstation sorgt für den Ausfall des gesamten Netzwerkes.
+Dazu wird Kapazität für das Nachfragen verbraucht.
+
+=== Token
+
+Stationen formen einen virtuellen oder physischen Ring.
+Ein Token (die Erlaubnis zum Senden) wird herumgereicht.
+Deterministisches und faires Verfahren.
+
+#pagebreak()
+
+#image("transmission-types.svg")
+
+=== ALOHA
+
+==== Pure
+
+Zwei Kanäle:
+1. zentraler Host zu allen Stationen.
+2. alle Stationen zum Host
+
+Übertragung ohne jegliche Koordination.
+Sender hört den Rückkanal auf ACK's vom Host ab.
+Bei Kollision werden die Daten nach einer zufälligen Zeit erneut Übertragen.
+Potentiell kann es viele Kollisionen geben.
+
+==== Slotted
+
+Zeitunterteilung in Slots.
+Übertragung von Frames kann nur zu Beginn eines Slots geschehen.
+Benötigt zentrale Synchronisierung, reduziert aber das Kollisionsfenster um die Hälfte.
+
+==== Durchlass
+
+Annahme: eine vielzahl von Stationen
+
+Sei
+- $t$ Sendezeit eines Frames
+- $S$ Menge der neuen Anfragen einen Frame pro Sendezeit $t$ zu senden
+- $G$ alle zu sendenden Anfragen
+
+#grid(
+    columns: (auto, 1fr),
+    align: horizon,
+    [
+        maximale Kanalauslastung:
+        - pure ALOHA: $1/(2e) approx 0.184$
+        - slotted ALOHA: $1/e approx 0.368$
+    ],
+    image("ALOHA-comparisons.svg", height: 150pt),
+)
+
+=== Carrier Sense Multiple Access (CSMA)
+
+CSMA überprüft vor dem Senden, ob eine Übertragung möglich ist.
+
+Kanalstatus
+1. in Verwendung
+    - Station wartet bis Kanal frei ist
+    - Entweder
+        - kontinuierliche Überprüfung, ob Kanal verfügbar ist
+        - gewisse Zeit warten, dann erneute Überprüfung
+2. Leerlauf
+    - Übertragung eines Frames
+    - Kollision kann auftreten
+3. Kollision
+    - Station wartet eine zufällige Zeit, überprüft dann den Kanal erneut
+
+==== 1-Persistent
+
+Prinzip:
+- Frame soll gesendet werden
+- Überprüfung des Kanals
+    - in Verwendung
+        - kontinuierliche Überprüfung, ob Kanal frei ist
+    - Leerlauf
+        - Sende Frame (mit Wahrscheinlichkeit 1)
+    - Kollision
+        - warte zufällige Zeit, überprüfe dann erneut
+
+Die Verzögerung der eigenen Station wird minimiert.
+Jedoch entstehen viele Kollisionen bei hoher Auslastung.
+
+==== Nicht-Persistent
+
+Prinzip:
+- Frame soll gesendet werden
+- Überprüfung des Kanals
+    - in Verwendung
+        - erneute Überprüfung erst nach einer zufälligen Zeit
+    - Leerlauf
+        - sende Frame
+    - Kollision
+        - warte zufällige Zeit, überprüfe dann erneut
+
+Es wird angenommen, dass andere Stationen auch senden wollen.
+Dadurch ist es besser die Überprüfungsintervalle zufällig zu bestimmen.
+Es ist generell effizienter, jedoch ist die Verzögerung für einzelne Stationen erhöht.
+
+==== P-Persistent
+
+Aufteilung der Zeit in Zeitslots.
+
+Prinzip:
+- Frame soll gesendet werden
+- Überprüfung des Kanals
+    - in Verwendung
+        - kontinuierliche Überprüfung, ob der Kanal frei ist
+    - Leerlauf
+        - sende Frame mit Wahrscheinlichkeit $p$
+        - warte mit Wahrscheinlichkeit $1 - p$ für den nächsten Slot
+        - überprüfe nächsten Slot
+    - Kollision
+        - warte zufällige Zeit, überprüfe dann erneut
+
+Kompromiss zwischen Verzögerung und Durchlass, definiert durch den Parameter $p$.
+
+==== CD
+
+"Carrier Sense Multiple Access with Collision Detection" = CSMA-1 mit persistenter Kollisionserkennung
+
+Station brechen Übertragung ab, sofort eine Kollision festgestellt wird.
+Speichert Zeit und Bandbreite.
+Häufige Verwendung (z.B. in IEEE 802.3, Ethernet).
+Algorithmus im Signal muss Kollisionserkennung ermöglichen.
+Während der Übertragung des Frames vergleicht die Station das gesendete und erhaltene Signal.
+Streitperiode ist unterschiedlich.
+Schlimmster Fall: kleine Frames und lange Distanz zwischen Stationen.
+Eine Station kann nur nach der RTT sicher sein, dass keine Kollision aufgetreten ist.
+
+#line()
+
+#image("transmission-performance.svg")
+
+=== LLA
+
+"Link Layer Addressing"
+
+MAC Adresse als Sendeadresse, um ein Frame von einem Interface zu einem anderen zu senden.
+Alternativ auch LAN, physische, oder Ethernet Adresse.
+
+MAC Adresse ist portabel, da sie fest für jedes Interface ist. IP Adresse ist nicht portabel - sie hängt vom Subnet ab.
+
 = Protokolle
 
 == HDLC
@@ -797,3 +996,7 @@ unnummeriertes Frame:
     - UA (unnumbered acknowledgement): ACK für unnummerierte Frames, Sicherheit bei Frameverlust
 - Poll/Final
 - Modifier
+
+=== LLC
+
+"Logical Link Control"
