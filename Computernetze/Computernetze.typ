@@ -1,11 +1,15 @@
 #set text(font: "Inter", size: 1.25em, lang: "de")
 #show math.equation: set text(font: "Fira Math")
+#set math.mat(delim: "[")
 
 #set line(length: 100%)
 #show image: img => align(center, img)
 
 #let Hz = $"Hz"$
 #let bps = $"bps"$
+#let kbps = $"kbps"$
+#let ms = $"ms"$
+#let bit = $"bit"$
 #let SN = $S slash N$
 #let dB = $"dB"$
 #let low = $"low"$
@@ -21,6 +25,8 @@
 
 // shortcuts
 #let DLE = [Data Link Escape]
+// Data link layer Service Access Point
+#let DSAP = [Data link Service Access Point]
 
 #let heading_(content) = [#h(1em) #sym.triangle.r.filled.small #content #linebreak()]
 #let subheading_(content) = [#h(1em) #sym.triangle.r.small #content #linebreak()]
@@ -389,14 +395,14 @@ Ursachen für Fehler
 Dabei gibt es Bitfehler (Modifikation eines einzelnen Bits) und Burstfehler (Modifikation von einer Sequenz von Bits).
 Ein Fehler ist meistens ein Burstfehler.
 
-== Herangehensweisen
+=== Herangehensweisen
 
-=== Fehlererkennung
+==== Fehlererkennung
 
 Es werden Redundanzen eingefügt, sodass der Empfänger ein Fehler feststellen kann.
 Fehlerbehandlung muss dabei separat gehandhabt werden (z.B. durch erneutes Senden).
 
-=== Fehlerbehandlung
+==== Fehlerbehandlung
 
 Es werden Redundanzen eingefügt, sodass der Empfänger Fehler erkennen und beheben kann.
 
@@ -418,3 +424,376 @@ $
     "w3" mono(10110011)
 $
 $"w2" xor "w3" = 1$, und somit ist die Distanz dieses Codes $1$.
+
+===== Erkennung und Behandlung nach Hamming
+
+Hamming-Distanz entscheidet über die Erkennungs- und Behandlungsmerkmale von einem Code.
+
+===== 1-Bit Fehler
+
+Beispiele:
+
+#let parity(content) = text(content, fill: blue)
+
+Wert ${0,1}$; Parity ${parity(0),parity(1)}$
+
+#heading_[Eindimensional]
+$
+    mat(delim: #none, 0, 0, parity(0); 0, 1, parity(1))
+$
+
+#heading_[Zweidimensional]
+$
+    mat(
+        delim: #none,
+        0, 0, 1, 1, 0, parity(0);
+        1, 1, 1, 1, 1, parity(1);
+        1, 0, 0, 0, 0, parity(1);
+        1, 1, 0, 0, 0, parity(0);
+        0, 0, 0, 0, 1, parity(1);
+        parity(1), parity(0), parity(0), parity(0), parity(0), parity(1);
+    )
+$
+
+====== Erkennung
+
+Wenn gilt
+$
+    d >= f + 1
+$
+dann generieren $f$ und weniger Fehler ein invalides Codewort.
+
+Beispiel
+$
+    mat(
+        delim: #none,
+        0, 0, parity(0);
+        0, 1, parity(1);
+        1, 0, parity(1);
+        1, 1, parity(0);
+    )
+$
+
+Bei $1 1 parity(0): d = 2$.
+Somit $max f = 1$, also Erkennung eines 1-Bit Fehlers.
+
+====== Behandlung
+
+Wenn gilt
+$
+    d >= 2 dot f + 1
+$
+dann erzeugen $f$ und weniger Fehler aus einem Wort $w$ ein invalides Wort, welches näher zu $w$ ist als zu jedem anderen Wort.
+
+Beispiel
+$d=5: f <= 2$:
+$
+    mat(
+        delim: #none,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+        0, 0, 0, 0, 0, 1, 1, 1, 1, 1;
+        1, 1, 1, 1, 1, 0, 0, 0, 0, 0;
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1;
+    )
+$
+bei zwei 1-Bit Fehlern kann das Wort $0000000111$ entstehen.
+Das nächste Wort ist $0000011111$ (mit $d(0000000111 xor 0000011111) = 2$).
+
+Untere Schranke für die Anzahl der Parity-Bits:
+$
+    m + r + 1 <= 2^r
+$
+mit Data-Bits $m$ und Parity-Bits $r$.
+
+z.B.: $m = 8 => r = 4$, $m = 1000 => r = 10$
+
+#heading_[Behandlung von Burstfehlern von Länge $k$]
+
+$k$ hintereinanderfolgende Codewörter als Matrix.
+Übertragung erfolgt pro Spalte.
+
+Nutzvoll, wenn nur Simplex-Kommunikation verfügbar ist.
+Hat aber hohe Redundanz pro Block.
+
+Generell weniger nützlich als nur Fehlererkennung alleine.
+
+==== Cyclic Redundancy Check (CRC)
+
+Grundidee: Bits werden als Polynome behandelt.
+Bei $n$ Bit:
+$
+    k_(n-1) dot x^(n-1) + k_(n-2) dot x^(n-2) + ... + k_1 dot x^1 + k_0
+$
+mit $k_i in {0,1}$.
+
+z.B. ist $110001 = x^5 + x^4 + 1$.
+
+===== Algorithmus
+
+$B$ zu versendender Block
+
+$B(x)$ Blockpolynom
+
+$G(x)$ Generatorpolynom vom Grad $r < deg B(x)$.
+Höchstes und geringstes Bit sind $1$.
+
+1. Addiere $r$ $0$-Bits am unteren Ende von $B$. Das Ergebnis ist $B^E = x^r dot B(x)$.
+2. Berechne $B^E(x) slash G(x)$. Das Ergebnis ist $Q(x) + R(x)$.
+    - Addition und Subtraktion sind durch $mod 2$ equivalent zu $xor$
+3. Berechne $B^E - R(x) mod 2$. Das Ergebnis wird übertragen.
+
+- Sender: Berechnung von $B(x) slash G(x) = Q(x) + R(x)$
+- Versendung von $(B,R)$
+- Empfänger: Berechne $(B(x)-R(x)) slash G(x) = Q(x) + R'(x)$
+
+Wenn $R'(x) = 0$, nehme $B$ an.
+Ansonsten lehne $B$ ab.
+
+#line()
+
+Standardisierte Polynome:
+- CRC-12: $x^12 + x^11 + x^3 + x^2 + x + 1$
+- CRC-16: $x^16 + x^15 + x^2 + 1$
+- CRC-CCITT: $x^16 + x^12 + x^5 + 1$
+
+Anerkennung von
+- alle Simplex und Duplikatsfehler
+- Alle Fehler mit einer ungeraden Anzahl von Bits
+- Alle Burstfehle bis zu Länge 16
+- 99.99% von allen Burstfehlern mit Länge 17 oder mehr
+durch CRC-CCITT
+
+Implementation ist einfach durch Shift-Register in Hardware.
+So gut wie alle LAN's verwenden CRC.
+
+#pagebreak()
+
+== Flusskontrolle
+
+Grundproblem: Sender kann schneller senden als Empfänger empfangen kann.
+Flusskontrolle dient zur Verhinderung dieses Problems.
+
+Normalerweise sind Flusskontrolle und Fehlerkontrolle verbunden.
+
+=== Protokoll 1: Utopia
+
+Annahmen:
+- fehlerfreier Kommunikationskanal
+- Empfänger hat unendliche Puffergröße
+- Empfänger kann Frames unendlich schnell bearbeiten
+
+Simples senden von Frames.
+
+=== Probleme 2: Stop-and-Wait
+
+Annahmen:
+- fehlerfreier Kommunikationskanal
+- Empfänger hat endliche Puffergröße
+- Empfänger hat endliche Bearbeitungsgeschwindigkeit
+    - schnell genug für ein Frame
+
+Sender sendet ein Frame und Empfänger sendet ein ACK. Ein neues Frame wird erst nach einem ACK gesendet.
+
+Benötigte Eigenschaften:
+- Empfänger hat Platz für ein Frame
+- Kommunikation in beide Richtungen
+
+Die Kommunikation verriegelt, wenn ein Frame oder ACK verloren geht.
+
+=== Protokoll 3a: Stop-and-Wait / ARQ
+
+ARQ: "Automatic Repeat reQuest" \
+auch PAR ("Positive-Acknowledgement with Retransmit") genannt
+
+Annahmen:
+- kein fehlerfreier Kommunikationskanal
+- Empfänger hat endliche Puffergröße
+- Empfänger hat endliche Bearbeitungsgeschwindigkeit
+
+Sender started beim Senden einen Timeout für den Frame. Wenn kein ACK innerhalb des Timeouts erhalten wurde, wird der Frame erneut gesendet.
+
+zu kurzer Timer: unnötige Neuübertragung \
+zu langer Timer: unnötiges Warten bei Fehlern
+
+=== Protokoll 3b: Stop-and-Wait / ARQ / SeqNo
+
+Behandelt das Problem von Verlust von ACK's.
+
+Jeder Frame erhält eine Sequenznummer, wodurch nur neue Frames vom Sender akzeptiert werden.
+
+Die Sequenznummern sind im Bereich ${0,1}$ bei Stop-and-Wait und zwischen ${0,...,2^n - 1}$ im Generellen, wobei $n$ die Fenstergröße ist.
+
+=== Protokoll 3c: Stop-and-Wait / NAK+ACK / SeqNo
+
+Aktive Fehlerkontrolle durch das senden von NAK, wenn ein schlechter Frame erhalten wurde.
+Dadurch wird der Timeout, welcher normalerweise indirekt beim verwerfen von schlechten Frames erzeugt wird, umgangen.
+
+=== Sliding Window
+
+Sender und Empfänger haben pro Verbindung Sender und Empfänger Fenster.
+Das Senderfenster enthält Sequenznummern, welche gesendet, aber noch nicht anerkannt wurden.
+Das Empfängerfenster enthält enthält Sequenznummern, welche angenommen werden können.
+
+Die gesendeten Frames werden in Puffern vom Sender bzw. Empfänger gespeichert, bis entsprechende ACK's erhalten werden.
+Es können maximal so viele Frames wie die Fenstergröße gesendet werden.
+Der Empfänger sendet ein ACK, wenn der Frame korrekt übertragen und korrekt identifiziert wurde.
+
+#table(
+    columns: (auto, 1fr, 1fr),
+    table.header([Grenze], [Sender], [Empfänger]),
+    [obere], [älteste, noch nicht bestätige Sequenznummer], [nächste erwartete Sequenznummer],
+    [untere], [nächste zu sendene Sequenznummer], [höchste akzeptierbare Sequenznummer],
+)
+
+Manipulation: Grenzen werden erhöht, wenn
+#table(
+    columns: (auto, 1fr, 1fr),
+    table.header([Grenze], [Sender], [Empfänger]),
+    [obere], [Empfang eines ACK's], [Empfang eines Frames],
+    [untere], [Senden eines Frames], [senden eines ACK's],
+)
+
+Wenn die Fenstergröße $n = 1$ ist, dann ist jede Sequenz immer korrekt.
+Bei einer Fenstergröße von $n > 1$ können Sequenzen Fehlerhaft sein, aber die maximale Verschiebung der Sequenznummern ist durch die Fenstergröße beschränkt.
+
+Die Effizienz ist abhängig von
+- Art und Menge der Fehler im #L1
+- Datenmenge pro Frame
+- Übertragungsrate
+- End-to-End Verzögerung
+- Fenstergröße
+
+Bei kleiner Fenstergröße ist die End-to-End Verzögerung am #L2 Service Interface allgemein geringer.
+Dazu wird auch weniger Arbeitsspeicher benötigt.
+
+==== Piggybacking
+
+Bei einer Full-Duplex Verbindung (beide Stationen senden volle Frames) können ACK's mit den Frames mitgesendet werden.
+Die ACK's geben dabei die nächste erwartete Sequenznummer an.
+Ein Frame hat dadurch den Inhalt `Frame(SeqNo,ACK-SeqNo,...Data)`.
+Der erste Frame der gesamten Verbindung erhält Sequenznummer 0 und `ACK-SeqNo` 0.
+
+==== Go-Back-N
+
+Normalerweise werden alle Frames nach einem fehlerhaften Frame verworfen.
+Somit müssen alle Frames nach dem fehlerhaften Frame erneut übertragen werden.
+
+Es ist simpel, da keine Frames außerhalb der Sequenz gespeichert werden müssen, hat aber einen schlechten Durchlass.
+
+Bei $n$ Sequenznummern muss die Fenstergröße $k <= 1/2 n$ sein, da ansonsten erneute Übertragungen nicht eindeutig zugeordnet werden können.
+
+==== Selective Repeat
+
+Empfänger speichert alle korrekten Frames, selbst wenn diese nach einem fehlerhaften Frame erhalten wurden.
+Der Sender wird über den fehlerhaften Frame informiert und überträgt nur diesen Frame neu.
+
+= Kanalauslastung
+
+#let Tip = $"T"_"ip"$
+#let Tit = $"T"_"it"$
+#let Tic = $"T"_"ic"$
+#let Tap = $"T"_"ap"$
+#let Tat = $"T"_"at"$
+#let Tac = $"T"_"ac"$
+#let Tp = $"T"_"p"$
+
+== Stop-and-Wait
+
+Stop-and-Wait Verfahren hat eine schlechte Kanalauslastung, da nach jedem Frame gewartet werden muss.
+
+Beispiel: Satellitenkanal
+
+Übertragungsrate: $50 kbps$, round-trip-delay: $2 dot 250 ms = 500 ms$, Framegröße $1000 bit$, ACK ist kurz und im Vergleich zu Frames vernachlässigbar.
+
+Senden eines Frames brauch $1000 bit slash 50 000 bps = 20 ms$.
+Durch Stop-and-Wait ist der Sender für $500 ms$ von $520 ms$ blockiert.
+Effektive Nutzung von $20 ms$ mit Kanalauslastung von $520 ms$.
+
+Die Kanalauslastung ist damit zu $1 - (500 ms slash 520 ms) approx 4%$ ausgelastet.
+
+#line()
+
+#grid(
+    columns: 2,
+    row-gutter: 0.75em,
+    Tip, [Ausbreitungsverzögerung eines Frames (Sender -> Empfänger)],
+    Tit, [Übertragungszeit eines Frames (Sender -> Empfänger)],
+    Tic, [Bearbeitungszeit eines Frames (Empfänger)],
+    Tap, [Ausbreitungsverzögerung eines ACK's (Empfänger -> Sender)],
+    Tac, [Bearbeitungszeit eines ACK's (Empfänger)],
+)
+
+Normalerweise gilt $Tip = Tap = Tp$
+
+Genaue Formel
+$
+    U = Tit/(sum "T"_"information + acknowledgement") = Tit/(Tip + Tit + Tic + Tap + Tat + Tac)
+$
+
+Ungefähre Formel
+$
+    U = Tit/(Tit + 2 Tip) = 1/(1 + 2 Tip/Tit)
+$
+mit den Annahmen
+- $Tip = Tap = Tp$
+- $Tic, Tac << Tip, Tap$
+- $Tit >> Tat$
+
+== Sliding Window
+
+Mit Fenstergröße $k$:
+$
+    U = cases((k Tit)/(Tit + 2 Tp) = k/(1 + 2 Tp/Tit) & "wenn" k < 1 + 2 Tp/Tit, 1 & "sonst")
+$
+
+= Protokolle
+
+== HDLC
+
+#text(fill: red, [Als Beispiel vorgestellt!])
+
+Bitorientiert und Full-Duplex.
+Verwendet Bitstuffing (nach 5 "1" kommt immer eine "0").
+
+Frameformat:
+- Address
+    - Adressierungsstationen
+    - bei Point-to-Point #L1 kann die Adresse zur Unterscheidung von Befehl und Antwort dienen
+- Control
+    - Sequenznummern
+    - ACK's
+    - Datenübertragungsinformationen
+    - Kontrollmanagement
+    - Verbindungsmanagement
+- Data
+    - Nutzerdaten
+- Checksumme
+    - Frame Check Sequence (FCS) - Variation von CRC
+
+Informationsframe:
+- "0"
+- Sequenznummer
+- Poll/Final
+- Next
+    - nächste erwartete Framenummer
+
+Aufsichtsframe:
+- "10"
+- Art
+    - "00" Receive Ready: effektiv ACK, Next ist das erwartete Frame
+    - "01" Reject: effektiv NAK, Next ist der erste Frame, der neu übertragen werden soll (mit Go-Back-N Methode)
+    - "10" Receive Not Ready: effektiv ACK + STOP, Empfänger hat ein temporäres Problem, keine weiteren Daten senden
+    - "11" Selective Reject: Neuübertragung eines Frames, Next ist der zu übertragene Frame (Selective Repeat Methode)
+- Poll/Final
+- Next
+
+unnummeriertes Frame:
+- "11"
+- Art
+    - DISC (disconnect): berichtet über Nichtverfügbarkeit
+    - SNRM (set normal response mode): Verfügbar im Primär-Sekundär Modus, setze `SeqNo` auf 0
+    - SABM (set asynchronous balanced mode): Verfügbar im Peer-to-Peer Modus, setze `SeqNo` auf 0
+    - FRMR (frame reject): Protokollverstoß, Frame wurde ignoriert
+    - UA (unnumbered acknowledgement): ACK für unnummerierte Frames, Sicherheit bei Frameverlust
+- Poll/Final
+- Modifier
