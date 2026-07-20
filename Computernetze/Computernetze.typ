@@ -805,15 +805,57 @@ Kontrollstation gibt an, wann und wer senden darf.
 Ein Ausfall der Kontrollstation sorgt für den Ausfall des gesamten Netzwerkes.
 Dazu wird Kapazität für das Nachfragen verbraucht.
 
-=== Token
+=== Token Ring
+
+IEEE 802.5
 
 Stationen formen einen virtuellen oder physischen Ring.
 Ein Token (die Erlaubnis zum Senden) wird herumgereicht.
-Deterministisches und faires Verfahren.
+Der Token wird dabei beim Senden vom Ring entfernt und nach dem Senden erstellt die Station einen neuen Token.
+Es ist ein deterministisches und faires Verfahren.
 
-#pagebreak()
+==== Frameformat
 
-#image("transmission-types.svg")
+Token:
+#table(
+    columns: 2,
+    align: (center + horizon, center + horizon, left),
+    table.header([Bytes], [Funktion]),
+    [1], [Starting Delimiter],
+    [1], [Access Control],
+    [1], [Ending Delimiter],
+)
+
+Frame:
+#table(
+    columns: 3,
+    align: (center + horizon, center + horizon, left),
+    table.header([Bytes], [Funktion], [Beschreibung]),
+    [1],
+    [Starting Delimiter],
+    [
+        `SD AC` mit $T$ = "1" als "Start of Frame" Sequenz
+    ],
+
+    [1],
+    [Access Control],
+    [
+        ermöglicht Prioritäten und Reservierungen
+
+        enthält Token-Bit $T$
+        - $T$ = "0": Token
+        - $T$ = "1": Daten
+        "entferne Token vom Ring" entspricht $T :=$ "1"
+    ],
+
+    [1], [Frame Control], [],
+    [2 / 6], [Zieladresse], [],
+    [2 / 6], [Quelladresse], [],
+    [unlimitiert], [Daten], [],
+    [4], [Checksumme], [],
+    [1], [Ending Delimiter], [],
+    [1], [Frame Status], [],
+)
 
 === ALOHA
 
@@ -924,17 +966,111 @@ Kompromiss zwischen Verzögerung und Durchlass, definiert durch den Parameter $p
 "Carrier Sense Multiple Access with Collision Detection" = CSMA-1 mit persistenter Kollisionserkennung
 
 Station brechen Übertragung ab, sofort eine Kollision festgestellt wird.
-Speichert Zeit und Bandbreite.
-Häufige Verwendung (z.B. in IEEE 802.3, Ethernet).
+Spart Zeit und Bandbreite.
+Häufige Verwendung (z.B. in IEEE 802.3 Ethernet).
 Algorithmus im Signal muss Kollisionserkennung ermöglichen.
 Während der Übertragung des Frames vergleicht die Station das gesendete und erhaltene Signal.
 Streitperiode ist unterschiedlich.
+
 Schlimmster Fall: kleine Frames und lange Distanz zwischen Stationen.
-Eine Station kann nur nach der RTT sicher sein, dass keine Kollision aufgetreten ist.
+Eine Station kann nur nach der vollen RTT sicher sein, dass keine Kollision aufgetreten ist.
 
-#line()
+Im Generellen gibt es nur exakt einen Weg zwischen zwei Stationen im Ethernet.
 
-#image("transmission-performance.svg")
+Sei $1 <= n <= 16$ die Anzahl der fehlgeschlagenen Sendeversuche, $k = min{n,10}$, $Delta t$ die Sendezeit von 512 Bits mit $0 <= r < 2^k$.
+
+Es gilt:
+$
+    "backoff" = r dot Delta t
+$
+\= Binary Exponential Backoff Algorithmus
+#table(
+    columns: 2,
+    table.header([Versuch], [Wartezeit in Frames]),
+    $1$, $0,1$,
+    $2$, $0,1,2,3$,
+    $3$, $0,1,2,3,4,5,6,7$,
+    $n$, $0,...,2^(k-1)$,
+    $16$, [Fehler zu #L3],
+)
+
+Effekte:
+- bei höherer Last entstehen längere Wartezeiten
+- geringere Kanalauslastung bei mehr Station
+- höhere Kanalauslastung bei längeren Frames
+
+===== Switches
+
+Kollisionsdomäne:
+Kollisionen sind intern möglich, aber nicht mit anderen Domänen.
+
+Bei Hubs und Repeater wird die Kollisionsdomäne beibehalten.
+Alle verbundenen Stationen sind also auf der selben Domäne.
+Um Kollisionen zu vermeiden, werden Switches anstatt Hubs verwendet.
+
+Ein Switch erhält ein Frame von einer Station.
+Zuerst wird versucht das Ziel innerhalb des "Boards" zu finden.
+Falls das nicht möglich ist, wird eine anderer Standort versucht.
+Dabei wird das Frame (wenn möglich) nicht an alle Stationen weitergeleitet.
+
+#pagebreak()
+
+===== Frameformat
+
+#table(
+    columns: 3,
+    rows: (auto, auto, 1fr, 1fr, auto),
+    align: (center + horizon, center + horizon, left),
+    table.header([Bytes], [Funktion], [Beschreibung]),
+    [8],
+    [Präambel + FSD],
+    [
+        - 7 Bytes `10101010` zur Synchronisierung der Clock
+        - Start Frame Delimiter `10101011`
+    ],
+
+    [6],
+    [Zieladresse],
+    table.cell(rowspan: 2, [
+        - als MAC Adresse
+        - lokale Addressgebung durch lokale Autorität
+        - globale Addressgebung durch IEEE
+            - #L3 muss Adresse suchen
+
+        48 Bits eingeteilt in
+        - Bit 0:
+            - "0": individuelle Adresse
+            - "1": Gruppenadresse
+        - Bit 1:
+            - "0": global verwaltete Adresse
+            - "1": lokal verwaltete Adresse
+        - restlichen 46 Bit als Adresse
+        \
+        - Unicast = individuelle Adresse
+        - multicast = Gruppenadresse
+        - Broadcast = alle Addressbits sind "1"
+
+    ]),
+    [6], [Quelladresse],
+    [2],
+    [Art oder Länge],
+    [
+        Alt: Anzahl der Bytes im Datenfeld \
+        Neu: Art, zeigt Protokoll des oberen Layers (IP, IPX).
+        Es werden nur werte über `0x0600` (der maximalen Datengröße) verwendet.
+
+        z.B.
+        - `0x0800`: IPv4
+        - `0x0806`: ARP (Address Resolution Protocol)
+    ],
+    [0 - 1500], [Daten], [Daten des Frames],
+    [0 - 46], [Padding], [mindestens 64 Byte pro Frame],
+    [4],
+    [FCS],
+    [
+        Frame Check Sum. 32 Bit CRC ohne Präambel und SFD berechnet.
+    ],
+)
 
 === LLA
 
@@ -944,6 +1080,16 @@ MAC Adresse als Sendeadresse, um ein Frame von einem Interface zu einem anderen 
 Alternativ auch LAN, physische, oder Ethernet Adresse.
 
 MAC Adresse ist portabel, da sie fest für jedes Interface ist. IP Adresse ist nicht portabel - sie hängt vom Subnet ab.
+
+#page(
+    grid(
+        columns: 1,
+        align: center + horizon,
+        rows: 1fr,
+        image("transmission-types.svg"),
+        image("transmission-performance.svg"),
+    ),
+)
 
 = Protokolle
 
