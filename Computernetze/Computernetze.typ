@@ -688,7 +688,7 @@ Bei $n$ Sequenznummern muss die Fenstergröße $k <= 1/2 n$ sein, da ansonsten e
 Empfänger speichert alle korrekten Frames, selbst wenn diese nach einem fehlerhaften Frame erhalten wurden.
 Der Sender wird über den fehlerhaften Frame informiert und überträgt nur diesen Frame neu.
 
-= Kanalauslastung
+== Kanalauslastung
 
 #let Tip = $"T"_"ip"$
 #let Tit = $"T"_"it"$
@@ -1013,6 +1013,42 @@ Zuerst wird versucht das Ziel innerhalb des "Boards" zu finden.
 Falls das nicht möglich ist, wird eine anderer Standort versucht.
 Dabei wird das Frame (wenn möglich) nicht an alle Stationen weitergeleitet.
 
+
+==== CA
+
+Nach einem übertragenen Frame wird durch zufälliges Warten bestimmt, welche Station senden darf.
+IFS "Inter Frame Space" um den Kanal zu belegen.
+Die Länge des IFS bestimmt die Priorität der Übertragung (kurze IFS wird früher gesendet).
+Wenn das Medium länger Frei ist als das gesamte IFS, dann ist der Kanal frei.
+
+==== MACA
+
+"Multiple Access with Collision Avoidance"
+
+Verwendung von kleinen Paketen zur Koordination und damit zur Kollisionsvermeidung.
+Sender sendet Anfrage zum Senden zu einem Empfänger durch RTS (Request To Send) Paket.
+Empfänger bestätigt die Anfrage, wenn dieser bereit ist zu empfangen durch ein CTS (Clear To Send) Paket.
+Die Pakete enthalten Quelladresse, Zieladresse, und Paketgröße.
+
+Dies ist wichtig, wenn Station verdeckt sind.
+Verdeckte Station sind z.B. bei kabellosen Netzwerk außerhalb der Reichweite einer Station, wodurch Kollisionserkennung nicht möglich ist.
+Bei sichtbare Stationen ist die Erkennung von Übertragen und damit Kollisionserkennung möglich.
+
+Beispiel: \
+Reichweite der Stationen:
+- A erreicht B
+- B erreicht A und C
+- C erreicht B
+
+1. verdeckte Terminals: A und C wollen an B senden.
+    - A sendet RTS zuerst.
+    - B sendet CTS and A und C.
+    - C wartet da der CTS nicht zu C gehört
+2. sichtbare Terminals: B will an A senden, C an ein anderes Gerät
+    - B sendet RTS an A und C
+    - A sendet CTS zurück
+    - C erhält das CTS nicht und kann senden
+
 #pagebreak()
 
 ===== Frameformat
@@ -1091,6 +1127,83 @@ MAC Adresse ist portabel, da sie fest für jedes Interface ist. IP Adresse ist n
     ),
 )
 
+== Internetworking
+
+#table(
+    columns: 2,
+    table.header([Layer], [Gerät]),
+    [#L4, #L5], [Gateway],
+    L3, [Router],
+    L2, [Bridge],
+    L1, [Repeater],
+)
+
+Layer 1: Repeater / Hub
+- kopiert Bits zwischen Kabeln
+- keine Modifikation der Informationen (ist nur ein Verstärker)
+- eine Kollisionsdomäne
+
+Layer 2: Bridge
+- Vermittlung zwischen LAN's (MAC Level)
+- geringe Veränderung der Frames
+- jede Verbindung ist ihre eigene Kollisionsdomäne
+
+Layer 2: Switch
+- geringe Veränderung der Frames
+- jede Verbindung ist ihre eigene Kollisionsdomäne
+- Vermittlung zwischen Endsystemen
+
+Layer 3: Router
+- alternativ auch Level 3 Router
+- Weiterleitung von Paketen zwischen verschiedenen Netzwerken
+- Modifiziert Pakete
+- Konvertierung zwischen verschiedenen Adressierungskonzepten
+
+Layer 4 + 5: Gateway
+- alternativ auch Protokollkonvertierer
+- Konvertierung von Protokollen
+    - meistens gibt es keine 1-zu-1 Abbildungsfunktion
+
+#pagebreak()
+
+=== Geräte
+
+==== Repeater
+- Verstärkung von Signalen um die Reichweite zu erhöhen
+
+==== Bridge
+
+- Verknüpfung mehrerer LAN's
+- Skalierbarkeit von Netzwerken
+- verbesserte Zuverlässigkeit und Sicherheit
+- Unabhängigkeit von Protokollen
+
+-> Ziel: Transparenz
+- Netzwerkkomponenten sehen Bridge nicht
+\
+- Tabelle mit Systemeinträgen wird dynamisch erstellt
+    - Frame mit Quelladresse wird als "in diesem LAN erreichbar" für einige Minuten gespeichert
+
+Spanning Tree
+- Vermeidung von Loops durch Bildung eines Baums
+- jedes LAN bekommt eine repräsentative Bridge, woraus ein Baum gebildet werden kann
+- Baum hat keine Loops, ignoriert aber Verbindung
+
+Alternative: Source Routing Bridge
+- Pfad definiert durch Sender
+- LAN und Bridge benötigen eindeutige Adresse
+- jede Bridge im Netzwerk routet diesen Frame
+    - hohe Netzwerklast
+
+==== Router
+
+- Datentransfer von Endsystem zu Endsystem über mehrere Sprünge und heterogene Netzwerke
+- kompensiert für Unterschiede der Endsysteme bei der Übertragung
+
+==== Gateway
+
+- Anpassung der Datenformate und Kontrollprotokolle
+
 = Protokolle
 
 == HDLC
@@ -1143,6 +1256,6 @@ unnummeriertes Frame:
 - Poll/Final
 - Modifier
 
-=== LLC
-
-"Logical Link Control"
+// === LLC
+//
+// "Logical Link Control"
