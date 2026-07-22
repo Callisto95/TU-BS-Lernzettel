@@ -2,6 +2,7 @@
 #show math.equation: set text(font: "Fira Math")
 #set math.mat(delim: "[")
 #set grid(columns: 2)
+#show link: content => [#underline(text(fill: blue, content)) 🡵]
 
 #set line(length: 100%)
 #show image: img => align(center, img)
@@ -47,6 +48,17 @@
     [3], [Network], [Endsystem zu Endsystem],
     [2], [Data Link], [Datentransfer zwischen benachbarten Stationen],
     [1], [Physical], [Integritätserhaltung von gesendeten Bits],
+)
+
+#table(
+    columns: 3,
+    align: center + horizon,
+    table.header(table.cell([Layer], colspan: 2), [Datenentität]),
+    [5], [Application], [...],
+    [4], [Transport], [...],
+    [3], [Network], [Paket (packet)],
+    [2], [Data Link], [Frame],
+    [1], [Physical], [Bitstream],
 )
 
 = Physical Layer (L1)
@@ -1203,6 +1215,199 @@ Alternative: Source Routing Bridge
 ==== Gateway
 
 - Anpassung der Datenformate und Kontrollprotokolle
+
+= Network Layer (L3)
+
+Ziel ist die Datenübertragung von Endsystem zu Endsystem.
+Dabei muss für Unterschiede in den Endsystemen und im #L2 während der Übertragung kompensiert werden.
+
+Die Service sind
+- für Endsysteme standardisiert
+- unabhängig von der Netzwerktopologie
+- unabhängig von der Anzahl, Art, und Topologie der Subnetzwerke
+
+Funktionen
+- Datenübertragung basierend auf #link("https://de.wikipedia.org/wiki/Datagramm", [Datagrammen]) oder virtuellen Schaltkreisen
+- routing
+- Internetworking
+- Adressierung
+- Fragmentation und Wiederzusammenbau
+
+sekundäre Funktionen (meist nur für spezifische Arten)
+- Staukontrolle
+- Quality of Service
+- Multiplexing von Netzwerkverbindungen
+- Fehlererkennung und -behandlung
+- Flusskontrolle
+- Übertragungsreihenfolge beibehalten
+
+Switching:
+- Circuit Switching
+    - Switching einer physischen Verbindung
+- Message Switching
+    - Nachricht wird von einem Hop gespeichert und weitergegeben
+- Packet Switching
+    - Store-And-Forward
+    - Pakete sind von begrenzter Größe
+- Virtual Circuit Switching
+    - Pakete über einem vordefinierter Pfad
+
+== Circuit Switching
+
+Switching mittels dedizierten Pfad während der gesamten Übertragung.
+Historisch auf Switching Boards.
+
+Verbindung muss vor Übertragung erstellt werden.
+Feste zugeteilte Bandbreite.
+Keine Datenverarbeitung durch anderen Knoten.
+
+== Message Switching
+
+"Store-And-Forward"
++ erhalte Nachricht
++ überprüfe Nachricht und behandle Fehler, wenn vorhanden
++ speichere Nachricht
++ leite Nachricht weiter
+
+Alle Daten werden als Nachricht behandelt.
+Da alle Nachricht gespeichert werden, ist der Speicheraufwand von jedem Knoten hoch.
+Dazu kann ein Knoten von einer Nachricht voll ausgelastet werden.
+
+== Packet Switching
+
+Pakete haben unterschiedliche Größe.
+Die Route der Pakete wird dynamisch bestimmt.
+Somit kann Bandbreite dynamisch vergeben werden, jedoch ist auch ein Stau möglich.
+Pakete kommen weder sequenziell noch zuverlässig an, und die End-to-End Verzögerung kann variieren.
+
+== Virtual Circuit Switching
+
+Switching mittels dedizierten Pfad während der gesamten Übertragung.
+Es wird keine physische Verbindung verwendet, sondern Zustandsinformationen in Knoten.
+
+#pagebreak()
+
+== Packet Switching - Circuit Switching
+
+#table(
+    columns: (1fr, 1fr),
+    table.header([Packet Switching], [Circuit Switching]),
+    [
+        Verbindungsphase nicht unbedingt notwendig
+    ],
+    [
+        Verbindungsaufbau kann einige Zeit benötigen
+    ],
+
+    [
+        dynamische Zuweisung von Bandbreite
+        - Staugefahr
+        - optimierte Kanalauslastung
+    ],
+    [
+        feste Bandbreite
+        - keine Staugefahr
+        - eventuell geringe Auslastung des Kanals
+    ],
+
+    [
+        variierende Übertragungszeit
+    ],
+    [
+        feste Übertragungszeit
+    ],
+
+    [
+        Preiskalkulation basierend auf der übertragenden Datenmenge
+    ],
+    [
+        Preiskalkulation basierend auf der Verbindungsdauer
+    ],
+)
+
+== Services
+
+=== Verbindungsbasiert
+
+- Ziel: fehlerloser Übertragungskanal
+- Fehlerfluss im #L3
+- üblicherweise Duplex Kommunikation
+- besser für Echtzeitkommunikation geeignet
+
+3 Phasen Verbindungsaufbau:
++ verbinden
++ Datentransfer
++ trennen
+
+Es erlaubt für die Verhandlung der Servicequalität (Durchlass, Fehlerwahrscheinlichkeit, Verzögerung).
+(üblicherweise) zuverlässige Kommunikation in beide Richtungen: kein Verlust, keine Duplikate, und keine Modifikation.
+Besitzt Flusskontrolle und hat relativ komplexe Protokolle.
+Es erlaubt die Simplifizierung von höheren Layern und die Aufgaben der Endsysteme.
+
+=== Verbindungslos
+
+- unzuverlässige Kommunikation
+- kaum Fehlerkontrolle, #L4 oder höher muss Fehler behandeln
+- Simplex Kommunikation
+- besser für einfache Kommunikation geeignet
+
+Die Pakete werden als unabhängige, isolierte Einheiten (Datagramme) versendet.
+(üblicherweise) unzuverlässige Kommunikation in beide Richtungen: Verlust, Duplikate, Modifikation, und Sequenzfehler sind möglich.
+Vergleichsweise simple Protokolle.
+Sehr flexibel mit geringer Komplexität.
+Vermeidet die hohen Kosten von Verbindungsauf und abbau.
+Es erleichtert die Optimierung der Netzwerklast.
+
+== Routing
+
+Ziel: Route für die Pakete durch das Network definieren.
+
+Ein Routingalgorithmus definiert auf welcher ausgehende Verbindung ein eingehendes Paket übertragen wird.
+Bei einem Datagramm wird diese Entscheidung für jedes Paket gemacht.
+Bei virtuellen Schaltkreisen wird die Entscheidung einmalig für alle Pakete des selben Flusses gemacht.
+
+=== Routingprozess
+
+Dabei entscheidet Routing welche Route verwendet wird und Forwarding was passiert, wenn ein Paket ankommt.
+Der Routingprozess nutzt die Informationen über die Topologie und Netzwerkauslastung um die Routingtabelle zu füllen.
+Der Forwardprozess nutzt die Routingtabelle um zu entscheiden wohin ein Paket weitergeleitet wird.
+
+Ein Routingprozess sollte
+- korrekt
+- simpel
+- robust
+    - Kompensation von Verbindungsfehlern
+    - Handhabung von Topologie- und Verkehrsänderungen
+- stabil
+    - konsistente Ergebnisse
+    - keine flüchtigen Änderungen zu neuen Bedingungen
+- fair
+- optimal
+
+Fairness und Optimierung (der Kanalauslastung) sind oft gegensätzlich.
+Die Auslastungsoptimierung einer Verbindung kann eine andere komplett ignorieren.
+Oft wird die Anzahl der Hops reduziert.
+
+==== nicht-adaptive Algorithmen
+
+Der derzeitige Netzwerkstand wird nicht in Betracht gezogen.
+Es werden durchschnittliche Werte verwendet.
+Alle Routen sind vor der Inbetriebnahme des Netzwerkes statisch definiert.
+Es gibt keine Änderungen während des Betriebs.
+Sie sind gut, wenn sich die Topologie oder das Verkehrsvolumen nicht über Zeit verändert.
+
+Wenn das Wissen über die Topologie verwendet wird, kann Spanning-Tree und Flussbasiertes Routing verwendet werden.
+Ohne das Wissen wird Flooding verwendet.
+
+==== adaptive Algorithmen
+
+Der derzeitige Netzwerkstand wird verwendet.
+Durch Messungen oder Schätzungen der Topologie und Verkehrsvolumen werden Entscheidungen getroffen.
+
+=== Sink-Tree
+
+Ein Sink-Tree ist das Set von optimalen Routen von allen Quellen zu einem bestimmten Ziel erzeugen einen Baum, welcher am Ziel entsteht.
+Dieser Baum wird Sink-Tree genannt.
 
 = Protokolle
 
