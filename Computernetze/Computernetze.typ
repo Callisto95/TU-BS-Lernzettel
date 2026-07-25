@@ -1,7 +1,6 @@
 #set text(font: "Inter", size: 1.25em, lang: "de")
 #show math.equation: set text(font: "Fira Math")
 #set math.mat(delim: "[")
-#set grid(columns: 2)
 #show link: content => [#underline(text(fill: blue, content)) 🡵]
 
 #set line(length: 100%)
@@ -1081,8 +1080,8 @@ Reichweite der Stationen:
     [Zieladresse],
     table.cell(rowspan: 2, [
         - als MAC Adresse
-        - lokale Addressgebung durch lokale Autorität
-        - globale Addressgebung durch IEEE
+        - lokale Adressgebung durch lokale Autorität
+        - globale Adressgebung durch IEEE
             - #L3 muss Adresse suchen
 
         48 Bits eingeteilt in
@@ -1096,7 +1095,7 @@ Reichweite der Stationen:
         \
         - Unicast = individuelle Adresse
         - multicast = Gruppenadresse
-        - Broadcast = alle Addressbits sind "1"
+        - Broadcast = alle Adressbits sind "1"
 
     ]),
     [6], [Quelladresse],
@@ -1399,10 +1398,88 @@ Sie sind gut, wenn sich die Topologie oder das Verkehrsvolumen nicht über Zeit 
 Wenn das Wissen über die Topologie verwendet wird, kann Spanning-Tree und Flussbasiertes Routing verwendet werden.
 Ohne das Wissen wird Flooding verwendet.
 
+===== Dijkstra's Algorithmus
+
+Es wird die kürzeste Distanz zu jedem Knoten in einem gewichteten Graphen gesucht.
+
++ jeder Knoten hat die Distanz $(circle.filled.tiny, infinity)$
++ ausgehend vom Startknoten, setzte die Distanz der anliegenden Knoten zu $(A,<"Gewicht der Kante">)$
++ wiederhole 2. für jeden Knoten
+    - falls ein Knoten mehrmals erreicht wird, wähle die Verbindung mit dem kleinsten Gewicht
+
+===== Flooding
+
+Eine Station überträgt ein empfangenen Paket an alle Leitungen, außer die eingehende.
+Dabei würden unendlich viele Pakete entstehen.
+
+Hop-Counter:\
+Es kann ein Hop-Counter im Header des Paketes verwendet werden.
+Jede Station verringert diesen Zähler um 1 und verwirft das Paket, wenn er 0 erreicht.
+Pakete müssen aber mit einem ausreichen großen Hop-Counter initialisiert werden.
+Im schlimmsten Fall wird der Durchmesser des Subnetzes verwendet.
+
+Speicherung:\
+Jede Station speichert erhaltene Pakete und verwirft bereits erhaltene.
+Die Quellrouter fügen dabei eine Sequenznummer in Paketen ein.
+Diese Sequenznummer muss von jedem Router pro Quellrouter gespeichert werden.
+
+===== Selective Flooding
+
+Anstatt alle Verbindungen zu fluten, wird das Paket nur an Verbindungen in Richtung des Ziels weitergeleitet.
+Dieser Ansatz funktioniert nicht bei allen Topologien.
+
 ==== adaptive Algorithmen
 
 Der derzeitige Netzwerkstand wird verwendet.
 Durch Messungen oder Schätzungen der Topologie und Verkehrsvolumen werden Entscheidungen getroffen.
+
+===== Adaptive Centralized Routing
+
+Das RCC (Routing Control Center) erhält periodisch von Zwischensystemen Informationen über den Status zum RCC.
+Dies enthält unter anderem verfügbare Nachbarn, Länge der Warteschlange, und die Netzwerkauslastung.
+Das RCC berechnet die optimale Route für jedes Paar an Zwischensystemen.
+Da das RCC alle Informationen besitzt, kann es perfekte Entscheidungen treffen und die Zwischensysteme müssen keine Berechnungen ausführen.
+Jedoch sind Neuberechnungen oft notwendig und bei Ausfall des RCC fällt das Routing komplett aus.
+Dazu gibt es mehr Verkehr um dem RCC.
+
+===== Distance Vector Routing
+
+Algorithmen bekannt als Bellman-Ford Algorithmus und Ford-Fulkerson Algorithmen.
+
+Verwendet im Internet als RIP (Routing Information Protocol).
+
+Die Zwischensysteme pflegen eine Tabelle (= ein Vektor), in welcher die beste Distanz zu Zielen enthält und welche Verbindung verwendet werden soll.
+Die Zwischensysteme aktualisieren die Tabelle indem sie Informationen mit ihren Nachbarn austauschen.
+Bei Internet-RIP wird dieser Austausch alle 30 Sekunden mit einer maximalen Hop-Anzahl von 15 Hops ausgeführt.
+
+// more details on protocols: Network layer part 2, page 79
+
+===== Link State Routing
+
++ bestimme Adresse von benachbarten Stationen
+    - sende `HELLO` Nachricht an Stationen über #L2 Kanal
+    - Stationen antworten mit eigener, im Netzwerk einzigartige Adresse
++ miss Distanz zu benachbarten Stationen
+    - Distanz = Delay
+    - Durchschnitt von mehreren Nachrichten, teilweise auch mit Payload
++ organisiere Informationen in einem Paket
+    - Adresse, Sequenznummer, Alter, Distanzen
++ verteile Informationen an alle anderen Stationen
+    - Flooding als LSP (Link State Packet)
+    - zu alte Pakete werden vom Netzwerk entfernt
++ berechne Route basierend auf den Informationen
+
+== Addressing
+
+Drei Arten von Kennzeichen:
+#grid(
+    columns: 2,
+    column-gutter: 0.75em,
+    row-gutter: 0.75em,
+    [Name], [Was wird gesucht?],
+    [Adresse], [Wo ist es?],
+    [Route], [Wie man dorthin gelangt],
+)
 
 === Sink-Tree
 
