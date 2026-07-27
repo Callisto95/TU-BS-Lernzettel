@@ -2,6 +2,8 @@
 #show math.equation: set text(font: "Fira Math")
 #set math.mat(delim: "[")
 #show link: content => [#underline(text(fill: blue, content)) 🡵]
+// columns is per grid, the formatter needs it
+#set grid(column-gutter: 0.75em, row-gutter: 0.75em)
 
 #set line(length: 100%)
 #show image: img => align(center, img)
@@ -727,7 +729,6 @@ Die Kanalauslastung ist damit zu $1 - (500 ms slash 520 ms) approx 4%$ ausgelast
 
 #grid(
     columns: 2,
-    row-gutter: 0.75em,
     Tip, [Ausbreitungsverzögerung eines Frames (Sender -> Empfänger)],
     Tit, [Übertragungszeit eines Frames (Sender -> Empfänger)],
     Tic, [Bearbeitungszeit eines Frames (Empfänger)],
@@ -1474,8 +1475,6 @@ Bei Internet-RIP wird dieser Austausch alle 30 Sekunden mit einer maximalen Hop-
 Drei Arten von Kennzeichen:
 #grid(
     columns: 2,
-    column-gutter: 0.75em,
-    row-gutter: 0.75em,
     [Name], [Was wird gesucht?],
     [Adresse], [Wo ist es?],
     [Route], [Wie man dorthin gelangt],
@@ -1485,6 +1484,101 @@ Drei Arten von Kennzeichen:
 
 Ein Sink-Tree ist das Set von optimalen Routen von allen Quellen zu einem bestimmten Ziel erzeugen einen Baum, welcher am Ziel entsteht.
 Dieser Baum wird Sink-Tree genannt.
+
+#pagebreak()
+
+== Internet
+
+=== Aufgaben
+
+Verbindung von verschiedenen Netzwerken über Gateways.
+Definition von
+- Protokollen, welche in allen Subnetzen funktionieren
+- standardisiertes Adressierungsverfahren für sehr große Netzwerke
+- globale Routing Architektur
+
+#image("internet-architecture.svg")
+
+#pagebreak()
+
+Dabei gibt es keine Formale Architektur oder unveränderlichen Prinzipien.
+Es gibt nur allgemeine Bedingungen
+- Ziel: Konnektivität
+- Mittel: Internet Protokoll
+- Informationen sind Ende-zu-Ende anstatt versteckt zu sein (?)
+
+Einige Richtlinien des Internets:
+- es muss funktionieren
+    - kein Standard soll finalisiert werden, bevor mehrere Prototypen untereinander funktionieren
+- KISS
+    - im Zweifel, lasse unnötige Funktionalität raus
+- klare Entscheidungen
+    - wenn mehrere Optionen existieren, wähle eine
+    - verwende gute Lösungen wieder, aber vermeide verdoppelte Implementationen
+- beute Modularität aus
+    - z.B. Layer in Protokollen
+- erwarte Heterogenität
+    - z.B. Hardware und Anwendungen
+- vermeide statische Optionen und Parameter
+    - Verhandlung zwischen Sender und Empfänger
+- gutes Design, nicht perfektes
+    - nehme jetzt eine fast vollständige Lösung an, anstatt auf einer perfekten Lösung zu warten
+- sei beim Senden strikt und beim Empfangen tolerant
+    - Postel's Law
+- berücksichtige Skalierbarkeit
+- berücksichtige Kosten und Leistung
+
+#pagebreak()
+
+=== bekannte Protokolle
+
+#grid(
+    columns: 2,
+    [ARP], [Address Resolution Protocol],
+    [IP], [Internet Protocol],
+    [ICMP], [Internet Control Message Protocol],
+    grid.cell(colspan: 2, [#line()]),
+    [LLC], [Logical Link Control],
+    [MAC], [Media Access Control],
+    [TCP], [Transmission Control Protocol],
+    [UDP], [User Datagram Protocol],
+    [SCTP], [Stream Control Transmission Protocol],
+    [SMTP], [Simple Mail Transfer Protocol],
+    [HTTP], [Hypertext Transfer Protocol],
+    [FTP], [File Transfer Protocol],
+    [NFS], [Network File Protocol],
+    [RTP], [Real-Time Transport Protocol],
+)
+
+ARP: \
+Auflösung der IP-Adresse zu einer Netzwerkadapter (Hardware) Adresse.
+z.B. im Gateway mit einer Mapping-Tabelle.
+Hauptsächlich verwendet in LAN's mit Broadcasting.
+
+=== Internet Protocol
+
+Nicht-transparente Segmentation.
+Große Pakete werden in kleinere aufgeteilt und erst beim Empfänger wieder zusammengesetzt.
+
+ICMP: 32 Bit Header.
+Enthält
+- Art (8 Bit)
+    - Art warum das Paket nicht am Empfänger angekommen ist (port or protocol unreachable)
+    - von Programm definiert (`ping`, `traceroute`)
+- Code (8 Bit)
+    - Grund warum Paket nicht angekommen ist
+- Checksumme (16 Bit).
+
+==== IPv4
+
+besondere Adressen:
+- Quelladresse
+    - 0.0.0.0: dieser Host
+    - alle Subnetz-Bits 0: ein Host in diesem Subnetz
+- Zieladresse
+    - 255.255.255.255: Broadcast
+    - alle Host-Bits 1: Broadcast in dem angegebenen Netzwerk
+    - 127.X.X.X: Localhost
 
 = Protokolle
 
