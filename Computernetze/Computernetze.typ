@@ -56,7 +56,7 @@
     align: center + horizon,
     table.header(table.cell([Layer], colspan: 2), [Datenentität]),
     [5], [Application], [...],
-    [4], [Transport], [...],
+    [4], [Transport], [TPDU / Nachricht (message)],
     [3], [Network], [Paket (packet)],
     [2], [Data Link], [Frame],
     [1], [Physical], [Bitstream],
@@ -1550,10 +1550,31 @@ Einige Richtlinien des Internets:
     [RTP], [Real-Time Transport Protocol],
 )
 
-ARP: \
+==== ARP:
+
 Auflösung der IP-Adresse zu einer Netzwerkadapter (Hardware) Adresse.
 z.B. im Gateway mit einer Mapping-Tabelle.
 Hauptsächlich verwendet in LAN's mit Broadcasting.
+
+Es ist auch möglich homogene Adressierung zu verwenden.
+Dabei ist die Hardwareadresse gleich der HostID der Internetadresse.
+
+#image("ARP.svg")
+
+==== DHCP
+
+Automatische (und manuelle) Verteilung von IP-Adressen.
+Endsystem erhält dazu weitere Informationen, wie z.B. DNS Server, Netzwerkmaske, und default Router.
+Eine DHCP-Anfrage (DHCP DISCOVER Paket) kann dabei in ein anderes Netzwerk weitergeleitet werden, wenn der DHCP-Server in einem anderen Netzwerk ist.
+Eine Adresse wird nur für eine bestimmte Zeit vergeben.
+Danach muss der Client eine neue Anfrage stellen.
+
+==== Network Address Translation
+
+Das Gateway übersetzt eine im Internet sichtbare IP-Adresse zu einer im LAN validen Adresse.
+Die Übersetzung erfolgt durch Veränderung der Quell- bzw. Zieladresse der Pakete durch Verwendung einer Übersetzungstabelle (interne Adresse:Port #sym.arrow.l.r externe Adresse:Port).
+Somit können mehr Geräte im Internet sein, ohne dass IP-Adressen verbraucht werden.
+Ein eingehendes Paket kann jedoch nicht verarbeitet werden, wenn vorher kein ausgehenden Paket gesendet wurde.
 
 === Internet Protocol
 
@@ -1579,6 +1600,61 @@ besondere Adressen:
     - 255.255.255.255: Broadcast
     - alle Host-Bits 1: Broadcast in dem angegebenen Netzwerk
     - 127.X.X.X: Localhost
+
+==== IPv6
+
+Verbessert viele Nachteile von IPv4.
+
+Es muss jedoch explizit angewendet werden, da es inkompatibel mit IPv4 ist.
+- Dual Stack (IPv4 und IPv6 gleichzeitig)
+- Übersetzung (Umwandlung der Pakete)
+- Tunneling (Übertragung von IPv6 Paketen innerhalb von IPv4 Paketen)
+
+= Transport Layer (L4)
+
+Zuverlässiger Datentransfer von Prozess zu Prozess.
+
+== TPDU
+
+"Transport Protocol Data Unit"
+
+Ein TPDU ist genestet:
+TPDU ist in einem Paket, welches in einem Frame ist.
+
+== Berkeley Socket Primitives
+
+#table(
+    columns: 2,
+    table.header([Primitive], [Bedeutung]),
+    [Socket], [Erzeugung eines neuen Kommunikationsendpunktes],
+    [Bind], [Verknüpfung einer lokalen Adresse mit einer Socket],
+    [Listen], [Meldung der Bereitschaft Verbindungen anzunehmen],
+    [Accept], [Blockieren des Aufrufers, bis ein Verbindungsversuch ankommt],
+    [Connect], [aktiver Versuch eine Verbindung aufzubauen],
+    [Send], [Sende Daten über die Verbindung],
+    [Receive], [Empfange Daten von der Verbindung],
+    [Close], [Freigabe der Verbindung],
+)
+
+== Schritte
+
+#grid(
+    columns: 2,
+    [SAP], [Service Access Point],
+    [TSAP], [Transport Service Access Point],
+    [NSAP], [Network Service Access Point],
+)
+
+Ein SAP einer Schicht stellt der überliegenden Schicht Dienste zur Verfügung.
+
+TSAP's sind implizit bekannt.
+Services, die oft verwendet werden, haben vordefinierte TSAP's (siehe `/etc/services`).
+
++ Server verbindet zu sich selber auf TSAP 122 und wartet auf Verbindungsanfragen.
++ Client initiiert eine Verbindung auf TSAP 6 als Quelle und TSAP 122 als Ziel
++ Transportentität auf dem Quellsystem identifiziert dediziertes NSAP und initiiert Kommunikation auf dem #L3
+    - Dabei wird TSAP 122 über die gewünschte Verbindung informiert
++ Transportentität auf dem Zielsystem adressiert den Server und nimmt die Verbindungsanfragen an
 
 = Protokolle
 
