@@ -28,6 +28,21 @@ Gruppe: inverses Element
 
 $(x y)^(-1) = y^(-1) x^(-1)$
 
+Ideal: $(I,+) <= (R,+): forall r in R, i in I: r dot i in I$
+
+Homomorphismus: $phi: G -> H, phi(e_G) = e_H$, $phi(a b) = phi(a) phi(b)$ ($phi(a^(-1)) = phi(a)^(-1)$)
+
+Ring: $exists bb(1)$ bezüglich der Multiplikation, Multiplikation ist kommutativ
+
+$ker phi$ eines Gruppenhomomorphismus ist ein Normalteiler
+
+In einem Gruppenhomomorphismus $phi: H -> G$
+- $phi(bb(0)_H) = bb(0)_G$
+- $phi(bb(1)_H) = bb(1)_G$
+
+Ring $(R,+,dot)$
+- $forall r in R: bb(0) dot r = bb(0)$
+
 = Beispielklausur
 
 == Aufgabe 1: chinesischer Restsatz
@@ -181,3 +196,27 @@ $
 $
 
 => Somit ist $X Y <= G$.
+
+= Hausaufgabenblatt 11
+
+== 11.1
+
+=== 11.1.1
+
+Ideal:
+$
+    (I,+) <= (R,+) \
+    forall r in R, i in I: r dot i in I
+$
+
+Aus Aufgabe 6.1.2: $ker phi lt.closed.eq R$ und damit auch $(ker phi,+) <= (R,+)$ und #linebreak() $forall r in R: r dot ker phi = ker phi dot r$.
+
+z.Z.: $forall r in R, forall i in ker phi: r dot i in ker phi$
+
+sei $r in R, i in ker phi$:
+$
+    phi(r dot i) = phi(r) dot.o phi(i) = phi(r) dot.o bb(0)_R' = bb(0)_R'
+$
+Somit ist $phi(r dot i) = bb(0)_R' in ker phi$
+
+=> $ker phi$ ist ein Ideal in $R$
