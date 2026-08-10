@@ -12,41 +12,54 @@
 
 #show heading.where(level: 1): content => [#pagebreak() #content]
 
-In Klausur
-- Permutationsgruppe $S_n$
-- Zyklenschreibweise
-- chinesischer Restsatz
-- Gruppenhomomorphismus
-    - ker, img, injektivität, surjektivität
-- Polynomringe
-- euklidischer Algorithmus
-// - Fermatische Faktorisierung
-
 = Notizen
 
 - Monoid: assoziativ, neutrales Element
 - Untermonoid: abgeschlossen, neutrales Element auch enthalten
 - Gruppe: inverses Element
+- Ring $(R,+,dot)$:
+    - $(R,+)$ ist eine abelsche Gruppe mit $e = bb(0)$
+    - $(R,dot)$ ist ein abelsches Monoid mit $e = bb(1)$
+    - Distributivgesetz gilt $a dot (b + c) = a dot b + a dot c$
+    - Integritätsbereich: Ring, der Nullteilerfrei ist
+        - $a dot b = 0 => a = 0 or b = 0$
+- Körper $(R,+,dot)$:
+    - $(K,+)$ ist eine abelsche Gruppe
+    - $(K,dot)$ ist ein Monoid
+    - $K^times = K without {0}$
+    - Nullteilerfrei: $a,b in K:a != 0 and b != 0 => a dot b != 0$
+    - Regeln
+        - $0 dot a = 0$
+        - $a dot -1 = -1$
+        - $(-a)^2 = a$
+        - binomische Formeln gelten
 
 $(x y)^(-1) = y^(-1) x^(-1)$
 
-Ideal: $(I,+) <= (R,+): forall r in R, i in I: r dot i in I$
+Ideal: $(I,+) <= (R,+) and forall r in R, i in I: r dot i in I$
 
-Homomorphismus: $phi: G -> H, phi(e_G) = e_H$, $phi(a b) = phi(a) phi(b)$ ($phi(a^(-1)) = phi(a)^(-1)$)
+Einheit $r in R$: $exists r^(-1) in R: r dot r^(-1) = 1$
 
-Ring: $exists bb(1)$ bezüglich der Multiplikation, Multiplikation ist kommutativ
+Normalteiler $H lt.closed.eq G$:
+- $forall a in G: a H = H a$
+- $a H a^(-1) subset.eq H$
 
-$ker phi$ eines Gruppenhomomorphismus ist ein Normalteiler
+Homomorphismus $phi: G -> H$:
+- $phi(e_G) = e_H$
+- $phi(a circle.small b) = phi(a) circle.small phi(b)$
+- ($phi(a^(-1)) = phi(a)^(-1)$)
+- $ker phi = {a : phi(a) = bb(0)_H} <= G$ eines Gruppenhomomorphismus ist ein Normalteiler
 
-In einem Gruppenhomomorphismus $phi: H -> G$
+In einem Ringhomomorphismus $phi: H -> G$
 - $phi(bb(0)_H) = bb(0)_G$
 - $phi(bb(1)_H) = bb(1)_G$
 
 Gruppe $G$
 - $forall g in G: g^0 = e$
 
-Ring $(R,+,dot)$
-- $forall r in R: bb(0) dot r = bb(0)$
+zyklische Untergruppe
+- $cyclic(a) = {a^n : n in ZZ}$
+- $a^(-m) = (a^(-1))^m$
 
 $ord()$:
 - (endliche) Gruppe $G$: $ord(G)$ ist die Anzahl der Elemente in $G$ = die Mächtigkeit von $G$
@@ -54,6 +67,9 @@ $ord()$:
     - bei endlicher Gruppe $G$: $ord(a) = m: a^m = e$
 - $a in G, cyclic(a) <= G$: $ord(cyclic(a)) divides ord(G)$
     - $a^ord(G) = e_G$
+
+Index (sei $H <= G$) $(H:G)$: Menge der Linksnebenklassen von $H$ in $G$
+- $(G:H) := \#(G slash H)$
 
 zyklische Untergruppe
 - $ord(a) = ord(cyclic(a))$
@@ -67,6 +83,9 @@ Restklassengruppen
 - $(a N) star (b N) = (a dot b) N$
 - $e = e N = N$
 - $(a N)^(-1) = a^(-1) N$
+
+Polynomring $R[x]$
+-
 
 Beispiel: $ZZ slash m ZZ = ZZ_m$:
 - $(G,dot)$ spezifiziert durch $(ZZ,+)$, also $a N = {a + n : n in N}$
@@ -305,6 +324,12 @@ $
     ord(a) divides ord(G)
 $
 
+== Satz von Lagrange
+
+bei $H<=G$:
+
+$ord(G) = ord(H) dot (G:H)$
+
 = Beispielklausur
 
 == Aufgabe 1: chinesischer Restsatz
@@ -405,7 +430,7 @@ z.Z.: $X Y = {x y : x in X, y in Y} subset.eq G$ ist eine Untergruppe von $G$, g
 $
        & x y in X Y \
     => & (x y)^(-1) = y^(-1) x^(-1) in X Y \
-       & sans("wähle") x = x^(-1) in X Y, y = y^(-1) in X Y \
+       & sans("wähle") x = x^(-1) in X, y = y^(-1) in Y \
        & x^(-1) y^(-1) in X Y \
     => & (x^(-1) y^(-1))^(-1) = (y^(-1))^(-1) (x^(-1))^(-1) = y x in X Y \
     => & Y X = X Y
@@ -482,3 +507,219 @@ $
 Somit ist $phi(r dot i) = bb(0)_R' in ker phi$
 
 => $ker phi$ ist ein Ideal in $R$
+
+= Wolff 2025
+
+== Aufgabe 5
+
+=== 1
+
+$overline(2) dot overline(5) = overline(10) = overline(0) = 0$
+
+=> nicht Nullteilerfrei
+
+=> kein Körper
+
+=== 2
+
+$overline(2) dot overline(6) = overline(12) = overline(2) in.not I$
+
+=> es ist kein Ideal
+
+=== 3
+
+$R, {overline(0)}, {overline(0), overline(2), overline(4), overline(6), overline(8)}, {overline(0), overline(5)}$
+
+=== 4
+
+==== i
+
+$(0,1) times.o (1,0) = ((0 dot 1),(1 dot 0)) = (0,0) = 0$
+
+=> $S$ ist kein Körper
+
+==== ii
+
+$ker phi = {overline(0)}$
+
+Untergruppe $(ker phi,+) <= (ZZ_10,+)$
+
+Da $e_+ = 0$ und $ker phi = {0}$ ist $ker phi$ eine Gruppe bezüglich der Addition.
+
+Idealeigenschaft $forall i in ZZ_10, j in ker phi: i dot j in ker phi$
+$
+    forall i in ZZ_10: i dot 0 = 0 \
+    => i dot 0 = 0 in ker phi
+$
+
+= 2023
+
+== 2
+
+=== 3
+
+$tau = (1 4 2)(5 3)$
+
+$sigma^(-1) = (1 3 5 4 2)$
+
+=== 4
+
+$S_4$ mit $5 mapsto 5$
+
+=== 5
+
+==== i
+
++ $e$
++ $sigma_1$
++ $sigma_2$
++ $sigma_1 circle.small sigma_2$
++ $sigma_1 circle.small sigma_2 circle.small sigma_1$
++ $sigma_2 circle.small sigma_1 circle.small sigma_2$
+
+==== ii
+
+$ord(S_5) = ord(H) dot (S_5:H) <=> 120 = 6 dot (S_5:H) <=> 20 = (S_5:H)$
+
+=== 3
+
+==== 1
+
+$
+    g(2) = 0 => frac(x^3 - 2x^2 + 3x - 6, x-2) = x^2 + 3 \
+    => g(x) = (x - 2)(x^2 + 3)
+$
+
+===== i
+
+$K = RR$
+
+$
+    x^2 = -3
+$
+nicht in $RR$ möglich, also ist $g(x) = (x - 2)(x^2 + 3)$ die kleinste Faktorisierung.
+
+===== ii
+
+$K = CC$
+
+$
+    x^2 + 3 = 0 => x = plus.minus i sqrt(3) \
+    => g = (x - 2)(x + i sqrt(3))(x - i sqrt(3))
+$
+
+===== iii
+
+$K = ZZ_3$
+
+$
+    g = x^3 - 2x^2 + 3x - 6 <=> x^3 x^2 = x^2(x + 1)
+$
+
+==== 2
+
+Nein :)
+
+== 4
+
+=== 1
+
+z.Z. $phi_1(1) = phi_2(1) => phi_1 = phi_2$
+
+$
+    phi_1(2) = phi_1(1 + 1) = phi_1(1) + phi_1(1) = phi_2(1) + phi_2(1) = phi_2(2)
+$
+
+=== 2
+
+==== i
+
+Nein. $f(0) = 1$
+
+==== ii
+
+Nein. $25 = f(5) != f(4 + 1) = f(4) + f(1) = 16 + 1 = 17$
+
+==== iii
+
+Ja, da $f(0) = 0, f(1) = 1, f(2) = 8 equiv 2 mod 3$ und somit ist $f$ die Identitätsfunktion.
+
+=== 3
+
+==== i
+
+$phi(0) = (0,0,0) = arrow(0) = 0$
+
+$phi(a) + phi(b) = (a,2a,3a) + (b,2b,3b) = ((a + b),2(a + b),3(a + b)) = phi(a + b)$
+
+Außerdem:
+
+$(ZZ,+)$ sowie $(ZZ^3,plus.o)$ sind eine Gruppe.
+
+Somit ist $phi$ ein Gruppenhomomorphismus.
+
+==== ii
+
+$H := {phi(z) : z in ZZ} = {(0,0,0),(1,2,3),(-1,-2,-3),(2,4,6),(-2,-4,-6),...}$
+
+$H = {(1,2,3)^z : z in ZZ} = cyclic((1,2,3))$
+
+$forall a,b in H: a plus.o b in H$:
+$
+    (m,2m,3m) plus.o (n,2n,3n) = ((m+n),2(m+n),3(m+n)) in H
+$
+
+$e in H$:
+$
+    0 in ZZ => (1,2,3) dot 0 = (0,0,0) = arrow(0) in H
+$
+
+inverse Elemente:
+$
+    forall a in ZZ: exists -a in ZZ\
+    => forall a = (a,2a,3a) in H: exists -a = (-a,-2a,-3a) in H
+$
+
+#line()
+
+Alternativ:
+
+$cyclic((1,2,3)) subset.eq ZZ^3$, da
+$
+    forall a = (a,2a,3a) in H: exists a in ZZ => (a,2a,3a) in ZZ^3
+$
+
+==== iii
+
+$K = {(0,0,0)} <= H$
+
+== Aufgabe 6
+
+=== 1
+
+$
+    k = deg(f), l = deg(g)\
+    "sei" i_1 != 0, j_1 != 0 "und damit" i_1 dot j_1 != 0 "weil" R "Integritätsbereich" \
+    f = i_1 x^k + ..., g = j_1 x^l + ... \
+    f dot g = (i_1 dot j_1) x^(k + l) + ... \
+    => deg(f dot g) = deg(f) + deg(l)
+$
+
+=== 2
+
+$
+    R = ZZ_4 \
+    f = 2x, g = 2x \
+    f dot g = 4 x^2 = 0 x^2 = 0
+$
+
+=== 3
+
+$
+    deg(1) = 0 \
+    0 + 0 = deg(f) + deg(g) = deg(f dot g) \
+    => f = x in R \
+    => exists y in R: x dot y = 1, "wähle" g = y \
+    => 1_R = x dot y, 1_(R[x]) = f dot g \
+    "da" f = x, g = y => f in R, f in R[x], g in R, g in R[x]
+$
