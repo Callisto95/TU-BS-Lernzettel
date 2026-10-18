@@ -4,7 +4,8 @@
 
 = Quadrille
 #[
-    #import "@local/quadrille:0.3.2": *
+    // #import "@local/quadrille:0.3.2": *
+    #import "@preview/quadrille:0.1.0": *
 
     #let graph = graph.with(scale: 1cm)
 
@@ -45,9 +46,9 @@
         segment((1, 1), (-1, 1)),
         segment((1, 2), (-1, 2), extend: true, stroke: (dash: "dashed")),
         area(1, 2, domain: (1, 2)),
-        area(x => x * x, x => x * x - 1, domain: (1,2), fill: red.lighten(75%)),
+        area(x => x * x, x => x * x - 1, domain: (1, 2), fill: red.lighten(75%)),
         annotate((2, 1), "weird area", pos: bottom + right),
-        arc((0, 0), (-2, 2), (2, 0), $alpha$, value: auto),
+        // arc((0, 0), (-2, 2), (2, 0), $alpha$, value: auto), # available in <=0.3.X
         parametric(x => (x, 3), $beta$, domain: (-3, 0)),
         legend: top + left,
     )
