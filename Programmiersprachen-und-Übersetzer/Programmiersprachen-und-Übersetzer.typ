@@ -124,7 +124,7 @@ Das sorgt aber dafür, dass der Lexer kontextsensitiv ist.
 
 #line()
 
-Zeichenstrom -Lexer-> Tokenstrom -Parser-> AST
+Zeichenstrom -Lexer-> Tokenstrom -Parser-> AST -Übersetzer-> CFG
 
 = Typen
 
